@@ -1,7 +1,4 @@
-﻿using static Il2CppSystem.Globalization.CultureInfo;
-using static Rewired.Controller;
-
-namespace Nebula.Roles.HnSImpostorRoles;
+﻿namespace Nebula.Roles.HnSImpostorRoles;
 
 public static class HnSImpostorSystem
 {
@@ -64,7 +61,7 @@ public class HnSReaper : Template.Draggable
 {
     public override bool ShowInHelpWindow => false;
 
-    static private CustomButton killButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         base.ButtonInitialize(__instance);

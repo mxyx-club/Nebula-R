@@ -3,7 +3,7 @@
 public class Vulture : Role, Template.HasWinTrigger
 {
     /* 陣営色 */
-    static public Color RoleColor = new Color(139f / 255f, 69f / 255f, 18f / 255f);
+    public static Color RoleColor = new Color(139f / 255f, 69f / 255f, 18f / 255f);
 
     /* オプション */
     private Module.CustomOption eatOption;
@@ -33,7 +33,7 @@ public class Vulture : Role, Template.HasWinTrigger
     }
 
     /* ボタン */
-    static private CustomButton eatButton;
+    private static CustomButton eatButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (eatButton != null)
@@ -66,7 +66,7 @@ public class Vulture : Role, Template.HasWinTrigger
     }
 
     /* 矢印 */
-    Dictionary<byte, Arrow> Arrows;
+    private Dictionary<byte, Arrow> Arrows;
 
     public byte deadBodyId;
 
@@ -81,7 +81,7 @@ public class Vulture : Role, Template.HasWinTrigger
             new HelpSprite(eatButtonSprite,"role.vulture.help.eat",0.3f)
     };
 
-    SpriteLoader arrowSprite = new SpriteLoader("role.vulture.arrow");
+    private SpriteLoader arrowSprite = new SpriteLoader("role.vulture.arrow");
 
     public override void MyPlayerControlUpdate()
     {
@@ -130,7 +130,7 @@ public class Vulture : Role, Template.HasWinTrigger
             {
                 if (!Arrows.ContainsKey(body.ParentId))
                 {
-                    Arrows[body.ParentId] = new Arrow(Color.blue,true,arrowSprite.GetSprite());
+                    Arrows[body.ParentId] = new Arrow(Color.blue, true, arrowSprite.GetSprite());
                     Arrows[body.ParentId].arrow.SetActive(true);
                 }
                 Arrows[body.ParentId].Update(body.transform.position);

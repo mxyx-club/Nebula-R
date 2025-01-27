@@ -9,8 +9,8 @@ public class HardTaskPatch
     [HarmonyPatch(typeof(UnlockManifoldsMinigame), nameof(UnlockManifoldsMinigame.Begin))]
     public static class UnlockManifoldsPatch
     {
-        static private Sprite emptySprite = null;
-        static private Sprite GetEmptySprite()
+        private static Sprite emptySprite = null;
+        private static Sprite GetEmptySprite()
         {
             if (emptySprite) return emptySprite;
             emptySprite = Helpers.loadSpriteFromResources("Nebula.Resources.EmptyManifolds.png", 100f);
@@ -186,7 +186,7 @@ public class HardTaskPatch
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.PickRandomConsoles))]
     public static class RandomTaskPatch
     {
-        static public void Postfix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
+        public static void Postfix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
         {
             if (!CustomOptionHolder.TasksOption.getBool() || !CustomOptionHolder.RandomizedWiringOption.getBool()) return;
 
@@ -196,11 +196,11 @@ public class HardTaskPatch
 
         }
 
-        static public bool Prefix(NormalPlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Console> __result, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
+        public static bool Prefix(NormalPlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Console> __result, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
         {
             if (!CustomOptionHolder.TasksOption.getBool()) return true;
 
-            List<Console> orgList = ShipStatus.Instance.AllConsoles.Where((t) => { return t.TaskTypes.Contains(taskType); }).ToList<Console>();
+            List<Console> orgList = ShipStatus.Instance.AllConsoles.Where((t) => { return t.TaskTypes.Contains(taskType); }).ToList();
             List<Console> list = new List<Console>(orgList);
             List<Console> result = new List<Console>();
 
@@ -228,34 +228,34 @@ public class HardTaskPatch
     }
 
     [HarmonyPatch]
-    class SafeMinigamePatch
+    private class SafeMinigamePatch
     {
-        static int[] numbers = new int[5];
-        static int[] received = new int[5] { 0, 0, 0, 0, 0 };
-        static int progress = 0;
-        static bool canPushButton;
+        private static int[] numbers = new int[5];
+        private static int[] received = new int[5] { 0, 0, 0, 0, 0 };
+        private static int progress = 0;
+        private static bool canPushButton;
         private static Sprite backgroundSprite;
         private static Texture2D buttonTexture;
         private static HashSet<SpriteRenderer> allRenderers = new HashSet<SpriteRenderer>();
         private static AudioClip denySound;
         private static AudioClip buttonSound;
 
-        static Sprite GetBackgroundSprite()
+        private static Sprite GetBackgroundSprite()
         {
             if (!backgroundSprite) backgroundSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SafeMinigameBackground.png", 190f);
             return backgroundSprite;
         }
 
-        static Texture2D GetButtonsTexture()
+        private static Texture2D GetButtonsTexture()
         {
             if (!buttonTexture) buttonTexture = Helpers.loadTextureFromResources("Nebula.Resources.SafeMinigameButtons.png");
             return buttonTexture;
         }
 
         [HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.Begin))]
-        class SafeMinigameBeginPatch
+        private class SafeMinigameBeginPatch
         {
-            static IEnumerator GetEnumerator()
+            private static IEnumerator GetEnumerator()
             {
                 canPushButton = false;
                 for (int i = 0; i < 6; i++)
@@ -273,7 +273,7 @@ public class HardTaskPatch
                 canPushButton = true;
             }
 
-            static void Postfix(SafeMinigame __instance)
+            private static void Postfix(SafeMinigame __instance)
             {
                 if (CustomOptionHolder.mapOptions.getBool() && !CustomOptionHolder.UseVanillaSafeTaskOption.getBool())
                 {
@@ -318,7 +318,7 @@ public class HardTaskPatch
                         button = new GameObject("Button");
                         button.layer = LayerExpansion.GetUILayer();
                         button.transform.SetParent(background.transform);
-                        button.transform.localPosition = new Vector3((float)(-1f + (float)(i % 3)) * 0.6f, (float)(1.5f - (float)(i / 3)) * 0.6f, -1f);
+                        button.transform.localPosition = new Vector3((float)(-1f + i % 3) * 0.6f, (float)(1.5f - i / 3) * 0.6f, -1f);
                         button.transform.localScale = new Vector3(1f, 1f, 1f);
 
                         int buttonType = 0;

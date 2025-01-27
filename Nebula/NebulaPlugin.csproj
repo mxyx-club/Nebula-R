@@ -1,58 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Version>1.0.0.0</Version>
+        <AssemblyName>Nebula</AssemblyName>
+        <LangVersion>latest</LangVersion>
+        <RootNamespace>Nebula</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DebugType>embedded</DebugType>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon />
-    <Win32Resource />
-    <RootNamespace>Nebula</RootNamespace>
-    <AssemblyName>Nebula</AssemblyName>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\**" />
+    </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>$(DefineConstants);STEAM</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.3.28" />
+        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1" />
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.671" />
+        <PackageReference Include="Reactor" Version="2.1.0-ci.228" />
+    </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>STEAM</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\CPUAffinityEditor.exe" />
-    <EmbeddedResource Include="Resources\CustomHats\*.png" />
-    <EmbeddedResource Include="Resources\*.png" />
-    <EmbeddedResource Include="Resources\Help\*.png" />
-    <EmbeddedResource Include="Resources\Ghost\*.png" />
-    <EmbeddedResource Include="Resources\Locations\*.png" />
-    <EmbeddedResource Include="Resources\Languages\*.dat" />
-    <EmbeddedResource Include="Resources\Lang.dat" />
-    <EmbeddedResource Include="Resources\Color.dat" />
-    <EmbeddedResource Include="Resources\RandomName.dat" />
-    <EmbeddedResource Include="Resources\Help.dat" />
-    <EmbeddedResource Include="Resources\Shaders\*.shader" />
-    <EmbeddedResource Include="Resources\Assets\nebula_asset" />
-    <EmbeddedResource Include="Resources\Assets\audiobundle" />
-    <EmbeddedResource Include="Resources\Assets\haomingassets" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="D:\SteamLibrary\steamapps\common\Among Us BepInEx\BepInEx\core\*.dll" />
-    <Reference Include="D:\SteamLibrary\steamapps\common\Among Us BepInEx\BepInEx\interop\*.dll" />
-    <Reference Include="D:\SteamLibrary\steamapps\common\Among Us BepInEx\BepInEx\reactor\*.dll" />
-    <Reference Include="D:\SteamLibrary\steamapps\common\Among Us BepInEx\dotnet\*.dll" />
-  </ItemGroup>
-
-  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <Message Text="Second occurrence" />
-    <Copy SourceFiles="bin\Debug\netstandard2.1\Nebula.dll" DestinationFolder="D:\SteamLibrary\steamapps\common\Among Us BepInEx\BepInEx\plugins\" />
-  </Target>
-
+    <Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition="Exists('$(AmongUsLatest)/BepInEx/plugins/')">
+        <Message Text="Second occurrence" />
+        <Copy SourceFiles="$(ProjectDir)\bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).dll" DestinationFolder="$(AmongUsLatest)/BepInEx/plugins/" />
+    </Target>
 </Project>

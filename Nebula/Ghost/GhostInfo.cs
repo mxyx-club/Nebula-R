@@ -2,7 +2,7 @@
 
 public class GhostInfo
 {
-    static public List<GhostInfo> AllGhostInfo = new List<GhostInfo>();
+    public static List<GhostInfo> AllGhostInfo = new List<GhostInfo>();
 
     public string LocalizeName { get; private set; }
     public string Name { get; private set; }

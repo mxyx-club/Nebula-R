@@ -1,10 +1,8 @@
-﻿namespace Nebula.Objects.ObjectTypes;
+namespace Nebula.Objects.ObjectTypes;
 
 public class Leaves : TypeWithImage
 {
-    private Color LeavesColor;
-
-    public Leaves() : base(128, "Leaves", new SpriteLoader("Nebula.Resources.Leaves.png",200f))
+    public Leaves() : base(128, "Leaves", new SpriteLoader("Nebula.Resources.Leaves.png", 200f))
     {
     }
 
@@ -14,14 +12,11 @@ public class Leaves : TypeWithImage
 
     public override void Update(CustomObject obj, int command)
     {
-        if(command == 1) obj.Renderer.color = Color.green;
-        else obj.Renderer.color = LeavesColor;
+        obj.Renderer.color = Color.green;
     }
 
     public override void Initialize(CustomObject obj)
     {
         base.Initialize(obj);
-
-        LeavesColor = Module.DynamicColors.MyColor.GetMainColor();
     }
 }

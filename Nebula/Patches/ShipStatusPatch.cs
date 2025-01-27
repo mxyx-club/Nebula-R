@@ -1,6 +1,4 @@
-﻿using AmongUs.GameOptions;
-
-namespace Nebula.Patches;
+﻿namespace Nebula.Patches;
 
 [HarmonyPatch(typeof(ShipStatus))]
 public class ShipStatusPatch
@@ -29,7 +27,7 @@ public class ShipStatusPatch
         SwitchSystem switchSystem = systemType.TryCast<SwitchSystem>();
         if (switchSystem == null) return true;
 
-        float rate = (float)switchSystem.Value / 255f;
+        float rate = switchSystem.Value / 255f;
 
         if (player == null || player.IsDead)
         { // IsDead
@@ -134,9 +132,9 @@ public class ShipStatusPatch
 
 //AirshipにてDummyらのスポーン位置を変更する
 [HarmonyPatch(typeof(AirshipStatus), nameof(AirshipStatus.SpawnPlayer))]
-static class AirshipSpawnDummyPatch
+internal static class AirshipSpawnDummyPatch
 {
-    static void Postfix(AirshipStatus __instance, [HarmonyArgument(0)] PlayerControl player)
+    private static void Postfix(AirshipStatus __instance, [HarmonyArgument(0)] PlayerControl player)
     {
         if (!player.GetComponent<DummyBehaviour>().enabled) player.NetTransform.SnapTo(new Vector2(-0.66f, -0.5f));
     }
@@ -144,9 +142,9 @@ static class AirshipSpawnDummyPatch
 
 //デフォルトのタスク終了を回避する
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
-static class CheckTaskCompletionPatch
+internal static class CheckTaskCompletionPatch
 {
-    static bool Prefix(GameManager __instance)
+    private static bool Prefix(GameManager __instance)
     {
         return false;
     }

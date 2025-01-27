@@ -4,7 +4,7 @@ namespace Nebula.Map;
 
 public class SpawnCandidate
 {
-    static private Il2CppArrayBase<UnityEngine.Object>? audioClips = null;
+    private static Il2CppArrayBase<UnityEngine.Object>? audioClips = null;
 
     public Vector2 SpawnLocation;
     public Texture2D Texture;
@@ -40,7 +40,7 @@ public class SpawnCandidate
 
         for (int i = 0; i < Sprites.Length; i++)
         {
-            Sprites[i] = Helpers.loadSpriteFromResources(Texture, pixelsPerUnit, new Rect((float)(i * spriteWidth), 0f, spriteWidth, Texture.height), new Vector2(0.5f, 0f));
+            Sprites[i] = Helpers.loadSpriteFromResources(Texture, pixelsPerUnit, new Rect(i * spriteWidth, 0f, spriteWidth, Texture.height), new Vector2(0.5f, 0f));
         }
     }
 
@@ -53,13 +53,13 @@ public class SpawnCandidate
 
     public AudioClip? GetAudioClip()
     {
-        if(AudioClip) return AudioClip;
+        if (AudioClip) return AudioClip;
 
         if (AudioClipName == null) return null;
 
         if (audioClips == null) audioClips = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<AudioClip>());
 
-        if (AudioClip == null) AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio && audio.name == AudioClipName)).TryCast<AudioClip>();
+        if (AudioClip == null) AudioClip = (audioClips.FirstOrDefault((audio) => audio && audio.name == AudioClipName)).TryCast<AudioClip>();
         return AudioClip;
     }
 
@@ -74,7 +74,7 @@ public class SpawnCandidate
         }));
     }
 
-    public SpawnCandidate(string locationKey, Vector2 location, string textureAddress, string? audioClip, float pixelsPerUnit = 100f,int spriteWidth = 200)
+    public SpawnCandidate(string locationKey, Vector2 location, string textureAddress, string? audioClip, float pixelsPerUnit = 100f, int spriteWidth = 200)
     {
         SpawnLocation = location;
         LocationKey = locationKey;
@@ -88,7 +88,7 @@ public class SpawnCandidate
         this.pixelsPerUnit = pixelsPerUnit;
     }
 
-    public SpawnCandidate(string locationKey, string textureAddress, int origIndex,int spriteWidth=200)
+    public SpawnCandidate(string locationKey, string textureAddress, int origIndex, int spriteWidth = 200)
     {
         LocationKey = locationKey;
         TextureAddress = textureAddress;

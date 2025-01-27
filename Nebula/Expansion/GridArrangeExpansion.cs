@@ -1,14 +1,14 @@
 ﻿namespace Nebula.Expansion;
 
 [HarmonyPatch]
-static public class GridArrangeExpansion
+public static class GridArrangeExpansion
 {
-    static public List<GameObject> leftSideContents = new List<GameObject>();
-    static public List<GameObject> bottomContents = new List<GameObject>();
-    static public List<GameObject> lineContents = new List<GameObject>();
-    static public List<GameObject> ignoredContent = new List<GameObject>(); 
+    public static List<GameObject> leftSideContents = new List<GameObject>();
+    public static List<GameObject> bottomContents = new List<GameObject>();
+    public static List<GameObject> lineContents = new List<GameObject>();
+    public static List<GameObject> ignoredContent = new List<GameObject>();
     //存在を問わずキルボタンの位置を代替するコンテンツ
-    static public GameObject AlternativeKillButtonContent;
+    public static GameObject AlternativeKillButtonContent;
 
     [Flags]
     public enum GridArrangeParameter
@@ -23,26 +23,26 @@ static public class GridArrangeExpansion
     }
 
 
-    static public void AddGridArrangeContent(GameObject obj, GridArrangeParameter param)
+    public static void AddGridArrangeContent(GameObject obj, GridArrangeParameter param)
     {
-        if (obj.transform.parent != HudManager.Instance.UseButton.transform.parent && (int)(param & GridArrangeParameter.AlwaysVisible) == 0)
+        if (obj.transform.parent != HudManager.Instance.UseButton.transform.parent && (param & GridArrangeParameter.AlwaysVisible) == 0)
             obj.transform.SetParent(HudManager.Instance.UseButton.transform.parent);
-        if (obj.transform.parent != alwaysVisible.transform && (int)(param & GridArrangeParameter.AlwaysVisible) != 0)
+        if (obj.transform.parent != alwaysVisible.transform && (param & GridArrangeParameter.AlwaysVisible) != 0)
             obj.transform.SetParent(alwaysVisible.transform);
 
-        if ((int)(param & GridArrangeParameter.BottomContent) != 0)
+        if ((param & GridArrangeParameter.BottomContent) != 0)
             bottomContents.Add(obj);
-        if ((int)(param & GridArrangeParameter.LeftSideContent) != 0)
+        if ((param & GridArrangeParameter.LeftSideContent) != 0)
             leftSideContents.Add(obj);
-        if ((int)(param & GridArrangeParameter.OccupyingLineContent) != 0)
+        if ((param & GridArrangeParameter.OccupyingLineContent) != 0)
             lineContents.Add(obj);
-        if ((int)(param & GridArrangeParameter.AlternativeKillButtonContent) != 0)
+        if ((param & GridArrangeParameter.AlternativeKillButtonContent) != 0)
             AlternativeKillButtonContent = obj;
-        if ((int)(param & GridArrangeParameter.IgnoredContent) != 0)
+        if ((param & GridArrangeParameter.IgnoredContent) != 0)
             ignoredContent.Add(obj);
     }
 
-    static public void RemoveGridArrangeContent(GameObject obj)
+    public static void RemoveGridArrangeContent(GameObject obj)
     {
         bottomContents.Remove(obj);
         leftSideContents.Remove(obj);
@@ -52,9 +52,9 @@ static public class GridArrangeExpansion
             AlternativeKillButtonContent = HudManager.Instance.KillButton.gameObject;
     }
 
-    static public GameObject alwaysVisible;
+    public static GameObject alwaysVisible;
 
-    static public void OnStartGame()
+    public static void OnStartGame()
     {
         bottomContents.Clear();
         leftSideContents.Clear();
@@ -68,17 +68,17 @@ static public class GridArrangeExpansion
         alwaysVisible.transform.localScale = HudManager.Instance.UseButton.transform.parent.localScale;
     }
 
-    private static bool ForcelyRefreshFlag=false;
+    private static bool ForcelyRefreshFlag = false;
 
-    static public void OnMeetingEnd()
+    public static void OnMeetingEnd()
     {
         ForcelyRefreshFlag = true;
     }
 
     [HarmonyPatch(typeof(GridArrange), nameof(GridArrange.CheckCurrentChildren))]
-    class CheckCurrentChildrenPatch
+    private class CheckCurrentChildrenPatch
     {
-        static IEnumerator GetEnumerator(GameObject obj,Vector3 dest)
+        private static IEnumerator GetEnumerator(GameObject obj, Vector3 dest)
         {
             float t = 0f;
             Vector3 pos = obj.transform.localPosition;
@@ -89,10 +89,10 @@ static public class GridArrangeExpansion
                 t += Time.deltaTime * 1.4f;
                 yield return null;
             }
-            if(obj)obj.transform.localPosition = dest;
+            if (obj) obj.transform.localPosition = dest;
         }
 
-        static public bool Prefix(GridArrange __instance)
+        public static bool Prefix(GridArrange __instance)
         {
             __instance.GetChildsActive();
             if (alwaysVisible)
@@ -122,7 +122,7 @@ static public class GridArrangeExpansion
 
             //直前に存在していたボタン
             List<int> lastContents = new List<int>();
-            if (ForcelyRefreshFlag) foreach(var t in __instance.cells) if(t) lastContents.Add(t.gameObject.GetInstanceID());
+            if (ForcelyRefreshFlag) foreach (var t in __instance.cells) if (t) lastContents.Add(t.gameObject.GetInstanceID());
             ForcelyRefreshFlag = false;
 
             //cellsを更新
@@ -158,8 +158,8 @@ static public class GridArrangeExpansion
                     y = isBottom ? 0 : (int)rightVec.y;
                 }
 
-                float posX = (float)x * __instance.CellSize.x;
-                float posY = (float)y * __instance.CellSize.y;
+                float posX = x * __instance.CellSize.x;
+                float posY = y * __instance.CellSize.y;
 
                 if (isLeftSide)
                     posX -= __instance.transform.localPosition.x * 2f;
@@ -170,13 +170,13 @@ static public class GridArrangeExpansion
                     c.localPosition = new Vector3(posX, posY, c.localPosition.z);
                 else
                     __instance.StartCoroutine(GetEnumerator(c.gameObject, new Vector3(posX, posY, c.localPosition.z)).WrapToIl2Cpp());
-            
 
-                if (y == (float)((isLeftSide ? leftVec : rightVec).y))
+
+                if (y == (isLeftSide ? leftVec : rightVec).y)
                 {
                     if (isLeftSide)
                     {
-                        leftVec.x += lineContents.Any((c)=>c.GetInstanceID()==obj.GetInstanceID()) ? __instance.MaxColumns : 1f;
+                        leftVec.x += lineContents.Any((c) => c.GetInstanceID() == obj.GetInstanceID()) ? __instance.MaxColumns : 1f;
                         if ((int)leftVec.x >= __instance.MaxColumns)
                         {
                             leftVec.x = 0f;
@@ -215,9 +215,9 @@ static public class GridArrangeExpansion
     }
 
     [HarmonyPatch(typeof(GridArrange), nameof(GridArrange.ArrangeChilds))]
-    class ArrangeChildsPatch
+    private class ArrangeChildsPatch
     {
-        static public bool Prefix(GridArrange __instance)
+        public static bool Prefix(GridArrange __instance)
         {
             return false;
         }

@@ -1,19 +1,11 @@
-﻿using Il2CppInterop.Generator.Passes;
-using Il2CppSystem.Data;
-using Nebula.Module;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Nebula.Module;
 using static Nebula.Roles.Perk.PerkHolder;
 
 namespace Nebula.Roles.Perk;
 
 public enum PerkPropertyType
 {
-    None=0,
+    None = 0,
     Percentage,
     Meter,
     Second
@@ -52,7 +44,7 @@ public class DisplayPerk
     public string LocalizedName { get; private set; }
 
     public virtual string DisplayName => "Undefined";
-    
+
     public virtual string DisplayFlavor => "Undefined";
 
 
@@ -65,7 +57,8 @@ public class DisplayPerk
     public bool IsCrewmatePerk { get; private set; }
 
 
-    public DisplayPerk(string localizedName, bool isCrewmate,int frontSpriteId, int backSpriteId, Color backSpriteColor) {
+    public DisplayPerk(string localizedName, bool isCrewmate, int frontSpriteId, int backSpriteId, Color backSpriteColor)
+    {
         LocalizedName = localizedName;
         VisualFrontSpriteId = frontSpriteId;
         VisualBackSpriteId = backSpriteId;
@@ -112,14 +105,14 @@ public class RolePerk : DisplayPerk, IReleasable
         UpdateReleaseStatus(10000);
     }
 
-    static private IntegerDataEntry?[] equipedRolePerkEntry = new IntegerDataEntry?[2];
-    static private void LoadEquipedRolePerkEntry(int index)
+    private static IntegerDataEntry?[] equipedRolePerkEntry = new IntegerDataEntry?[2];
+    private static void LoadEquipedRolePerkEntry(int index)
     {
         if (equipedRolePerkEntry[index] == null) equipedRolePerkEntry[index] = new IntegerDataEntry("perks.role.equiped" + index, PerkSaver.PerkDataSaver, -1);
     }
 
     public RolePerk(int id, string localizedName, Role relatedRole, int frontSpriteId, int backSpriteId, Color backSpriteColor, float[]? importantProperty = null)
-        : base(localizedName,false,frontSpriteId, backSpriteId, backSpriteColor)
+        : base(localizedName, false, frontSpriteId, backSpriteId, backSpriteColor)
     {
         ImportantProperties = importantProperty ?? new float[0];
 
@@ -127,7 +120,7 @@ public class RolePerk : DisplayPerk, IReleasable
 
         Id = id;
 
-        this.RelatedRole= relatedRole;
+        this.RelatedRole = relatedRole;
 
         Perks.AllRolePerks[Id] = this;
 
@@ -165,7 +158,7 @@ public class Perk : DisplayPerk, IReleasable
         if (lastAvailableState) return;
 
         StatusEntry.Value = newStatus;
-        if(!lastAvailableState && IsAvailable)
+        if (!lastAvailableState && IsAvailable)
         {
             //新しく解放された場合
         }
@@ -191,20 +184,20 @@ public class Perk : DisplayPerk, IReleasable
     /// </summary>
     /// <param name="perkData"></param>
     /// <param name="playerId"></param>
-    public virtual void Initialize(PerkHolder.PerkInstance perkData, byte playerId) { }
+    public virtual void Initialize(PerkInstance perkData, byte playerId) { }
 
     /// <summary>
     /// 初期化します。
     /// </summary>
     /// <param name="perkData"></param>
     /// <param name="playerId"></param>
-    public virtual void GlobalInitialize(PerkHolder.PerkInstance perkData, byte playerId) { }
+    public virtual void GlobalInitialize(PerkInstance perkData, byte playerId) { }
 
     /// <summary>
     /// 脅威範囲を設定します。
     /// 自身のパークのみ呼び出されます。
     /// </summary>
-    public virtual void EditLocalIntimidation(PerkInstance perkData,ref float additional, ref float ratio) { }
+    public virtual void EditLocalIntimidation(PerkInstance perkData, ref float additional, ref float ratio) { }
 
     /// <summary>
     /// 脅威範囲を設定します。
@@ -218,12 +211,12 @@ public class Perk : DisplayPerk, IReleasable
     /// タスクの効果を調整します。
     /// 自身のパークのみ呼び出されます。
     /// </summary>
-    public virtual void OnCompleteHnSTaskLocal(PerkInstance perkData, ref float additional,ref float ratio){ }
+    public virtual void OnCompleteHnSTaskLocal(PerkInstance perkData, ref float additional, ref float ratio) { }
 
     /// <summary>
     /// タスクの効果を調整します。
     /// </summary>
-    public virtual void OnCompleteHnSTaskGlobal(PerkInstance perkData, byte playerId,ref float additional, ref float ratio) { }
+    public virtual void OnCompleteHnSTaskGlobal(PerkInstance perkData, byte playerId, ref float additional, ref float ratio) { }
 
     /// <summary>
     /// キルクールを調整します。
@@ -283,32 +276,32 @@ public class Perk : DisplayPerk, IReleasable
     /// 誰かが死亡した際に呼び出されます。
     /// </summary>
     /// <param name="playerId"></param>
-    public virtual void OneAnyoneDied(PerkHolder.PerkInstance perkData, byte playerId) { }
+    public virtual void OneAnyoneDied(PerkInstance perkData, byte playerId) { }
 
-    public virtual void OnTaskComplete(PerkHolder.PerkInstance perkData, PlayerTask? task) { }
+    public virtual void OnTaskComplete(PerkInstance perkData, PlayerTask? task) { }
 
-    
 
-    public virtual void MyUpdate(PerkHolder.PerkInstance perkData) { }
-    public virtual void MyControlUpdate(PerkHolder.PerkInstance perkData) { }
-    public virtual void GlobalUpdate(PerkHolder.PerkInstance perkData) { }
 
-    public virtual void ButtonInitialize(PerkInstance perkData,Action<Objects.CustomButton> buttonRegister) { }
+    public virtual void MyUpdate(PerkInstance perkData) { }
+    public virtual void MyControlUpdate(PerkInstance perkData) { }
+    public virtual void GlobalUpdate(PerkInstance perkData) { }
+
+    public virtual void ButtonInitialize(PerkInstance perkData, Action<CustomButton> buttonRegister) { }
 
     public int Id { get; private set; }
-    public Perk(int id,string localizedName,bool isCrewmatePerk,int frontSpriteId,int backSpriteId,Color backSpriteColor)
-        :base(localizedName,isCrewmatePerk,frontSpriteId, backSpriteId,backSpriteColor)
+    public Perk(int id, string localizedName, bool isCrewmatePerk, int frontSpriteId, int backSpriteId, Color backSpriteColor)
+        : base(localizedName, isCrewmatePerk, frontSpriteId, backSpriteId, backSpriteColor)
     {
         id -= 4096;
 
         Id = id;
-        
+
         Perks.AllPerks[Id] = this;
 
         StatusEntry = new IntegerDataEntry("perk." + localizedName + ".status", PerkSaver.PerkDataSaver, 0);
     }
 
-    static public IEnumerator CoProceedDisplayTimer(PerkDisplay? perkDisplay,float duration)
+    public static IEnumerator CoProceedDisplayTimer(PerkDisplay? perkDisplay, float duration)
     {
         if (perkDisplay == null) yield break;
 
@@ -365,8 +358,8 @@ public class Perks
 
 public static class PerkSaver
 {
-    static private DataSaver? perkDataSaver = null;
-    static public DataSaver PerkDataSaver
+    private static DataSaver? perkDataSaver = null;
+    public static DataSaver PerkDataSaver
     {
         get
         {
@@ -375,8 +368,8 @@ public static class PerkSaver
         }
     }
 
-    static private IntegerDataEntry?[] equipedPerkEntry = new IntegerDataEntry?[12];
-    static private string GetCommonIndex(int index,bool isAbility,bool isCrewmate,out int commonIndex)
+    private static IntegerDataEntry?[] equipedPerkEntry = new IntegerDataEntry?[12];
+    private static string GetCommonIndex(int index, bool isAbility, bool isCrewmate, out int commonIndex)
     {
         if (isAbility)
             commonIndex = 2 + index + (isCrewmate ? 5 : 0);
@@ -388,38 +381,38 @@ public static class PerkSaver
         return (isCrewmate ? "hider" : "seeker") + "." + (isAbility ? "ability" : "role") + "." + index;
     }
 
-    static private void LoadEquipedPerkEntry(string commonIndexStr,int commonIndex)
+    private static void LoadEquipedPerkEntry(string commonIndexStr, int commonIndex)
     {
         if (equipedPerkEntry[commonIndex] == null) equipedPerkEntry[commonIndex] = new IntegerDataEntry("perks.equiped." + commonIndexStr, PerkDataSaver, -1);
     }
 
-    static private int GetEquipedPerkId(string commonIndexStr, int commonIndex)
+    private static int GetEquipedPerkId(string commonIndexStr, int commonIndex)
     {
         LoadEquipedPerkEntry(commonIndexStr, commonIndex);
         return equipedPerkEntry[commonIndex]!.Value;
     }
 
-    static private void SetEquipedPerkId(string commonIndexStr, int commonIndex, int id)
+    private static void SetEquipedPerkId(string commonIndexStr, int commonIndex, int id)
     {
         LoadEquipedPerkEntry(commonIndexStr, commonIndex);
         equipedPerkEntry[commonIndex].Value = id;
     }
 
-    static public RolePerk? GetEquipedRolePerk(int index,bool isCrewmate)
+    public static RolePerk? GetEquipedRolePerk(int index, bool isCrewmate)
     {
-        string commonStr = GetCommonIndex(index,false,isCrewmate,out int commonIdx);
+        string commonStr = GetCommonIndex(index, false, isCrewmate, out int commonIdx);
         RolePerk? perk = null;
         Perks.AllRolePerks.TryGetValue(GetEquipedPerkId(commonStr, commonIdx), out perk);
         return perk;
     }
 
-    static public void SetEquipedRolePerk(int index,bool isCrewmate, RolePerk? rolePerk)
+    public static void SetEquipedRolePerk(int index, bool isCrewmate, RolePerk? rolePerk)
     {
         string commonStr = GetCommonIndex(index, false, isCrewmate, out int commonIdx);
         SetEquipedPerkId(commonStr, commonIdx, rolePerk?.Id ?? -1);
     }
 
-    static public Perk? GetEquipedAbilityPerk(int index, bool isCrewmate)
+    public static Perk? GetEquipedAbilityPerk(int index, bool isCrewmate)
     {
         string commonStr = GetCommonIndex(index, true, isCrewmate, out int commonIdx);
         Perk? perk = null;
@@ -427,19 +420,20 @@ public static class PerkSaver
         return perk;
     }
 
-    static public void UnequipAbilityPerk(Perk? perk)
+    public static void UnequipAbilityPerk(Perk? perk)
     {
         if (perk == null) return;
         for (int c = 0; c < 2; c++)
         {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++)
+            {
                 string commonStr = GetCommonIndex(i, true, c == 0, out int commonIdx);
                 if (GetEquipedPerkId(commonStr, commonIdx) == perk?.Id) SetEquipedPerkId(commonStr, commonIdx, -1);
             }
         }
     }
 
-    static public void SetEquipedAbilityPerk(int index, bool isCrewmate, Perk? perk)
+    public static void SetEquipedAbilityPerk(int index, bool isCrewmate, Perk? perk)
     {
         string commonStr = GetCommonIndex(index, true, isCrewmate, out int commonIdx);
         SetEquipedPerkId(commonStr, commonIdx, perk?.Id ?? -1);

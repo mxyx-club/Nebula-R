@@ -5,7 +5,7 @@ public class ExtraRole : Assignable, ExtraAssignable
     public byte id { get; private set; }
 
     //使用済みロールID
-    static private byte maxId = 0;
+    private static byte maxId = 0;
 
     public virtual void Assignment(Patches.AssignMap assignMap) { }
 
@@ -44,7 +44,7 @@ public class ExtraRole : Assignable, ExtraAssignable
         return null;
     }
 
-    static public void LoadAllOptionData()
+    public static void LoadAllOptionData()
     {
         foreach (ExtraRole role in Roles.AllExtraRoles)
         {
@@ -75,7 +75,7 @@ public class ExtraRole : Assignable, ExtraAssignable
 
     public virtual void EditSpawnableRoleShower(ref string roleName, Role role) { }
 
-    sealed public override void SetupRoleOptionData()
+    public sealed override void SetupRoleOptionData()
     {
         SetupRoleOptionData(Module.CustomOptionTab.Modifiers);
     }

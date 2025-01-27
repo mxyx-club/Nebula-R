@@ -86,9 +86,9 @@ public static class OpenDoorConsoleCanUsePatch
 }
 
 [HarmonyPatch(typeof(MedScanMinigame), nameof(MedScanMinigame.FixedUpdate))]
-class MedScanMinigameFixedUpdatePatch
+internal class MedScanMinigameFixedUpdatePatch
 {
-    static void Prefix(MedScanMinigame __instance)
+    private static void Prefix(MedScanMinigame __instance)
     {
         if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.allowParallelMedBayScans.getBool())
         {
@@ -99,7 +99,7 @@ class MedScanMinigameFixedUpdatePatch
 }
 
 [HarmonyPatch(typeof(ImportantTextTask), nameof(ImportantTextTask.AppendTaskText))]
-class ImportantTextTaskPatch
+internal class ImportantTextTaskPatch
 {
     public static bool Prefix(ImportantTextTask __instance)
     {
@@ -108,7 +108,7 @@ class ImportantTextTaskPatch
 }
 
 [HarmonyPatch(typeof(Minigame), nameof(Minigame.Begin))]
-class MinigameBeginPatch
+internal class MinigameBeginPatch
 {
     public static bool Prefix(Minigame __instance, [HarmonyArgument(0)] PlayerTask task)
     {
@@ -132,7 +132,7 @@ class MinigameBeginPatch
 }
 
 [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
-class NextStepPatch
+internal class NextStepPatch
 {
     public static void Finalizer(NormalPlayerTask __instance)
     {

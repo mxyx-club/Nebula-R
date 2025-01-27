@@ -1,8 +1,7 @@
-﻿using Nebula.Map;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Nebula.Map;
 
 namespace Nebula.Module;
 
@@ -13,7 +12,7 @@ public class CustomTextureAsset
     public bool isLoop = false;
     public bool terminateEmptyFrame = false;
     public int loopBegin = 0;
-    public float frame =0.2f;
+    public float frame = 0.2f;
     public Vector3 pos = Vector3.zero;
     public int layer = 0;
 
@@ -28,21 +27,22 @@ public class CustomTextureHandler : MonoBehaviour
 {
     static CustomTextureHandler()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<CustomTextureHandler>();        
+        ClassInjector.RegisterTypeInIl2Cpp<CustomTextureHandler>();
     }
 
     public Il2CppValueField<int> TextureAssetId;
-    CustomTextureAsset? textureAsset = null;
-    float proceedTime = 0f;
-    int animState = 0;
-    SpriteRenderer? renderer = null;
+    private CustomTextureAsset? textureAsset = null;
+    private float proceedTime = 0f;
+    private int animState = 0;
+    private SpriteRenderer? renderer = null;
 
     public void Start()
     {
         TexturePack.AllTextureAssets.TryGetValue(TextureAssetId.Get(), out textureAsset);
 
         renderer = GetComponent<SpriteRenderer>();
-        if (!renderer) {
+        if (!renderer)
+        {
             renderer = null;
             return;
         }
@@ -51,18 +51,19 @@ public class CustomTextureHandler : MonoBehaviour
         if (textureAsset.staticSprite == null && textureAsset.animation == null) return;
 
         var animator = gameObject.GetComponent<Animator>();
-        if(animator)animator.enabled = false;
+        if (animator) animator.enabled = false;
 
         if (textureAsset.animation != null)
         {
             renderer.sprite = textureAsset.animation[0];
-        }else if (textureAsset.staticSprite != null)
-            renderer.sprite= textureAsset.staticSprite;
+        }
+        else if (textureAsset.staticSprite != null)
+            renderer.sprite = textureAsset.staticSprite;
     }
 
     public void Update()
     {
-        if(textureAsset==null || renderer==null || textureAsset.animation == null) return;
+        if (textureAsset == null || renderer == null || textureAsset.animation == null) return;
 
         if (animState >= textureAsset.animation.Length) return;
 
@@ -77,13 +78,13 @@ public class CustomTextureHandler : MonoBehaviour
                 {
                     if (textureAsset.staticSprite != null)
                         renderer.sprite = textureAsset.staticSprite;
-                    else if(textureAsset.terminateEmptyFrame)
+                    else if (textureAsset.terminateEmptyFrame)
                         renderer.sprite = null;
                     return;
                 }
                 animState = textureAsset.loopBegin;
             }
-            
+
             renderer.sprite = textureAsset.animation[animState];
         }
     }
@@ -102,7 +103,7 @@ public interface TexturePackLoader
 
 public class RawTexturePackLoader : TexturePackLoader
 {
-    string prefix;
+    private string prefix;
 
     public RawTexturePackLoader()
     {
@@ -124,8 +125,8 @@ public class RawTexturePackLoader : TexturePackLoader
 
 public class ZipTexturePackLoader : TexturePackLoader
 {
-    string prefix = "";
-    ZipArchive zipArchive;
+    private string prefix = "";
+    private ZipArchive zipArchive;
 
     public ZipTexturePackLoader(ZipArchive zipArchive)
     {
@@ -161,7 +162,8 @@ public class ZipTexturePackLoader : TexturePackLoader
 
 public static class TexturePack
 {
-    public class TexturePackData {
+    public class TexturePackData
+    {
         public bool? BoolVal = null;
         public float? floatVal = null;
         public int? xVal = null, yVal = null;
@@ -175,7 +177,8 @@ public static class TexturePack
         public bool shadowyVal = false;
         public int resolutionVal = 100;
 
-        public TexturePackData TerminateEmptyFrame(bool appendEmptyFrame) {
+        public TexturePackData TerminateEmptyFrame(bool appendEmptyFrame)
+        {
             if (!this.terminateEmptyFrame.HasValue) this.terminateEmptyFrame = appendEmptyFrame;
             return this;
         }
@@ -188,14 +191,14 @@ public static class TexturePack
     }
 
 
-    static private Regex vector3Regex = new Regex("^\\(([^,]*),([^,]*),([^,]*)\\)$");
+    private static Regex vector3Regex = new Regex("^\\(([^,]*),([^,]*),([^,]*)\\)$");
     //static private Regex floatRegex = new Regex("-?[1-9][0-9]*(\\.[0-9]*)?");
 
-    static private bool Vector3TryParse(string str,out Vector3 vector)
+    private static bool Vector3TryParse(string str, out Vector3 vector)
     {
         vector = Vector3.zero;
 
-        var match=vector3Regex.Match(str);
+        var match = vector3Regex.Match(str);
         if (!match.Success) return false;
 
         if (!float.TryParse(match.Groups[1].Value, out vector.x)) return false;
@@ -205,13 +208,13 @@ public static class TexturePack
         return true;
     }
 
-    static public void Deserialize(TexturePackLoader texturePackLoader, Dictionary<string,TexturePackData> dic)
+    public static void Deserialize(TexturePackLoader texturePackLoader, Dictionary<string, TexturePackData> dic)
     {
         Stream? stream = texturePackLoader.GetStream();
 
         if (stream == null)
         {
-            NebulaPlugin.Instance.Logger.Print("TexturePack", "TexturePack doesn't have TextureInfo.pack at the correct path.");
+            Message("TexturePack", "TexturePack doesn't have TextureInfo.pack at the correct path.");
             return;
         }
 
@@ -229,10 +232,10 @@ public static class TexturePack
                 while ((line = sr.ReadLine()) != null)
                 {
                     //スペースを除去
-                    line = line.Replace(" ", "").Replace("\t","").Replace("\b", "");
+                    line = line.Replace(" ", "").Replace("\t", "").Replace("\b", "");
 
                     Match mt;
-        
+
                     mt = statementRegex.Match(line);
                     if (!mt.Success) continue;
 
@@ -252,7 +255,7 @@ public static class TexturePack
                     }
 
                     mt = imageRegex.Match(value);
-                    if(mt.Success)
+                    if (mt.Success)
                     {
                         TexturePackData tpd = new();
 
@@ -271,7 +274,7 @@ public static class TexturePack
                             foreach (string prop in mt.Groups[6].Value.Split(";"))
                             {
                                 var propAry = prop.Split("=", 2);
-                                if(propAry.Length != 2) continue;
+                                if (propAry.Length != 2) continue;
 
                                 if (propAry[0] == "fps" && int.TryParse(propAry[1], out int fps))
                                     tpd.fpsVal = fps;
@@ -297,14 +300,15 @@ public static class TexturePack
                 }
             }
         }
-        catch {
-            NebulaPlugin.Instance.Logger.Print("Loading texture pack is failed.");
+        catch
+        {
+            Error("Loading texture pack is failed.");
         }
 
         stream.Close();
     }
 
-    static public bool LoadSprite(Texture2D? texture, int? x,int? y,int resolution,out Sprite[]? sprites)
+    public static bool LoadSprite(Texture2D? texture, int? x, int? y, int resolution, out Sprite[]? sprites)
     {
         sprites = null;
 
@@ -316,33 +320,33 @@ public static class TexturePack
         sprites = new Sprite[x.Value * y.Value];
         int sizeX = texture.width / x.Value;
         int sizeY = texture.height / y.Value;
-        for (int _x = 0;_x < x.Value; _x++)
+        for (int _x = 0; _x < x.Value; _x++)
         {
             for (int _y = 0; _y < y.Value; _y++)
             {
-                sprites[_x + _y * x.Value] = Helpers.loadSpriteFromResources(texture, (float)resolution, new Rect(_x * sizeX, _y * sizeY, sizeX, sizeY), new Vector2(0.5f, 0.5f));
-                sprites[_x + _y * x.Value].hideFlags= HideFlags.DontUnloadUnusedAsset;
+                sprites[_x + _y * x.Value] = Helpers.loadSpriteFromResources(texture, resolution, new Rect(_x * sizeX, _y * sizeY, sizeX, sizeY), new Vector2(0.5f, 0.5f));
+                sprites[_x + _y * x.Value].hideFlags = HideFlags.DontUnloadUnusedAsset;
             }
         }
 
         return true;
     }
 
-    static public bool LoadAsset(string key, Action<TexturePackData>? TexturePackDataEditor,ref CustomTextureAsset? asset, bool canLoadStaticSprite = true, bool canLoadAnimationSprite = true)
+    public static bool LoadAsset(string key, Action<TexturePackData>? TexturePackDataEditor, ref CustomTextureAsset? asset, bool canLoadStaticSprite = true, bool canLoadAnimationSprite = true)
     {
         TexturePackData tpd;
         if (!TexturePackDataDic.TryGetValue(key, out tpd)) return false;
-        
+
         if (TexturePackDataEditor != null) TexturePackDataEditor.Invoke(tpd);
 
         Sprite[]? sprites;
-        if (!LoadSprite(tpd.texture, tpd.xVal, tpd.yVal, tpd.resolutionVal,out sprites)) return false;
+        if (!LoadSprite(tpd.texture, tpd.xVal, tpd.yVal, tpd.resolutionVal, out sprites)) return false;
 
         if (asset == null) asset = new();
 
         if (sprites == null) return false;
 
-        
+
         if (tpd.shadowyVal) asset.layer = LayerExpansion.GetShadowLayer();
         else if (tpd.permanentVal) asset.layer = LayerExpansion.GetObjectsLayer();
 
@@ -357,25 +361,25 @@ public static class TexturePack
             if (canLoadAnimationSprite)
             {
                 asset.isLoop = tpd.isLoopVal.HasValue ? tpd.isLoopVal.Value : false;
-                asset.frame = 1f / (float)tpd.fpsVal;
+                asset.frame = 1f / tpd.fpsVal;
                 asset.terminateEmptyFrame = tpd.terminateEmptyFrame.HasValue ? tpd.terminateEmptyFrame.Value : false;
                 asset.animation = sprites;
-                if(tpd.loopRange.HasValue) asset.loopBegin = Mathf.Max((int)0,(int)(sprites.Length - tpd.loopRange.Value));
+                if (tpd.loopRange.HasValue) asset.loopBegin = Mathf.Max(0, sprites.Length - tpd.loopRange.Value);
             }
         }
         return true;
     }
 
-    static public bool LoadAsset(string key, ref CustomTextureAsset? asset, bool canLoadStaticSprite = true, bool canLoadAnimationSprite = true)
+    public static bool LoadAsset(string key, ref CustomTextureAsset? asset, bool canLoadStaticSprite = true, bool canLoadAnimationSprite = true)
     => LoadAsset(key, null, ref asset, canLoadStaticSprite, canLoadAnimationSprite);
 
-    static public Dictionary<string, TexturePackData> TexturePackDataDic = new();
+    public static Dictionary<string, TexturePackData> TexturePackDataDic = new();
 
-    static private void Decorate(ref int availableId,ShipStatus shipStatus,CustomTextureAsset asset)
+    private static void Decorate(ref int availableId, ShipStatus shipStatus, CustomTextureAsset asset)
     {
-        NebulaPlugin.Instance.Logger.Print("dec-0");
+        Info("dec-0");
         AllTextureAssets[++availableId] = asset;
-        
+
         GameObject obj = new GameObject("Decoration");
 
         obj.transform.SetParent(shipStatus.transform);
@@ -383,13 +387,13 @@ public static class TexturePack
         var pos = asset.pos;
         pos.z /= 10f;
         obj.transform.position = pos;
-        NebulaPlugin.Instance.Logger.Print("dec-1");
+        Info("dec-1");
         obj.AddComponent<SpriteRenderer>();
         obj.AddComponent<CustomTextureHandler>().TextureAssetId.Set(availableId);
-        NebulaPlugin.Instance.Logger.Print("dec-2");
+        Info("dec-2");
     }
 
-    static public void Load()
+    public static void Load()
     {
         if (!Directory.Exists("TexturePack")) return;
 
@@ -397,7 +401,7 @@ public static class TexturePack
 
         foreach (var path in Directory.GetFiles("TexturePack"))
         {
-            NebulaPlugin.Instance.Logger.Print("Check " + path);
+            Info("Check " + path);
             if (!path.EndsWith(".zip")) continue;
             using (var zip = ZipFile.OpenRead(path))
             {
@@ -416,17 +420,18 @@ public static class TexturePack
             deadBodyPrefab.transform.GetChild(1).gameObject.AddComponent<CustomTextureHandler>().TextureAssetId.Set(availableId);
             asset = null;
         }
-        if (TexturePackDataDic.TryGetValue("deadBody.showBlood",out var data) && data.BoolVal.HasValue && !data.BoolVal.Value)
+        if (TexturePackDataDic.TryGetValue("deadBody.showBlood", out var data) && data.BoolVal.HasValue && !data.BoolVal.Value)
         {
             deadBodyPrefab.transform.GetChild(0).gameObject.SetActive(false);
-        }else if (LoadAsset("deadBody.blood", (d)=> d.TerminateEmptyFrame(true), ref asset,false))
+        }
+        else if (LoadAsset("deadBody.blood", (d) => d.TerminateEmptyFrame(true), ref asset, false))
         {
             AllTextureAssets[++availableId] = asset;
             deadBodyPrefab.transform.GetChild(0).gameObject.AddComponent<CustomTextureHandler>().TextureAssetId.Set(availableId);
             asset = null;
         }
 
-        foreach(var entry in TexturePackDataDic)
+        foreach (var entry in TexturePackDataDic)
         {
             string key = entry.Key;
             if (!key.StartsWith("decoration.")) continue;
@@ -435,11 +440,11 @@ public static class TexturePack
             if (!entry.Value.vectorVal.HasValue) continue;
 
             if (!LoadAsset(key, null, ref asset)) continue;
-            
+
             switch (strings[1])
             {
                 case "skeld":
-                    Decorate(ref availableId, MapData.MapDatabase[0].Assets,asset!);
+                    Decorate(ref availableId, MapData.MapDatabase[0].Assets, asset!);
                     break;
                 case "mira":
                     Decorate(ref availableId, MapData.MapDatabase[1].Assets, asset!);
@@ -454,5 +459,5 @@ public static class TexturePack
         }
     }
 
-    static public Dictionary<int, CustomTextureAsset> AllTextureAssets = new();
+    public static Dictionary<int, CustomTextureAsset> AllTextureAssets = new();
 }

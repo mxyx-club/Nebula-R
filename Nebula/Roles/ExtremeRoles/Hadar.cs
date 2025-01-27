@@ -40,7 +40,7 @@ public class Hadar : Role
         }
     }
 
-    static private CustomButton ventButton;
+    private static CustomButton ventButton;
     private float lightRadius = 1f;
 
     private Sprite ventAppearButtonSprite = null, ventHideButtonSprite = null, auraButtonSprite = null;
@@ -73,7 +73,7 @@ public class Hadar : Role
         base.LoadOptionData();
 
         TopOption.tab = Module.CustomOptionTab.GhostRoles;
-        
+
         DisappearanceOption = CreateOption(Color.white, "disappearance", 20f, 5f, 45f, 2.5f);
         DisappearanceOption.suffix = "second";
 
@@ -100,8 +100,8 @@ public class Hadar : Role
             {
                 var property = PlayerControl.LocalPlayer.GetModData().Property;
 
-                    //ダメージを与える
-                    if (property.UnderTheFloor)
+                //ダメージを与える
+                if (property.UnderTheFloor)
                 {
                     ventButton.Timer = DisappearanceOption.getFloat();
                 }
@@ -127,7 +127,7 @@ public class Hadar : Role
         ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
         ventButton.MaxTimer = ventButton.Timer = 0f;
 
-        if(killButton != null)
+        if (killButton != null)
         {
             killButton.Destroy();
         }

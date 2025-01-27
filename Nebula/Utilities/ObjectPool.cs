@@ -2,12 +2,11 @@
 
 public class ObjectPool<ObjectType> where ObjectType : Component
 {
-    ObjectType prefab;
-    Transform parent;
-    System.Action<ObjectType>? initializer;
-
-    List<ObjectType> activeObjects;
-    List<ObjectType> inactiveObjects;
+    private ObjectType prefab;
+    private Transform parent;
+    private Action<ObjectType>? initializer;
+    private List<ObjectType> activeObjects;
+    private List<ObjectType> inactiveObjects;
 
     public ObjectPool(ObjectType prefab, Transform parent)
     {
@@ -18,7 +17,7 @@ public class ObjectPool<ObjectType> where ObjectType : Component
         initializer = null;
     }
 
-    public void SetInitializer(System.Action<ObjectType> initializer)
+    public void SetInitializer(Action<ObjectType> initializer)
     {
         this.initializer = initializer;
     }

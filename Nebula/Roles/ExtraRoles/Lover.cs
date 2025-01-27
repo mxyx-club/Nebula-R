@@ -1,5 +1,4 @@
-﻿using Il2CppSystem.Data;
-using Nebula.Patches;
+﻿using Nebula.Patches;
 
 namespace Nebula.Roles.ExtraRoles;
 
@@ -17,7 +16,7 @@ public class Lover : ExtraRole
 
     private PlayerControl trilemmaTarget = null;
 
-    static public Color[] iconColor { get; } = new Color[] {
+    public static Color[] iconColor { get; } = new Color[] {
         (Color)new Color32(251, 3, 188, 255) ,
         (Color)new Color32(254, 132, 3, 255) ,
         (Color)new Color32(3, 254, 188, 255) ,
@@ -57,7 +56,7 @@ public class Lover : ExtraRole
         return false;
     }
 
-    private void ActionForLover(PlayerControl player, System.Action<PlayerControl> action)
+    private void ActionForLover(PlayerControl player, Action<PlayerControl> action)
     {
         ulong myLoverId = player.GetModData().GetExtraRoleData(this);
         PlayerControl target;
@@ -75,12 +74,12 @@ public class Lover : ExtraRole
         }
     }
 
-    private void ActionForMyLover(System.Action<PlayerControl> action)
+    private void ActionForMyLover(Action<PlayerControl> action)
     {
         ActionForLover(PlayerControl.LocalPlayer, (player) =>
         {
-                //自身であれば特に何もしない
-                if (player == PlayerControl.LocalPlayer) return;
+            //自身であれば特に何もしない
+            if (player == PlayerControl.LocalPlayer) return;
 
             action.Invoke(player);
         });
@@ -90,8 +89,8 @@ public class Lover : ExtraRole
     {
         ActionForMyLover((player) =>
         {
-                //自身であれば特に何もしない
-                if (player == PlayerControl.LocalPlayer) return;
+            //自身であれば特に何もしない
+            if (player == PlayerControl.LocalPlayer) return;
 
 
             if (!player.Data.IsDead) RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
@@ -148,7 +147,7 @@ public class Lover : ExtraRole
         );
     }
 
-    public override void Assignment(Patches.AssignMap assignMap)
+    public override void Assignment(AssignMap assignMap)
     {
         int maxPairs = maxPairsOption.getSelection();
         if (maxPairs * 2 > Game.GameData.data.AllPlayers.Count) maxPairs = Game.GameData.data.AllPlayers.Count / 2;
@@ -211,7 +210,7 @@ public class Lover : ExtraRole
         canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
         canChangeTrilemmaOption.AddCustomPrerequisite(() => loversModeOption.getSelection() == 0);
 
-        hasPrivateChatOption = CreateOption(Color.white,"hasPrivateChat",false);
+        hasPrivateChatOption = CreateOption(Color.white, "hasPrivateChat", false);
     }
 
     public override IEnumerable<Assignable> GetFollowRoles()
@@ -343,8 +342,8 @@ public class Lover : ExtraRole
             {
                 PlayerControl target = trilemmaTarget;
 
-                    //巻き込まれるのがラバーズであった場合
-                    if (target.GetModData().extraRole.Contains(this))
+                //巻き込まれるのがラバーズであった場合
+                if (target.GetModData().extraRole.Contains(this))
                 {
                     ulong removeId = target.GetModData().GetExtraRoleData(id);
 
@@ -352,18 +351,18 @@ public class Lover : ExtraRole
                     {
                         if (data.GetExtraRoleData(id) != removeId) continue;
 
-                            //鞍替えする側はなにもしない
-                            if (data.id == target.PlayerId) continue;
+                        //鞍替えする側はなにもしない
+                        if (data.id == target.PlayerId) continue;
 
-                            //ロール消去
-                            RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id), this);
+                        //ロール消去
+                        RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id), this);
 
                         break;
                     }
                 }
 
-                    //巻き込まれるのがトリレマであった場合
-                    if (target.GetModData().extraRole.Contains(Roles.Trilemma))
+                //巻き込まれるのがトリレマであった場合
+                if (target.GetModData().extraRole.Contains(Roles.Trilemma))
                 {
                     ulong removeId = target.GetModData().GetExtraRoleData(Roles.Trilemma.id);
 
@@ -371,11 +370,11 @@ public class Lover : ExtraRole
                     {
                         if (data.GetExtraRoleData(Roles.Trilemma.id) != removeId) continue;
 
-                            //鞍替えする側はなにもしない
-                            if (data.id == target.PlayerId) continue;
+                        //鞍替えする側はなにもしない
+                        if (data.id == target.PlayerId) continue;
 
-                            //ロール消去
-                            RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id), Roles.Trilemma);
+                        //ロール消去
+                        RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id), Roles.Trilemma);
                     }
                 }
 
@@ -440,7 +439,7 @@ public class Lover : ExtraRole
 
     public override Module.CustomOption? RegisterAssignableOption(Role role)
     {
-        if(role == Roles.Yandere) return null;
+        if (role == Roles.Yandere) return null;
         Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeLovers");
         option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
         option.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });

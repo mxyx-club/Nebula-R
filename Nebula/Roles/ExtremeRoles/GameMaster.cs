@@ -4,14 +4,14 @@ public class GameMaster : Role
 {
     public class GMEvent : Events.LocalEvent
     {
-        PlayerControl target;
-        byte targetId;
-        Role targetRole;
-        byte targetRoleId;
+        private PlayerControl target;
+        private byte targetId;
+        private Role targetRole;
+        private byte targetRoleId;
         public GMEvent(PlayerControl target) : base(0.2f) { this.target = target; }
         public override void OnTerminal()
         {
-            RPCEventInvoker.ImmediatelyChangeRole(target,Roles.Challenger);
+            RPCEventInvoker.ImmediatelyChangeRole(target, Roles.Challenger);
         }
     }
 
@@ -25,7 +25,7 @@ public class GameMaster : Role
     private CustomButton testButton;
     public override void ButtonInitialize(HudManager __instance)
     {
-        if(testButton != null) testButton.Destroy();
+        if (testButton != null) testButton.Destroy();
         testButton = new CustomButton(
         () =>
             {
@@ -53,7 +53,7 @@ public class GameMaster : Role
 
     public override void CleanUp()
     {
-        if(testButton != null)
+        if (testButton != null)
         {
             testButton.Destroy();
             testButton = null;

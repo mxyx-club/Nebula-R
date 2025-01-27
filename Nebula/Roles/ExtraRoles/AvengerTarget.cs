@@ -2,8 +2,8 @@
 
 public class AvengerTarget : ExtraRole
 {
-    static public Color RoleColor = Palette.ImpostorRed;
-    static public Color TargetColor = new Color(100f / 255f, 100f / 255f, 100f / 255f);
+    public static Color RoleColor = Palette.ImpostorRed;
+    public static Color TargetColor = new Color(100f / 255f, 100f / 255f, 100f / 255f);
 
     public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Target Lovers Identifer", this, 0, 6) }; }
 
@@ -43,7 +43,7 @@ public class AvengerTarget : ExtraRole
                     {
                         if (Arrow == null)
                         {
-                            Arrow = new Arrow(TargetColor,true,Roles.Avenger.arrowSprite.GetSprite());
+                            Arrow = new Arrow(TargetColor, true, Roles.Avenger.arrowSprite.GetSprite());
                             Arrow.arrow.SetActive(true);
                             noticeInterval = 0f;
                         }

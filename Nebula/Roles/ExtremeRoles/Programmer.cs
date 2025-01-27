@@ -1,11 +1,11 @@
 namespace Nebula.Roles.CrewmateRoles;
 
-public class Programmer : Template.TCrewmate{
-    public static Color RoleColor = new Color(180f / 255f,210f / 255f,237f / 255f);
+public class Programmer : Template.TCrewmate
+{
+    public static Color RoleColor = new Color(180f / 255f, 210f / 255f, 237f / 255f);
     private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CloseVentButton.png", 115f, "ui.button.minekeeper.set");
-
-    string targetVentName;
-    Vent targetVent;
+    private string targetVentName;
+    private Vent targetVent;
     private CustomButton monitorVent;
 
     public override void LoadOptionData()
@@ -20,14 +20,16 @@ public class Programmer : Template.TCrewmate{
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if(monitorVent != null){
+        if (monitorVent != null)
+        {
             monitorVent.Destroy();
         }
         monitorVent = new CustomButton(
-            () => {
+            () =>
+            {
                 targetVentName = targetVent.name;
                 targetVent = null;
-                Debug.Log(targetVentName);
+                Info(targetVentName);
                 monitorVent.Timer = 1f;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -42,9 +44,11 @@ public class Programmer : Template.TCrewmate{
         monitorVent.MaxTimer = monitorVent.Timer = 0;
     }
 
-    public void check(Vent vent,PlayerControl pc){
+    public void check(Vent vent, PlayerControl pc)
+    {
         //Debug.Log("Programmer check!");
-        if(vent.name == targetVentName){
+        if (vent.name == targetVentName)
+        {
             Helpers.PlayQuickFlash(pc.GetModData().role.Color);
         }
     }
@@ -76,13 +80,15 @@ public class Programmer : Template.TCrewmate{
 
     public override void CleanUp()
     {
-        if(monitorVent != null){
+        if (monitorVent != null)
+        {
             monitorVent.Destroy();
             monitorVent = null;
         }
         targetVentName = "";
     }
 
-    public Programmer() : base("Programmer","programmer",RoleColor,false){
+    public Programmer() : base("Programmer", "programmer", RoleColor, false)
+    {
     }
 }

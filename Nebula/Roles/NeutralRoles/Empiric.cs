@@ -2,9 +2,9 @@
 
 public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
 {
-    static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
+    public static Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
 
-    static private CustomButton infectButton;
+    private static CustomButton infectButton;
 
     private Module.CustomOption maxInfectMyselfOption;
     private Module.CustomOption infectRangeOption;
@@ -45,7 +45,7 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
         ventDurationOption.suffix = "second";
     }
 
-    SpriteLoader infectSprite = new SpriteLoader("Nebula.Resources.InfectButton.png", 115f, "ui.button.empiric.infect");
+    private SpriteLoader infectSprite = new SpriteLoader("Nebula.Resources.InfectButton.png", 115f, "ui.button.empiric.infect");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

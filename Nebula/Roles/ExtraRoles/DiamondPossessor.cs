@@ -2,7 +2,7 @@
 
 public class DiamondPossessor : ExtraRole
 {
-    static public Color RoleColor = new Color(145f / 255f, 159f / 255f, 232f / 255f);
+    public static Color RoleColor = new Color(145f / 255f, 159f / 255f, 232f / 255f);
 
     public override void Assignment(Patches.AssignMap assignMap)
     {

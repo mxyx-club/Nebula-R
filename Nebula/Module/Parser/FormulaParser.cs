@@ -2,9 +2,9 @@
 
 public class FormulaResult
 {
-    int iValue;
-    bool bValue;
-    bool isBool;
+    private int iValue;
+    private bool bValue;
+    private bool isBool;
 
     public int GetInt() => iValue;
     public bool GetBool() => bValue;
@@ -37,7 +37,7 @@ public class FormulaContent
         Attribute = text;
     }
 
-    virtual public FormulaResult GetResult()
+    public virtual FormulaResult GetResult()
     {
         if (Attribute == "") return new FormulaResult();
         if (int.TryParse(Attribute, out int iResult))
@@ -51,29 +51,29 @@ public class FormulaContent
         return new FormulaResult();
     }
 
-    virtual public void Substitute(string variable, string result)
+    public virtual void Substitute(string variable, string result)
     {
         if (Attribute == variable) Attribute = result;
     }
 
-    virtual public void ConvertOperation(string opertionAttribute, FormulaOperation operation) { }
+    public virtual void ConvertOperation(string opertionAttribute, FormulaOperation operation) { }
 }
 
 public class FormulaComplexContent : FormulaContent
 {
-    List<FormulaContent> List;
+    private List<FormulaContent> List;
     public FormulaComplexContent(List<FormulaContent> list) : base("")
     {
         List = list;
     }
 
-    override public FormulaResult GetResult()
+    public override FormulaResult GetResult()
     {
         if (List.Count > 0) return List[0].GetResult();
         return new FormulaResult();
     }
 
-    override public void Substitute(string variable, string result)
+    public override void Substitute(string variable, string result)
     {
         foreach (var c in List)
         {
@@ -81,7 +81,7 @@ public class FormulaComplexContent : FormulaContent
         }
     }
 
-    override public void ConvertOperation(string opertionAttribute, FormulaOperation operation)
+    public override void ConvertOperation(string opertionAttribute, FormulaOperation operation)
     {
         foreach (var c in List)
             c.ConvertOperation(opertionAttribute, operation);
@@ -102,8 +102,8 @@ public class FormulaComplexContent : FormulaContent
 
 public class FormulaOperationContent : FormulaContent
 {
-    FormulaContent Left, Right;
-    FormulaOperation Operation;
+    private FormulaContent Left, Right;
+    private FormulaOperation Operation;
 
     public FormulaOperationContent(FormulaContent left, FormulaContent right, FormulaOperation operation) : base("")
     {
@@ -112,18 +112,18 @@ public class FormulaOperationContent : FormulaContent
         Operation = operation;
     }
 
-    override public FormulaResult GetResult()
+    public override FormulaResult GetResult()
     {
         return Operation.Invoke(Left, Right);
     }
 
-    override public void Substitute(string variable, string result)
+    public override void Substitute(string variable, string result)
     {
         Left.Substitute(variable, result);
         Right.Substitute(variable, result);
     }
 
-    override public void ConvertOperation(string opertionAttribute, FormulaOperation operation)
+    public override void ConvertOperation(string opertionAttribute, FormulaOperation operation)
     {
         Left.ConvertOperation(opertionAttribute, operation);
         Right.ConvertOperation(opertionAttribute, operation);
@@ -132,7 +132,7 @@ public class FormulaOperationContent : FormulaContent
 
 public class FormulaAnalyzer
 {
-    FormulaComplexContent Formula;
+    private FormulaComplexContent Formula;
 
     public FormulaAnalyzer(string text, params Dictionary<string, string>[] variables)
     {
@@ -257,7 +257,7 @@ public class FormulaAnalyzer
                 count = 0;
                 continue;
             }
-            
+
             count++;
         }
     }

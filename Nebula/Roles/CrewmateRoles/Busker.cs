@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-
-namespace Nebula.Roles.CrewmateRoles;
+﻿namespace Nebula.Roles.CrewmateRoles;
 
 public class Busker : Role
 {
-    static public Color RoleColor = new Color(255f / 255f, 172f / 255f, 117f / 255f);
+    public static Color RoleColor = new Color(255f / 255f, 172f / 255f, 117f / 255f);
 
 
     private CustomButton buskButton;

@@ -29,7 +29,7 @@ public class Painter : Role
         changeLookImmediatelyOption = CreateOption(Color.white, "changeLookImmediately", true);
     }
 
-    byte paintMode = 0;
+    private byte paintMode = 0;
 
     private void SetPaintMode(byte mode)
     {

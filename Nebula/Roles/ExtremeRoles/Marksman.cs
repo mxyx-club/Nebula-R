@@ -1,11 +1,12 @@
 namespace Nebula.Roles.ImpostorRoles;
 
-public class Marksman : Role{
+public class Marksman : Role
+{
     private Module.CustomOption maxShootOption;
     private Module.CustomOption getShootOption;
     private Module.CustomOption getShootAfterMeetingOption;
 
-    private CustomButton saveShootButton,getShootButton,killButton;
+    private CustomButton saveShootButton, getShootButton, killButton;
     private SpriteLoader saveShootButtonSprite = new SpriteLoader("Nebula.Resources.SaveShootButton.png", 115f, "ui.button.marksman.saveShoot");
     private SpriteLoader getShootButtonSprite = new SpriteLoader("Nebula.Resources.GetShootButton.png", 115f, "ui.button.marksman.getShoot");
 
@@ -14,16 +15,16 @@ public class Marksman : Role{
     public override void LoadOptionData()
     {
         TopOption.tab = Module.CustomOptionTab.GhostRoles;
-        maxShootOption = CreateOption(Color.white,"maxShoot",3f,1f,10f,1f);
-        getShootOption = CreateOption(Color.white,"getShootCooldown",0f,0f,10f,1f);
+        maxShootOption = CreateOption(Color.white, "maxShoot", 3f, 1f, 10f, 1f);
+        getShootOption = CreateOption(Color.white, "getShootCooldown", 0f, 0f, 10f, 1f);
         getShootOption.suffix = "second";
-        getShootAfterMeetingOption = CreateOption(Color.white,"getShootAfterMeeting",0f,0f,10f,1f);
+        getShootAfterMeetingOption = CreateOption(Color.white, "getShootAfterMeeting", 0f, 0f, 10f, 1f);
         getShootAfterMeetingOption.suffix = "second";
     }
 
     public override void GlobalInitialize(PlayerControl __instance)
     {
-        __instance.GetModData().SetRoleData(shootId,0);
+        __instance.GetModData().SetRoleData(shootId, 0);
     }
 
     public override void ButtonInitialize(HudManager __instance)
@@ -58,7 +59,7 @@ public class Marksman : Role{
         saveShootButton = new CustomButton(
             () =>
             {
-                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,shootId,1);
+                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, shootId, 1);
                 killButton.Timer = killButton.MaxTimer;
                 getShootButton.UsesText.text = PlayerControl.LocalPlayer.GetModData().GetRoleData(shootId).ToString();
             },
@@ -80,7 +81,7 @@ public class Marksman : Role{
         getShootButton = new CustomButton(
             () =>
             {
-                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,shootId,-1);
+                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, shootId, -1);
                 killButton.Timer = 0;
                 getShootButton.Timer = getShootButton.MaxTimer;
                 getShootButton.UsesText.text = PlayerControl.LocalPlayer.GetModData().GetRoleData(shootId).ToString();
@@ -105,16 +106,20 @@ public class Marksman : Role{
         killButton.actionButton.ShowButtonText("+" + count + "s");
     }
 
-    public override void CleanUp(){
-        if(killButton != null){
+    public override void CleanUp()
+    {
+        if (killButton != null)
+        {
             killButton.Destroy();
             killButton = null;
         }
-        if(saveShootButton != null){
+        if (saveShootButton != null)
+        {
             saveShootButton.Destroy();
             saveShootButton = null;
         }
-        if(getShootButton != null){
+        if (getShootButton != null)
+        {
             getShootButton.Destroy();
             getShootButton = null;
         }
@@ -128,9 +133,10 @@ public class Marksman : Role{
     }
 
     public Marksman()
-        : base("Marksman","marksman",Palette.ImpostorRed,RoleCategory.Impostor,Side.Impostor,Side.Impostor,
-        Impostor.impostorSideSet,Impostor.impostorSideSet,Impostor.impostorEndSet,
-        true,VentPermission.CanUseUnlimittedVent,true,true,true){
+        : base("Marksman", "marksman", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
+        Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
+        true, VentPermission.CanUseUnlimittedVent, true, true, true)
+    {
         saveShootButton = null;
         getShootButton = null;
         killButton = null;

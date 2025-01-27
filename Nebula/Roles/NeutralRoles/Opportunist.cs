@@ -1,11 +1,10 @@
 ﻿using Nebula.Patches;
-using UnityEngine.Lumin;
 
 namespace Nebula.Roles.NeutralRoles;
 
 public class Opportunist : Role
 {
-    static public Color RoleColor = new Color(106f / 255f, 252f / 255f, 45f / 255f);
+    public static Color RoleColor = new Color(106f / 255f, 252f / 255f, 45f / 255f);
 
     private Module.CustomOption numOfTasksOption;
     private Module.CustomOption canUseVentsOption;
@@ -39,7 +38,8 @@ public class Opportunist : Role
 
     public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
     {
-        if(!useSpecialTasksOption.getBool()){
+        if (!useSpecialTasksOption.getBool())
+        {
             RPCEventInvoker.RefreshTasks(PlayerControl.LocalPlayer.PlayerId, (int)numOfTasksOption.getFloat(), 0, 0.1f);
             return;
         }
@@ -65,8 +65,8 @@ public class Opportunist : Role
         base.LoadOptionData();
 
         numOfTasksOption = CreateOption(Color.white, "numOfTasks", 4f, 1f, 6f, 1f);
-        useSpecialTasksOption = CreateOption(Color.white,"useSpecialTasks",false);
-        taskDuringTimeOption = CreateOption(Color.white,"taskDuring",60f,10f,120f,5f).AddPrerequisite(useSpecialTasksOption);
+        useSpecialTasksOption = CreateOption(Color.white, "useSpecialTasks", false);
+        taskDuringTimeOption = CreateOption(Color.white, "taskDuring", 60f, 10f, 120f, 5f).AddPrerequisite(useSpecialTasksOption);
         taskDuringTimeOption.suffix = "second";
 
         canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
@@ -147,7 +147,7 @@ public class Opportunist : Role
     public Opportunist()
         : base("Opportunist", "opportunist", RoleColor, RoleCategory.Neutral, Side.Opportunist, Side.Opportunist,
              new HashSet<Side>() { Side.Opportunist }, new HashSet<Side>() { Side.Opportunist },
-             new HashSet<Patches.EndCondition>(),
+             new HashSet<EndCondition>(),
              true, VentPermission.CanUseLimittedVent, true, false, false)
     {
         VentColor = RoleColor;

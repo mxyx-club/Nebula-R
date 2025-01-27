@@ -1,7 +1,7 @@
 ﻿namespace Nebula.Patches;
 
 [HarmonyPatch]
-class ChatPatch
+internal class ChatPatch
 {
     [HarmonyPatch(typeof(ChatBubble), nameof(ChatBubble.SetName))]
     public static class SetBubbleName
@@ -24,11 +24,14 @@ class ChatPatch
             {
             }
 
-            try{
-                if(PlayerControl.LocalPlayer.PlayerId == PlayerControl.AllPlayerControls.ToArray().ToList().FirstOrDefault(x => x.Data.PlayerName.Equals(playerName)).PlayerId){
+            try
+            {
+                if (PlayerControl.LocalPlayer.PlayerId == PlayerControl.AllPlayerControls.ToArray().ToList().FirstOrDefault(x => x.Data.PlayerName.Equals(playerName)).PlayerId)
+                {
                     __instance.NameText.color = PlayerControl.LocalPlayer.GetModData().role.Color;
                 }
-            }catch{}
+            }
+            catch { }
         }
     }
 }

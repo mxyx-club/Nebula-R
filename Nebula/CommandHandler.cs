@@ -1,12 +1,4 @@
-﻿using Cpp2IL.Core.Extensions;
 using Nebula.Patches;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Services.Core.Internal;
 
 namespace Nebula;
 
@@ -18,7 +10,7 @@ public class NebulaManager : MonoBehaviour
         ClassInjector.RegisterTypeInIl2Cpp<NebulaManager>();
     }
 
-    static public IEnumerator CaptureAndSave()
+    public static IEnumerator CaptureAndSave()
     {
         yield return new WaitForEndOfFrame();
         Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
@@ -77,7 +69,7 @@ public class NebulaManager : MonoBehaviour
             // Kill nearest player
             if (Input.GetKeyDown(KeyCode.F10))
             {
-                PlayerControl target = Patches.PlayerControlPatch.SetMyTarget();
+                PlayerControl target = PlayerControlPatch.SetMyTarget();
                 if (target == null) return;
 
                 Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
@@ -92,7 +84,7 @@ public class NebulaManager : MonoBehaviour
             if (HudManager.InstanceExists) obj.transform.SetParent(HudManager.Instance.transform);
             obj.transform.localPosition = new Vector3(0f, -1.8f, -300f);
             obj.transform.localScale = new Vector3(1f, 1f, 1f);
-            var component = obj.AddComponent<Components.TextInputField>();
+            var component = obj.AddComponent<TextInputField>();
             component.SetTextProperty(new Vector2(7, 0.5f), 1.8f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Normal);
             component.GetFocus();
 

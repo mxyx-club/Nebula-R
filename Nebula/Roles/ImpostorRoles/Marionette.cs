@@ -4,7 +4,7 @@ public class Marionette : Role
 {
     public class DecoyEvent : Events.LocalEvent
     {
-        CustomObject decoy;
+        private CustomObject decoy;
         public DecoyEvent(CustomObject decoy, float duration) : base(duration)
         {
             this.decoy = decoy;

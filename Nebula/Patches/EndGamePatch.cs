@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityEngine.SceneManagement;
 
 namespace Nebula.Patches;
@@ -39,20 +39,20 @@ public class EndCondition
     public static EndCondition PavlovWin = new EndCondition(128, Roles.NeutralRoles.Pavlov.RoleColor, "pavlov", 1, Module.CustomGameMode.Standard);
     public static EndCondition MoriartyWin = new EndCondition(129, Roles.NeutralRoles.Moriarty.RoleColor, "moriarty", 1, Module.CustomGameMode.Standard);
     public static EndCondition MoriartyWinByKillHolmes = new EndCondition(130, Roles.NeutralRoles.Moriarty.RoleColor, "holmesIsKilled", 1, Module.CustomGameMode.Standard);
-    public static EndCondition CascrubinterWin = new EndCondition(131,Roles.NeutralRoles.Cascrubinter.RoleColor,"cascrubinter",1,Module.CustomGameMode.Standard);
-    public static EndCondition GuesserWin = new EndCondition(132,Roles.ComplexRoles.FGuesser.RoleColor,"guesser",0,Module.CustomGameMode.Standard);
-    public static EndCondition YandereWin = new EndCondition(133,Roles.NeutralRoles.Yandere.RoleColor,"yandere",1,Module.CustomGameMode.Standard);
-    public static EndCondition WerewolfWin = new EndCondition(134,Roles.NeutralRoles.Werewolf.RoleColor,"werewolf",1,Module.CustomGameMode.Standard);
-    public static EndCondition ChallengerWin = new EndCondition(135,Roles.NeutralRoles.Challenger.RoleColor,"challenger",1,Module.CustomGameMode.Standard);
-    public static EndCondition OracleWin = new EndCondition(136,Roles.NeutralRoles.Oracle.RoleColor,"oracle",1,Module.CustomGameMode.Standard);
-    public static EndCondition GhostWin = new EndCondition(137,new(1f,1f,1f),"ghost",1,Module.CustomGameMode.Standard);
-    public static EndCondition PuppeteerWin = new EndCondition(138,Roles.NeutralRoles.Puppeteer.RoleColor,"puppeteer",1,Module.CustomGameMode.Standard);
-    public static EndCondition YellowTeamWin = new EndCondition(139,Roles.BattleRoles.YellowTeam.RoleColor,"yellowTeam",1,Module.CustomGameMode.Battle);
-    public static EndCondition GreenTeamWin = new EndCondition(140,Roles.BattleRoles.GreenTeam.RoleColor,"greenTeam",1,Module.CustomGameMode.Battle);
-    public static EndCondition InfectedWin = new EndCondition(141,Palette.ImpostorRed,"infected",1,Module.CustomGameMode.VirusCrisis);
-    public static EndCondition SurvivalWin = new EndCondition(142,Palette.CrewmateBlue,"survival",1,Module.CustomGameMode.VirusCrisis);
-    public static EndCondition HighRollerWin = new EndCondition(143,Roles.NeutralRoles.HighRoller.RoleColor,"highRoller",1,Module.CustomGameMode.Standard);
-    public static EndCondition UndeadMasterWin = new EndCondition(144,Roles.NeutralRoles.UndeadMaster.RoleColor,"undeadMaster",1,Module.CustomGameMode.Standard);
+    public static EndCondition CascrubinterWin = new EndCondition(131, Roles.NeutralRoles.Cascrubinter.RoleColor, "cascrubinter", 1, Module.CustomGameMode.Standard);
+    public static EndCondition GuesserWin = new EndCondition(132, Roles.ComplexRoles.FGuesser.RoleColor, "guesser", 0, Module.CustomGameMode.Standard);
+    public static EndCondition YandereWin = new EndCondition(133, Roles.NeutralRoles.Yandere.RoleColor, "yandere", 1, Module.CustomGameMode.Standard);
+    public static EndCondition WerewolfWin = new EndCondition(134, Roles.NeutralRoles.Werewolf.RoleColor, "werewolf", 1, Module.CustomGameMode.Standard);
+    public static EndCondition ChallengerWin = new EndCondition(135, Roles.NeutralRoles.Challenger.RoleColor, "challenger", 1, Module.CustomGameMode.Standard);
+    public static EndCondition OracleWin = new EndCondition(136, Roles.NeutralRoles.Oracle.RoleColor, "oracle", 1, Module.CustomGameMode.Standard);
+    public static EndCondition GhostWin = new EndCondition(137, new(1f, 1f, 1f), "ghost", 1, Module.CustomGameMode.Standard);
+    public static EndCondition PuppeteerWin = new EndCondition(138, Roles.NeutralRoles.Puppeteer.RoleColor, "puppeteer", 1, Module.CustomGameMode.Standard);
+    public static EndCondition YellowTeamWin = new EndCondition(139, Roles.BattleRoles.YellowTeam.RoleColor, "yellowTeam", 1, Module.CustomGameMode.Battle);
+    public static EndCondition GreenTeamWin = new EndCondition(140, Roles.BattleRoles.GreenTeam.RoleColor, "greenTeam", 1, Module.CustomGameMode.Battle);
+    public static EndCondition InfectedWin = new EndCondition(141, Palette.ImpostorRed, "infected", 1, Module.CustomGameMode.VirusCrisis);
+    public static EndCondition SurvivalWin = new EndCondition(142, Palette.CrewmateBlue, "survival", 1, Module.CustomGameMode.VirusCrisis);
+    public static EndCondition HighRollerWin = new EndCondition(143, Roles.NeutralRoles.HighRoller.RoleColor, "highRoller", 1, Module.CustomGameMode.Standard);
+    public static EndCondition UndeadMasterWin = new EndCondition(144, Roles.NeutralRoles.UndeadMaster.RoleColor, "undeadMaster", 1, Module.CustomGameMode.Standard);
     public static EndCondition RedTeamWin = new EndCondition(145, Color.red, "redTeam", 1, Module.CustomGameMode.Compete);
     public static EndCondition BlueTeamWin = new EndCondition(146, Color.blue, "blueTeam", 1, Module.CustomGameMode.Compete);
     public static EndCondition Tie = new EndCondition(147, new Color(72f / 255f, 78f / 255f, 84f / 255f), "tie", 32, Module.CustomGameMode.ActuallyAll).SetNoBodyWin(true);
@@ -145,7 +145,7 @@ public class FinalPlayerData
             this.completedTasks = completedTasks;
             this.status = status;
             this.killer = killer;
-            this.additionChar = Helpers.cs(Palette.PlayerColors[id],"" + chars[id % 24]) + "-";
+            this.additionChar = Helpers.cs(Palette.PlayerColors[id], "" + chars[id % 24]) + "-";
         }
 
         public void SetKiller(string killer)
@@ -196,7 +196,7 @@ public class FinalPlayerData
             if (name.Equals(""))
                 name = player.name;
             else
-                name = Helpers.cs(Palette.PlayerColors[player.id],player.name) + " " + name;
+                name = Helpers.cs(Palette.PlayerColors[player.id], player.name) + " " + name;
 
 
             string shortHistory = "";
@@ -231,7 +231,7 @@ public class OnGameEndPatch
     public static EndCondition EndCondition;
     public static FinalPlayerData FinalData;
 
-    private static System.Collections.IEnumerator GetEnumerator()
+    private static IEnumerator GetEnumerator()
     {
         yield return HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black, 0.5f, false);
 
@@ -287,22 +287,22 @@ public class OnGameEndPatch
 
 public static class DetailDialog
 {
-    static EndGameManager endGameManager;
-    static GameObject dialog;
-    static TMPro.TMP_Text saveText;
-    static TMPro.TMP_Text[] text;
-    static PassiveButton button;
-    static PassiveButton saveButton;
-    static SpriteRenderer renderer;
+    private static EndGameManager endGameManager;
+    private static GameObject dialog;
+    private static TMPro.TMP_Text saveText;
+    private static TMPro.TMP_Text[] text;
+    private static PassiveButton button;
+    private static PassiveButton saveButton;
+    private static SpriteRenderer renderer;
+    private static Sprite saveButtonSprite;
 
-    static Sprite saveButtonSprite;
-    static Sprite getSaveButtonSprite()
+    private static Sprite getSaveButtonSprite()
     {
         if (!saveButtonSprite) saveButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SavePicButton.png", 100f);
         return saveButtonSprite;
     }
 
-    static public void Initialize(EndGameManager endGameManager, ControllerDisconnectHandler handler, TMPro.TMP_Text textTemplate, string[] detail)
+    public static void Initialize(EndGameManager endGameManager, ControllerDisconnectHandler handler, TMPro.TMP_Text textTemplate, string[] detail)
     {
         DetailDialog.endGameManager = endGameManager;
 
@@ -321,7 +321,7 @@ public static class DetailDialog
         button.transform.localPosition = new Vector3(0f, -1.95f, 0f);
         button.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("game.endScreen.close");
         button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        button.OnClick.AddListener((System.Action)Close);
+        button.OnClick.AddListener((Action)Close);
 
         saveText.transform.localPosition = new Vector3(3.45f, -2.3f, 5f);
         saveText.alignment = TMPro.TextAlignmentOptions.TopLeft;
@@ -341,10 +341,10 @@ public static class DetailDialog
         saveRenderer.size = new Vector2(0.45f, 0.45f);
         saveButton.transform.GetChild(1).gameObject.SetActive(false);
         saveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        saveButton.OnClick.AddListener((System.Action)(() =>
+        saveButton.OnClick.AddListener((Action)(() =>
         {
-                //四隅の座標を算出
-                float xl = text[0].transform.position.x;
+            //四隅の座標を算出
+            float xl = text[0].transform.position.x;
             float xu = text[text.Length - 1].transform.position.x + text[text.Length - 1].preferredWidth;
             float yl = text[0].transform.position.y - text[0].preferredHeight;
             float yu = text[0].transform.position.y;
@@ -387,7 +387,7 @@ public static class DetailDialog
         saveText.gameObject.SetActive(true);
     }
 
-    static public void Open()
+    public static void Open()
     {
         dialog.SetActive(true);
         dialog.transform.localScale = new Vector3(0.0f, 0.0f, 1.0f);
@@ -399,7 +399,7 @@ public static class DetailDialog
             )));
     }
 
-    static public void Close()
+    public static void Close()
     {
         endGameManager.StartCoroutine(Effects.Lerp(0.12f, (Il2CppSystem.Action<float>)(
             (p) =>
@@ -410,7 +410,7 @@ public static class DetailDialog
             )));
     }
 
-    static public IEnumerator CaptureAndSave(float xl, float xu, float yl, float yu)
+    public static IEnumerator CaptureAndSave(float xl, float xu, float yl, float yu)
     {
         Vector2Int convertVector(Vector3 vec)
         {
@@ -451,7 +451,7 @@ public class EndGameManagerSetUpPatch
 {
     //public const string chars = "αβγδεζηθικλμνξοπρστυφχψ";
 
-    static HashSet<string> AdditionalTextSet = new HashSet<string>();
+    private static HashSet<string> AdditionalTextSet = new HashSet<string>();
 
     public static void AddEndText(string text) { AdditionalTextSet.Add(text); }
 
@@ -477,18 +477,18 @@ public class EndGameManagerSetUpPatch
                 return 0;
             }
             return -1;
-        }).ToList<WinningPlayerData>();
+        }).ToList();
 
         for (int i = 0; i < list.Count; i++)
         {
             WinningPlayerData winningPlayerData2 = list[i];
             int num2 = (i % 2 == 0) ? -1 : 1;
             int num3 = (i + 1) / 2;
-            float num4 = (float)num3 / (float)num;
+            float num4 = num3 / (float)num;
             float num5 = Mathf.Lerp(1f, 0.75f, num4);
-            float num6 = (float)((i == 0) ? -8 : -1);
-            PoolablePlayer poolablePlayer = UnityEngine.Object.Instantiate<PoolablePlayer>(__instance.PlayerPrefab, __instance.transform);
-            poolablePlayer.transform.localPosition = new Vector3(1f * (float)num2 * (float)num3 * num5, FloatRange.SpreadToEdges(-1.125f, 0f, num3, num), num6 + (float)num3 * 0.01f) * 0.9f;
+            float num6 = (i == 0) ? -8 : -1;
+            PoolablePlayer poolablePlayer = UnityEngine.Object.Instantiate(__instance.PlayerPrefab, __instance.transform);
+            poolablePlayer.transform.localPosition = new Vector3(1f * num2 * num3 * num5, FloatRange.SpreadToEdges(-1.125f, 0f, num3, num), num6 + num3 * 0.01f) * 0.9f;
             float num7 = Mathf.Lerp(1f, 0.65f, num4) * 0.9f;
             Vector3 vector = new Vector3(num7, num7, 1f);
             poolablePlayer.transform.localScale = vector;
@@ -557,7 +557,7 @@ public class EndGameManagerSetUpPatch
 
         foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
         {
-            playerText.AppendLine("　" + Helpers.cs(Palette.PlayerColors[player.id],player.name));
+            playerText.AppendLine("　" + Helpers.cs(Palette.PlayerColors[player.id], player.name));
             roleText.AppendLine("　" + player.additionChar + player.roleName);
             roleDetailText.AppendLine("　" + player.additionChar + player.roleDetail);
             statusText.AppendLine("　" + Language.Language.GetString("status." + player.status.Status));
@@ -610,8 +610,7 @@ public class EndGameManagerSetUpPatch
     }
 }
 
-
-class CheckEndCriteriaPatch
+internal class CheckEndCriteriaPatch
 {
     public static void CommonPrefix()
     {
@@ -620,7 +619,7 @@ class CheckEndCriteriaPatch
         if (!GameManager.Instance) return;
         if (!GameManager.Instance.ShouldCheckForGameEnd) return;
 
-            if (ExileController.Instance != null)
+        if (ExileController.Instance != null)
         {
             if (SpawnInMinigame.Instance == null)
                 return;// return false;
@@ -633,9 +632,9 @@ class CheckEndCriteriaPatch
         var statistics = new PlayerStatistics(ShipStatus.Instance);
         if (!statistics.IsValid) return;
 
-        Patches.EndCondition endCondition = null, temp;
+        EndCondition endCondition = null, temp;
         byte priority = Byte.MaxValue;
-        
+
         foreach (Roles.Side side in Roles.Side.AllSides)
         {
 
@@ -670,13 +669,13 @@ class CheckEndCriteriaPatch
 }
 
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.FixedUpdate))]
-class CheckNormalEndCriteriaPatch
+internal class CheckNormalEndCriteriaPatch
 {
-    static bool lastShouldCheckedFlag;
+    private static bool lastShouldCheckedFlag;
 
     public static void Prefix(GameManager __instance)
     {
-        if(GameData.Instance)TasksHandler.RecomputeTasks(GameData.Instance);
+        if (GameData.Instance) TasksHandler.RecomputeTasks(GameData.Instance);
         CheckEndCriteriaPatch.CommonPrefix();
 
         lastShouldCheckedFlag = __instance.ShouldCheckForGameEnd;
@@ -841,7 +840,7 @@ public class PlayerStatistics
 
         AliveZombieSidekick = 0;
         AlivePuppeteer = 0;
-        
+
         AliveYellowTeam = 0;
         AliveGreenTeam = 0;
 
@@ -854,7 +853,7 @@ public class PlayerStatistics
         AliveBlueTeam = 0;
 
         Roles.Side side;
-        
+
 
         foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
@@ -875,7 +874,8 @@ public class PlayerStatistics
 
                 var data = Game.GameData.data.playersArray[playerInfo.PlayerId];
 
-                if(data.role == Roles.Roles.Madmate || data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                if (data.role == Roles.Roles.Madmate || data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                {
                     AliveMadmate++;
                 }
 
@@ -989,7 +989,7 @@ public class PlayerStatistics
                     {
                         AliveTrilemma++;
 
-                        bool jackalFlag = false, impostorFlag = false, pavlovFlag = false, moriartyFlag = false,werewolfFlag = false,oracleFlag = false;
+                        bool jackalFlag = false, impostorFlag = false, pavlovFlag = false, moriartyFlag = false, werewolfFlag = false, oracleFlag = false;
 
                         foreach (var d in lData)
                         {
@@ -1008,15 +1008,18 @@ public class PlayerStatistics
                                 pavlovFlag = true;
                                 AliveInLovePavlov++;
                             }
-                            if((d.role.side == Roles.Side.Moriarty)){
+                            if ((d.role.side == Roles.Side.Moriarty))
+                            {
                                 moriartyFlag = true;
                                 AliveInLoveMoriarty++;
                             }
-                            if((d.role.side == Roles.Side.Werewolf)){
+                            if ((d.role.side == Roles.Side.Werewolf))
+                            {
                                 werewolfFlag = true;
                                 AliveInLoveWerewolf++;
                             }
-                            if((d.role.side == Roles.Side.Oracle)){
+                            if ((d.role.side == Roles.Side.Oracle))
+                            {
                                 oracleFlag = true;
                                 AliveInLoveOracle++;
                             }
@@ -1025,8 +1028,8 @@ public class PlayerStatistics
                         if (impostorFlag) AliveImpostorTrilemma++;
                         if (pavlovFlag) AlivePavlovTrilemma++;
                         if (moriartyFlag) AliveMoriartyTrilemma++;
-                        if(werewolfFlag) AliveWerewolfTrilemma++;
-                        if(oracleFlag) AliveOracleTrilemma++;
+                        if (werewolfFlag) AliveWerewolfTrilemma++;
+                        if (oracleFlag) AliveOracleTrilemma++;
                     }
                 }
 
@@ -1036,82 +1039,95 @@ public class PlayerStatistics
                     {
                         AliveImpostorsWithSidekick++;
                         AliveSecondaryJackal++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveImpostorsWithSidekick++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveImpostorsWithSidekick++;
                     }
-                }else if (side == Roles.Side.Jackal)
+                }
+                else if (side == Roles.Side.Jackal)
                 {
-                    if(data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                    if (data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                    {
                         AliveJackalsWithMadmate++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveJackalsWithMadmate++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveJackalsWithMadmate++;
                     }
-                }else if (side == Roles.Side.Pavlov)
+                }
+                else if (side == Roles.Side.Pavlov)
                 {
                     if (data.HasExtraRole(Roles.Roles.SecondarySidekick) || data.HasExtraRole(Roles.Roles.SecondaryJackal))
                     {
                         AlivePavlovWithSidekick++;
                         AliveSecondaryJackal++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLovePavlovWithSidekick++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLovePavlovWithSidekick++;
                     }
-                    if(data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                    if (data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                    {
                         AlivePavlovWithMadmate++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLovePavlovWithMadmate++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLovePavlovWithMadmate++;
                     }
-                }else if (side == Roles.Side.Moriarty)
+                }
+                else if (side == Roles.Side.Moriarty)
                 {
                     if (data.HasExtraRole(Roles.Roles.SecondarySidekick) || data.HasExtraRole(Roles.Roles.SecondaryJackal))
                     {
                         AliveMoriartyWithSidekick++;
                         AliveSecondaryJackal++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveMoriartyWithSidekick++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveMoriartyWithSidekick++;
                     }
-                    if(data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                    if (data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                    {
                         AliveMoriartyWithMadmate++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveMoriartyWithMadmate++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveMoriartyWithMadmate++;
                     }
-                }else if (side == Roles.Side.Werewolf)
+                }
+                else if (side == Roles.Side.Werewolf)
                 {
                     if (data.HasExtraRole(Roles.Roles.SecondarySidekick) || data.HasExtraRole(Roles.Roles.SecondaryJackal))
                     {
                         AliveWerewolfWithSidekick++;
                         AliveSecondaryJackal++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveWerewolfWithSidekick++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveWerewolfWithSidekick++;
                     }
-                    if(data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                    if (data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                    {
                         AliveWerewolfWithMadmate++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveWerewolfWithMadmate++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveWerewolfWithMadmate++;
                     }
-                }else if (side == Roles.Side.Oracle)
+                }
+                else if (side == Roles.Side.Oracle)
                 {
                     if (data.HasExtraRole(Roles.Roles.SecondarySidekick) || data.HasExtraRole(Roles.Roles.SecondaryJackal))
                     {
                         AliveOracleWithSidekick++;
                         AliveSecondaryJackal++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveOracleWithSidekick++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveOracleWithSidekick++;
                     }
-                    if(data.HasExtraRole(Roles.Roles.SecondaryMadmate)){
+                    if (data.HasExtraRole(Roles.Roles.SecondaryMadmate))
+                    {
                         AliveOracleWithMadmate++;
-                        if(data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveOracleWithMadmate++;
+                        if (data.HasExtraRole(Roles.Roles.Lover) || data.HasExtraRole(Roles.Roles.Trilemma)) AliveInLoveOracleWithMadmate++;
                     }
                 }
 
-                if (data.role == Roles.Roles.Spectre){
-                    if(data.extraRole.Contains(Roles.Roles.SecondaryJackal) || data.extraRole.Contains(Roles.Roles.SecondarySidekick)){
+                if (data.role == Roles.Roles.Spectre)
+                {
+                    if (data.extraRole.Contains(Roles.Roles.SecondaryJackal) || data.extraRole.Contains(Roles.Roles.SecondarySidekick))
+                    {
                         AliveSpectreWithSidekick++;
                         AliveSecondaryJackal++;
-                    }else AliveSpectre++;
+                    }
+                    else AliveSpectre++;
                 }
 
-                if(data.role == Roles.Roles.ZombieSidekick) AliveZombieSidekick++;
+                if (data.role == Roles.Roles.ZombieSidekick) AliveZombieSidekick++;
 
-                if(data.role == Roles.Roles.Puppeteer) AlivePuppeteer++;
+                if (data.role == Roles.Roles.Puppeteer) AlivePuppeteer++;
 
-                if(data.role == Roles.Roles.Infected) AliveInfected++;
+                if (data.role == Roles.Roles.Infected) AliveInfected++;
 
                 IsValid = true;
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
-                Debug.LogError(e.StackTrace);
+                Error(e);
                 continue;
             }
         }
@@ -1142,6 +1158,6 @@ public class PlayerStatistics
             AliveInLoveWerewolf = 0;
             AliveInLoveOracle = 0;
         }
-        if(!Roles.Roles.Madmate.IgnoringNumOfMadmateOption.getBool()) AliveMadmate = 0;
+        if (!Roles.Roles.Madmate.IgnoringNumOfMadmateOption.getBool()) AliveMadmate = 0;
     }
 }

@@ -1,18 +1,16 @@
-﻿using static Il2CppSystem.Globalization.CultureInfo;
-
-namespace Nebula.Roles.NeutralRoles;
+﻿namespace Nebula.Roles.NeutralRoles;
 public class Jackal : Role
 {
-    static public Color RoleColor = new Color(0f, 162f / 255f, 211f / 255f);
+    public static Color RoleColor = new Color(0f, 162f / 255f, 211f / 255f);
 
-    static private CustomButton killButton;
-    static private CustomButton sidekickButton;
-    static private SpriteRenderer lockedButtonRenderer;
+    private static CustomButton killButton;
+    private static CustomButton sidekickButton;
+    private static SpriteRenderer lockedButtonRenderer;
 
-    static public Module.CustomOption CanCreateSidekickOption;
-    static public Module.CustomOption NumOfKillingToCreateSidekickOption;
-    static public Module.CustomOption KillCoolDownOption;
-    static public Module.CustomOption createSidekickCoolDownOption;
+    public static Module.CustomOption CanCreateSidekickOption;
+    public static Module.CustomOption NumOfKillingToCreateSidekickOption;
+    public static Module.CustomOption KillCoolDownOption;
+    public static Module.CustomOption createSidekickCoolDownOption;
 
     private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f, "ui.button.jackal.sidekick");
 
@@ -114,15 +112,16 @@ public class Jackal : Role
         sidekickButton = new CustomButton(
             () =>
             {
-                    //Sidekick生成
-                    int jackalId = PlayerControl.LocalPlayer.GetModData().GetRoleData(jackalDataId);
+                //Sidekick生成
+                int jackalId = PlayerControl.LocalPlayer.GetModData().GetRoleData(jackalDataId);
                 RPCEventInvoker.CreateSidekick(Game.GameData.data.myData.currentTarget.PlayerId, (byte)jackalId);
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftSidekickDataId, -1);
 
                 Game.GameData.data.myData.currentTarget = null;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId) > 0; },
-            () => {
+            () =>
+            {
                 int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
                 int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
                 if (killing >= goal)
@@ -135,7 +134,7 @@ public class Jackal : Role
                     sidekickButton.UsesText.text = (goal - killing).ToString();
                 }
 
-                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing >= goal; 
+                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing >= goal;
             },
             () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
             sidekickButtonSprite.GetSprite(),
@@ -157,7 +156,7 @@ public class Jackal : Role
             lockedButtonRenderer = null;
         }
 
-        sidekickButton.UsesText.text= NumOfKillingToCreateSidekickOption.getFloat().ToString();
+        sidekickButton.UsesText.text = NumOfKillingToCreateSidekickOption.getFloat().ToString();
     }
 
     public override void CleanUp()

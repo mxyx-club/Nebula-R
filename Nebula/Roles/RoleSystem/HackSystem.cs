@@ -1,8 +1,8 @@
 ﻿namespace Nebula.Roles.RoleSystem;
 
-static public class HackSystem
+public static class HackSystem
 {
-    static public void showAdminMap(bool ignoreCommSabotage, Patches.AdminPatch.AdminMode adminMode)
+    public static void showAdminMap(bool ignoreCommSabotage, Patches.AdminPatch.AdminMode adminMode)
     {
         Patches.AdminPatch.isAffectedByCommAdmin = !ignoreCommSabotage;
         Patches.AdminPatch.isStandardAdmin = false;
@@ -10,9 +10,10 @@ static public class HackSystem
         Patches.AdminPatch.shouldChangeColor = true;
 
         PlayerControl.LocalPlayer.NetTransform.Halt();
-        FastDestroyableSingleton<HudManager>.Instance.ToggleMapVisible(new MapOptions { 
-            Mode=MapOptions.Modes.CountOverlay,
-            AllowMovementWhileMapOpen=false
+        FastDestroyableSingleton<HudManager>.Instance.ToggleMapVisible(new MapOptions
+        {
+            Mode = MapOptions.Modes.CountOverlay,
+            AllowMovementWhileMapOpen = false
         });
     }
 }

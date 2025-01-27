@@ -2,9 +2,9 @@
 
 //CanUseDoorDespiteSabotageOption
 [HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseDoors), MethodType.Getter)]
-class CanUseDoorPatch
+internal class CanUseDoorPatch
 {
-    static void Postfix(InfectedOverlay __instance, ref bool __result)
+    private static void Postfix(InfectedOverlay __instance, ref bool __result)
     {
         __result &= !Roles.Roles.Grenadier.isFlashing;
         if (GameOptionsManager.Instance.CurrentGameOptions.MapId != 4) return;
@@ -15,9 +15,9 @@ class CanUseDoorPatch
 }
 
 [HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseSpecial), MethodType.Getter)]
-class CanUseSpecialPatch
+internal class CanUseSpecialPatch
 {
-    static void Postfix(InfectedOverlay __instance, ref bool __result)
+    private static void Postfix(InfectedOverlay __instance, ref bool __result)
     {
         //if (GameOptionsManager.Instance.CurrentGameOptions.MapId != 4) return;
         __result &= !Roles.Roles.Grenadier.isFlashing;
@@ -25,9 +25,9 @@ class CanUseSpecialPatch
 }
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcRepairSystem))]
-class InvokeSabotagePatch
+internal class InvokeSabotagePatch
 {
-    static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType)
+    private static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType)
     {
         if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) => role.OnInvokeSabotage(systemType));
@@ -35,9 +35,9 @@ class InvokeSabotagePatch
 }
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcCloseDoorsOfType))]
-class InvokeDoorSabotagePatch
+internal class InvokeDoorSabotagePatch
 {
-    static void Postfix(ShipStatus __instance)
+    private static void Postfix(ShipStatus __instance)
     {
         Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) => role.OnInvokeSabotage(SystemTypes.Doors));
     }
@@ -45,11 +45,11 @@ class InvokeDoorSabotagePatch
 
 //サボクールダウン
 [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
-class SabotageCoolDownPatch
+internal class SabotageCoolDownPatch
 {
-    static bool flag = false;
+    private static bool flag = false;
 
-    static void Prefix(SabotageSystemType __instance)
+    private static void Prefix(SabotageSystemType __instance)
     {
         if (__instance.Timer > 0f) return;
         if (MeetingHud.Instance) return;
@@ -58,7 +58,7 @@ class SabotageCoolDownPatch
         flag = true;
     }
 
-    static void Postfix(SabotageSystemType __instance)
+    private static void Postfix(SabotageSystemType __instance)
     {
         if (flag)
         {
@@ -70,9 +70,9 @@ class SabotageCoolDownPatch
 
 //サボクールダウンの割合表示
 [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.PercentCool), MethodType.Getter)]
-class SabotageCoolDownGetterPatch
+internal class SabotageCoolDownGetterPatch
 {
-    static bool Prefix(SabotageSystemType __instance, ref float __result)
+    private static bool Prefix(SabotageSystemType __instance, ref float __result)
     {
         if (!CustomOptionHolder.SabotageOption.getBool()) return true;
 

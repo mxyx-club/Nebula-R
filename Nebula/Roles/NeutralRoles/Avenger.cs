@@ -4,9 +4,9 @@ namespace Nebula.Roles.NeutralRoles;
 
 public class Avenger : Role
 {
-    static public Color RoleColor = new Color(141f / 255f, 111f / 255f, 131f / 255f);
+    public static Color RoleColor = new Color(141f / 255f, 111f / 255f, 131f / 255f);
 
-    static private CustomButton killButton;
+    private static CustomButton killButton;
 
     public int avengerCheckerId;
     public int loversId;
@@ -24,7 +24,7 @@ public class Avenger : Role
     public Module.CustomOption canTakeOverSabotageWinOption;
 
     /* 矢印 */
-    Arrow Arrow;
+    private Arrow Arrow;
     private float noticeInterval = 0f;
     private Vector2 noticePos = Vector2.zero;
 
@@ -73,7 +73,7 @@ public class Avenger : Role
                         {
                             if (Arrow == null)
                             {
-                                Arrow = new Arrow(Color,true,arrowSprite.GetSprite());
+                                Arrow = new Arrow(Color, true, arrowSprite.GetSprite());
                                 Arrow.arrow.SetActive(true);
                                 noticeInterval = 0f;
                             }
@@ -182,7 +182,7 @@ public class Avenger : Role
     public Avenger()
         : base("Avenger", "avenger", RoleColor, RoleCategory.Neutral, Side.Avenger, Side.Avenger,
              new HashSet<Side>() { Side.Avenger }, new HashSet<Side>() { Side.Avenger },
-             new HashSet<Patches.EndCondition>() { },
+             new HashSet<EndCondition>() { },
              true, VentPermission.CanUseLimittedVent, true, false, false)
     {
         avengerCheckerId = Game.GameData.RegisterRoleDataId("avenger.winChecker");

@@ -4,9 +4,9 @@ public class Demagogue : Role
 {
     public class DemagogueEvent : Events.LocalEvent
     {
-        PlayerControl target;
-        Role targetRole;
-        public DemagogueEvent(PlayerControl target,Role targetRole) : base(0.2f) { this.targetRole = targetRole; this.target = target; }
+        private PlayerControl target;
+        private Role targetRole;
+        public DemagogueEvent(PlayerControl target, Role targetRole) : base(0.2f) { this.targetRole = targetRole; this.target = target; }
         public override void OnTerminal()
         {
             RPCEventInvoker.ImmediatelyUnsetExtraRole(target, Roles.SecondaryMadmate);
@@ -65,7 +65,8 @@ public class Demagogue : Role
     public override void CleanUp()
     {
         base.CleanUp();
-        if(CreateImpostor != null){
+        if (CreateImpostor != null)
+        {
             CreateImpostor.Destroy();
             CreateImpostor = null;
         }
@@ -78,7 +79,8 @@ public class Demagogue : Role
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
     }
 
-    private Role getRole(Role target){
+    private Role getRole(Role target)
+    {
         Role targetRole = Roles.Impostor;
         if (target == Roles.Mayor) targetRole = Roles.EvilAce;
         else if (target == Roles.Necromancer) targetRole = Roles.Reaper;

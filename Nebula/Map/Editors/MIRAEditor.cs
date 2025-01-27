@@ -1,6 +1,6 @@
 ﻿namespace Nebula.Map.Editors;
 
-class MIRAEditor : MapEditor
+internal class MIRAEditor : MapEditor
 {
 
     public MIRAEditor() : base(1)

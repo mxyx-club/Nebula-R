@@ -6,7 +6,7 @@ public class HnSCleaner : Role
 
     private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f, "ui.button.cleaner.clean");
 
-    static private CustomButton cleanButton, killButton;
+    private static CustomButton cleanButton, killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (killButton != null) killButton.Destroy();

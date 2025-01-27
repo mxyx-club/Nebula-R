@@ -2,7 +2,7 @@
 
 public class Oracle : Role
 {
-    static public Color RoleColor = new Color(214f / 255f, 156f / 255f, 45f / 255f);
+    public static Color RoleColor = new Color(214f / 255f, 156f / 255f, 45f / 255f);
 
     private CustomButton oracleButton;
 
@@ -79,8 +79,8 @@ public class Oracle : Role
                     return;
                 }
 
-                    //まだ占っていなければ占う
-                    if (!divineResult.ContainsKey(target.PlayerId))
+                //まだ占っていなければ占う
+                if (!divineResult.ContainsKey(target.PlayerId))
                 {
                     divineResult[target.PlayerId] = Divine(target);
                 }
@@ -103,7 +103,7 @@ public class Oracle : Role
                     index++;
                 }
                 target.GetModData().RoleInfo = roles.Replace("\n", "");
-                RPCEventInvoker.SendInfo(target.PlayerId,target.GetModData().RoleInfo);
+                RPCEventInvoker.SendInfo(target.PlayerId, target.GetModData().RoleInfo);
                 message = message.Replace("%ROLES%", roles);
                 message = message.Replace("%PLAYER%", target.name);
                 CustomMessage customMessage = CustomMessage.Create(target.transform.position, true, message, 5f, 0.5f, 2f, rate, Color.white);
@@ -172,9 +172,9 @@ public class Oracle : Role
             if (result.Count < 3)
             {
                 List<RoleCategory> leftCategory = new List<RoleCategory>();
-                if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Crewmate)) leftCategory.Add(RoleCategory.Crewmate);
-                if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Impostor)) leftCategory.Add(RoleCategory.Impostor);
-                if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Neutral)) leftCategory.Add(RoleCategory.Neutral);
+                if (!result.Any(role => role.oracleCategory == RoleCategory.Crewmate)) leftCategory.Add(RoleCategory.Crewmate);
+                if (!result.Any(role => role.oracleCategory == RoleCategory.Impostor)) leftCategory.Add(RoleCategory.Impostor);
+                if (!result.Any(role => role.oracleCategory == RoleCategory.Neutral)) leftCategory.Add(RoleCategory.Neutral);
 
                 role = DivineRole(target, result, leftCategory[NebulaPlugin.rnd.Next(leftCategory.Count)], relatedRoleChance);
             }

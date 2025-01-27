@@ -1,6 +1,7 @@
 namespace Nebula.Roles.ImpostorRoles;
 
-public class InvisibleMan : Role{
+public class InvisibleMan : Role
+{
     private Module.CustomOption InvisibleCooldown;
     private Module.CustomOption InvisibleDuringTime;
     private Module.CustomOption canUseVentOption;
@@ -9,11 +10,11 @@ public class InvisibleMan : Role{
 
     public override void LoadOptionData()
     {
-        InvisibleCooldown = CreateOption(Color.white,"invisibleCooldown",30f,15f,45f,2.5f);
+        InvisibleCooldown = CreateOption(Color.white, "invisibleCooldown", 30f, 15f, 45f, 2.5f);
         InvisibleCooldown.suffix = "second";
-        InvisibleDuringTime = CreateOption(Color.white,"invisibleDuringTime",7.5f,2.5f,15f,2.5f);
+        InvisibleDuringTime = CreateOption(Color.white, "invisibleDuringTime", 7.5f, 2.5f, 15f, 2.5f);
         InvisibleDuringTime.suffix = "second";
-        canUseVentOption = CreateOption(Color.white,"canUseVent",false);
+        canUseVentOption = CreateOption(Color.white, "canUseVent", false);
     }
 
     private CustomButton invisible;
@@ -51,7 +52,8 @@ public class InvisibleMan : Role{
 
     public override void CleanUp()
     {
-        if(invisible != null){
+        if (invisible != null)
+        {
             invisible.Destroy();
             invisible = null;
         }
@@ -63,8 +65,9 @@ public class InvisibleMan : Role{
     }
 
     public InvisibleMan()
-        : base("InvisibleMan","invisibleMan",Palette.ImpostorRed,RoleCategory.Impostor,Side.Impostor,Side.Impostor,
-        Impostor.impostorSideSet,Impostor.impostorSideSet,Impostor.impostorEndSet,
-        true,VentPermission.CanUseUnlimittedVent,true,true,true){
+        : base("InvisibleMan", "invisibleMan", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
+        Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
+        true, VentPermission.CanUseUnlimittedVent, true, true, true)
+    {
     }
 }

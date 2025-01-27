@@ -13,7 +13,7 @@ public class RaidAxe : TypeWithImage
         Crashed
     }
 
-    public RaidAxe() : base(5, "RaidAxe", new SpriteLoader("Nebula.Resources.RaiderAxe.png",150f))
+    public RaidAxe() : base(5, "RaidAxe", new SpriteLoader("Nebula.Resources.RaiderAxe.png", 150f))
     {
     }
 
@@ -58,7 +58,7 @@ public class RaidAxe : TypeWithImage
 
     public void SetAngle(CustomObject obj, float angle)
     {
-        obj.Data[1] = (int)(angle * (float)ANGLE_DIVIDE);
+        obj.Data[1] = (int)(angle * ANGLE_DIVIDE);
     }
     public void UpdateState(CustomObject obj, AxeState state)
     {
@@ -70,7 +70,7 @@ public class RaidAxe : TypeWithImage
                 break;
             case AxeState.Crashed:
                 obj.Renderer.sprite = GetCrashedSprite();
-                obj.GameObject.transform.eulerAngles = new Vector3(0f, 0f, (float)obj.Data[1] / (float)ANGLE_DIVIDE);
+                obj.GameObject.transform.eulerAngles = new Vector3(0f, 0f, obj.Data[1] / (float)ANGLE_DIVIDE);
                 break;
         }
     }
@@ -103,7 +103,7 @@ public class RaidAxe : TypeWithImage
                 break;
 
             case (int)AxeState.Thrown:
-                float angle = (float)obj.Data[1] / (float)ANGLE_DIVIDE;
+                float angle = obj.Data[1] / (float)ANGLE_DIVIDE;
                 Vector2 vec = new Vector2(Mathf.Cos(angle / 180f * Mathf.PI), Mathf.Sin(angle / 180f * Mathf.PI));
                 float d;
                 float c = 0f;

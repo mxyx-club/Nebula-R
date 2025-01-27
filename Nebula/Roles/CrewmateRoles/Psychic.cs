@@ -1,8 +1,8 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.CrewmateRoles;
 
 public class Psychic : Role
 {
-    static public Color RoleColor = new Color(96f / 255f, 206f / 255f, 137f / 255f);
+    public static Color RoleColor = new Color(96f / 255f, 206f / 255f, 137f / 255f);
 
     private CustomButton searchButton;
 
@@ -62,7 +62,7 @@ public class Psychic : Role
         Arrows.Clear();
     }
 
-    static public HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
+    public static HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
 
     public override void OnAnyoneMurdered(byte murderId, byte targetId)
     {
@@ -91,12 +91,11 @@ public class Psychic : Role
     private float deathMessageInterval;
 
     private string[] PsychicMessage = new string[] { "elapsedTime", "killerColor", "killerRole", "myRole" };
-
-    SpriteLoader arrowSprite = new SpriteLoader("role.psychic.arrow");
+    private SpriteLoader arrowSprite = new SpriteLoader("role.psychic.arrow");
 
     public override void MyPlayerControlUpdate()
     {
-        RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows,arrowSprite);
+        RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows, arrowSprite);
 
         deathMessageInterval -= Time.deltaTime;
         if (deathMessageInterval > 0) return;
@@ -116,7 +115,7 @@ public class Psychic : Role
 
             if (deadPlayerData.MurderId != Byte.MaxValue)
             {
-                m_color = Module.DynamicColors.IsLightColor(Palette.PlayerColors[deadPlayerData.MurderId]) ?
+                m_color = Helpers.playerById(deadPlayerData.MurderId).isLighterColor() ?
                     Language.Language.GetString("role.psychic.color.light") : Language.Language.GetString("role.psychic.color.dark");
                 m_role = Language.Language.GetString("role." + Helpers.GetModData(deadPlayerData.MurderId).role.LocalizeName + ".name");
 

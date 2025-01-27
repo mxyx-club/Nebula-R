@@ -1,5 +1,4 @@
 ﻿using Nebula.Expansion;
-using Steamworks;
 
 namespace Nebula.Module;
 
@@ -48,7 +47,7 @@ public class MSString : MetaScreenContent
         this.style = style;
     }
 
-    public MSString(float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style,bool dontAllowWrapping=false,bool omitMargin=false)
+    public MSString(float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style, bool dontAllowWrapping = false, bool omitMargin = false)
         : this(width, text, alignment, style)
     {
         this.fontSize = fontSize;
@@ -57,7 +56,7 @@ public class MSString : MetaScreenContent
         this.omitMargin = omitMargin;
     }
 
-    public MSString EditFontSize(float fontSize,float fontSizeMin)
+    public MSString EditFontSize(float fontSize, float fontSizeMin)
     {
         this.fontSize = fontSize;
         this.fontSizeMin = fontSizeMin;
@@ -134,7 +133,7 @@ public class MSMultiString : MetaScreenContent
     protected TMPro.FontStyles style { get; }
     public TMPro.TextMeshPro? text { get; protected set; }
     public float fontSize { get; protected set; }
-    public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.1f + 0.74f * fontSize / 6f * (float)(1 + rawText.Count((c) => c == '\n')));
+    public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.1f + 0.74f * fontSize / 6f * (1 + rawText.Count((c) => c == '\n')));
 
     public MSMultiString(float width, float size, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
     {
@@ -164,13 +163,13 @@ public class MSMultiString : MetaScreenContent
 
 public class MSSprite : MetaScreenContent
 {
-    protected Utilities.SpriteLoader sprite;
+    protected SpriteLoader sprite;
     protected float margin;
     protected float scale;
     public override Vector2 GetSize() => (Vector2)sprite.GetSprite().bounds.size * scale + new Vector2(margin, margin);
     public SpriteRenderer renderer;
 
-    public MSSprite(Utilities.SpriteLoader sprite, float margin, float scale)
+    public MSSprite(SpriteLoader sprite, float margin, float scale)
     {
         this.sprite = sprite;
         this.margin = margin;
@@ -221,7 +220,7 @@ public class MSTextInput : MetaScreenContent
     private TMPro.FontStyles fontStyles;
     public float FontSize;
     public TextInputField TextInputField;
-    public MSTextInput(float width, float height, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) 
+    public MSTextInput(float width, float height, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
     {
         this.width = width;
         this.height = height;
@@ -233,7 +232,7 @@ public class MSTextInput : MetaScreenContent
     public override void Generate(GameObject obj)
     {
         TextInputField = obj.AddComponent<TextInputField>();
-        TextInputField.SetTextProperty(new Vector2(width,height), FontSize, alignmentOptions,fontStyles);
+        TextInputField.SetTextProperty(new Vector2(width, height), FontSize, alignmentOptions, fontStyles);
     }
 }
 
@@ -250,9 +249,9 @@ public class MSRadioButton : MSString
     public override Vector2 GetSize() => new Vector2(width + 0.36f, 0.5f);
 
     private TMPro.TextMeshPro RadioButton;
-    
-    public MSRadioButton(bool flag,float width, string text,float fontSize,float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style):
-        base(width,text,fontSize,fontSizeMin,alignment,style)
+
+    public MSRadioButton(bool flag, float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) :
+        base(width, text, fontSize, fontSizeMin, alignment, style)
     {
         this.flag = flag;
     }
@@ -262,7 +261,7 @@ public class MSRadioButton : MSString
     {
         base.Generate(obj);
 
-        text.transform.localPosition += new Vector3(0.15f,0f);
+        text.transform.localPosition += new Vector3(0.15f, 0f);
 
         RadioButton = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
         RadioButton.transform.SetParent(obj.transform);
@@ -281,16 +280,19 @@ public class MSRadioButton : MSString
         button.OnMouseOut = new UnityEngine.Events.UnityEvent();
         button.OnMouseOver = new UnityEngine.Events.UnityEvent();
         button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
             Flag = !Flag;
             OnFlagChanged();
             SoundManager.Instance.PlaySound(MetaDialog.getSelectClip(), false, 0.8f);
         }));
-        button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => {
+        button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
             RadioButton.color = Palette.AcceptedGreen;
             SoundManager.Instance.PlaySound(MetaDialog.getHoverClip(), false, 0.8f);
         }));
-        button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => {
+        button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
             RadioButton.color = Color.white;
         }));
 
@@ -301,23 +303,23 @@ public class MSRadioButton : MSString
 
 public class MetaScreen
 {
-    static private Sprite? buttonSprite = null;
-    static private AudioClip? audioHover = null;
-    static private AudioClip? audioSelect = null;
-    static private SpriteLoader playerMask = new SpriteLoader("Nebula.Resources.PlayerMask.png", 100f);
-    static public Sprite GetButtonBackSprite()
+    private static Sprite? buttonSprite = null;
+    private static AudioClip? audioHover = null;
+    private static AudioClip? audioSelect = null;
+    private static SpriteLoader playerMask = new SpriteLoader("Nebula.Resources.PlayerMask.png", 100f);
+    public static Sprite GetButtonBackSprite()
     {
         if (buttonSprite == null) buttonSprite = Helpers.getSpriteFromAssets("buttonClick");
         return buttonSprite!;
     }
 
-    static public AudioClip? getHoverClip()
+    public static AudioClip? getHoverClip()
     {
         if (audioHover == null) audioHover = Helpers.FindSound("UI_Hover");
         return audioHover;
     }
 
-    static public AudioClip? getSelectClip()
+    public static AudioClip? getSelectClip()
     {
         if (audioSelect == null) audioSelect = Helpers.FindSound("UI_Select");
         return audioSelect;
@@ -353,7 +355,7 @@ public class MetaScreen
             center = new Vector2(origin.x + size.x * 0.5f, origin.y - size.y * 0.5f);
         }
 
-        static private SpriteLoader PseudoBackgroundSprite = new SpriteLoader("Nebula.Resources.ColorFullBase.png", 100f);
+        private static SpriteLoader PseudoBackgroundSprite = new SpriteLoader("Nebula.Resources.ColorFullBase.png", 100f);
         public PassiveButton MakeIntoPseudoScreen()
         {
             var renderer = screen.screen.AddComponent<SpriteRenderer>();
@@ -362,7 +364,7 @@ public class MetaScreen
             renderer.size = size + new Vector2(0.08f, 0.08f);
 
             var collider2D = screen.screen.AddComponent<BoxCollider2D>();
-            collider2D.size = new Vector2(100f,100f);
+            collider2D.size = new Vector2(100f, 100f);
 
             var back = new GameObject("Background").AddComponent<SpriteRenderer>();
             back.sprite = PseudoBackgroundSprite.GetSprite();
@@ -374,7 +376,7 @@ public class MetaScreen
             return screen.screen.SetUpButton(null);
         }
 
-        static public PassiveButton SetUpButton(GameObject obj, Vector2 size, string display, Color? color = null)
+        public static PassiveButton SetUpButton(GameObject obj, Vector2 size, string display, Color? color = null)
         {
             Color normalColor = (color == null) ? Color.white : color.Value;
 
@@ -428,7 +430,7 @@ public class MetaScreen
             return button;
         }
 
-        static public PassiveButton AddSubButton(GameObject parent, Vector2 size, string name, string display, Color? normalColor = null)
+        public static PassiveButton AddSubButton(GameObject parent, Vector2 size, string name, string display, Color? normalColor = null)
         {
             GameObject obj = new GameObject(name);
             obj.transform.SetParent(parent.transform);
@@ -438,12 +440,12 @@ public class MetaScreen
             return result;
         }
 
-        static public PassiveButton AddSubButton(PassiveButton button, Vector2 size, string name, string display)
+        public static PassiveButton AddSubButton(PassiveButton button, Vector2 size, string name, string display)
         {
             return AddSubButton(button.gameObject, size, name, display);
         }
 
-        static public TMPro.TextMeshPro AddSubText(GameObject obj, float width, float fontsize, string display, TMPro.FontStyles style, TMPro.TextAlignmentOptions alignment)
+        public static TMPro.TextMeshPro AddSubText(GameObject obj, float width, float fontsize, string display, TMPro.FontStyles style, TMPro.TextAlignmentOptions alignment)
         {
             TMPro.TextMeshPro text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
             text.transform.SetParent(obj.transform);
@@ -461,7 +463,7 @@ public class MetaScreen
             return text;
         }
 
-        static public TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize, string display)
+        public static TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize, string display)
         {
             return AddSubText(button.gameObject, width, fontsize, display, TMPro.FontStyles.Normal, TMPro.TextAlignmentOptions.Center);
         }
@@ -581,20 +583,20 @@ public class MetaScreen
 
         public void AddPageTopic(int currentPage, bool hasPrev, bool hasNext, Action<int> changePageFunc)
         {
-            Module.MetaScreenContent prev;
-            if (hasPrev) prev = new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => changePageFunc(-1));
-            else prev = new Module.MSMargin(0.5f);
+            MetaScreenContent prev;
+            if (hasPrev) prev = new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => changePageFunc(-1));
+            else prev = new MSMargin(0.5f);
 
-            Module.MetaScreenContent next;
-            if (hasNext) next = new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => changePageFunc(1));
-            else next = new Module.MSMargin(0.5f);
+            MetaScreenContent next;
+            if (hasNext) next = new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => changePageFunc(1));
+            else next = new MSMargin(0.5f);
 
-            AddTopic(prev, new Module.MSString(0.5f, (currentPage + 1).ToString(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), next);
+            AddTopic(prev, new MSString(0.5f, (currentPage + 1).ToString(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), next);
         }
 
         public void AddPageListTopic(int currentPage, int pages, Action<int> changePageFunc)
         {
-            Module.MetaScreenContent[] contents = new MetaScreenContent[pages];
+            MetaScreenContent[] contents = new MetaScreenContent[pages];
 
             for (int i = 0; i < pages; i++)
             {
@@ -731,8 +733,8 @@ public class MetaScreen
 
             for (int i = 0; i < division; i++)
             {
-                result[i] = new MSDesigner(screen, new Vector2(size.x / (float)division, size.y - used),
-                    origin + new Vector2((float)i * size.x / (float)division, -used));
+                result[i] = new MSDesigner(screen, new Vector2(size.x / division, size.y - used),
+                    origin + new Vector2(i * size.x / division, -used));
             }
 
             return result;
@@ -744,8 +746,8 @@ public class MetaScreen
 
             for (int i = 0; i < division; i++)
             {
-                result[i] = new MSDesigner(screen, new Vector2((size.x - (margin * 2f)) / (float)division, size.y - used),
-                    origin + new Vector2(margin + (float)i * (size.x - margin * 2f) / (float)division, -used));
+                result[i] = new MSDesigner(screen, new Vector2((size.x - (margin * 2f)) / division, size.y - used),
+                    origin + new Vector2(margin + i * (size.x - margin * 2f) / division, -used));
             }
 
             return result;
@@ -799,7 +801,7 @@ public class MetaScreen
         GameObject.Destroy(screen);
     }
 
-    static public MSDesigner OpenScreen(GameObject parent, Vector2 size, Vector2 center)
+    public static MSDesigner OpenScreen(GameObject parent, Vector2 size, Vector2 center)
     {
         GameObject screen = new GameObject("Screen");
         screen.transform.SetParent(parent.transform);

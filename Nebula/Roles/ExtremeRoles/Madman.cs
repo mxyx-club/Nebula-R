@@ -2,7 +2,7 @@
 
 public class Madman : Role
 {
-    static public Color RoleColor = new Color(191f / 255f, 0f / 255f, 32f / 255f);
+    public static Color RoleColor = new Color(191f / 255f, 0f / 255f, 32f / 255f);
     private Module.CustomOption isGuessableOption;
     private Module.CustomOption killCooldownOption;
 
@@ -63,7 +63,7 @@ public class Madman : Role
         }
     }
 
-    static private CustomButton killButton;
+    private static CustomButton killButton;
 
     public override void ButtonInitialize(HudManager __instance)
     {
@@ -81,9 +81,10 @@ public class Madman : Role
                 Game.GameData.data.myData.currentTarget = null;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-            () => {
+            () =>
+            {
                 int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killedNumber);
-                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing == 0 ; 
+                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing == 0;
             },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,

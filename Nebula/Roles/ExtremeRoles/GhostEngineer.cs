@@ -2,7 +2,7 @@ namespace Nebula.Roles.GhostRoles;
 
 public class GhostEngineer : GhostRole
 {
-    static public Color RoleColor = new Color(63f / 255f, 72f / 255f, 204f / 255f);
+    public static Color RoleColor = new Color(63f / 255f, 72f / 255f, 204f / 255f);
 
     private Module.CustomOption maxRepairOption;
     public override void LoadOptionData()
@@ -17,11 +17,12 @@ public class GhostEngineer : GhostRole
 
     public int repairId { get; private set; }
 
-    public override void Initialize(PlayerControl __instance){
+    public override void Initialize(PlayerControl __instance)
+    {
         repairId = (int)maxRepairOption.getFloat();
     }
 
-    CustomButton repairButton;
+    private CustomButton repairButton;
     private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resources.RepairButton.png", 115f, "ui.button.ghostEngineer.repair");
 
     public override void ButtonInitialize(HudManager __instance)

@@ -11,7 +11,7 @@ public interface GhostAI
 
     void Update(Ghost ghost);
 
-    static protected SystemTypes? GetValidType(params SystemTypes[] systemTypes)
+    protected static SystemTypes? GetValidType(params SystemTypes[] systemTypes)
     {
         foreach (var room in systemTypes)
         {
@@ -20,13 +20,13 @@ public interface GhostAI
         return null;
     }
 
-    static protected int GetCountOfAlivePlayers(SystemTypes room, int MaxPlayers)
+    protected static int GetCountOfAlivePlayers(SystemTypes room, int MaxPlayers)
     {
         if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return 0;
         return GetCountOfAlivePlayers(ShipStatus.Instance.FastRooms[room], MaxPlayers);
     }
 
-    static protected int GetCountOfAlivePlayers(PlainShipRoom room, int MaxPlayers)
+    protected static int GetCountOfAlivePlayers(PlainShipRoom room, int MaxPlayers)
     {
         Collider2D roomArea = room.roomArea;
         int num = 0;
@@ -41,13 +41,13 @@ public interface GhostAI
         return num > MaxPlayers ? MaxPlayers : num;
     }
 
-    static protected int GetCountOfDeadBodies(SystemTypes room, int MaxBodies)
+    protected static int GetCountOfDeadBodies(SystemTypes room, int MaxBodies)
     {
         if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return 0;
         return GetCountOfDeadBodies(ShipStatus.Instance.FastRooms[room], MaxBodies);
     }
 
-    static protected int GetCountOfDeadBodies(PlainShipRoom room, int MaxBodies)
+    protected static int GetCountOfDeadBodies(PlainShipRoom room, int MaxBodies)
     {
         Collider2D roomArea = room.roomArea;
         int num = 0;
@@ -60,7 +60,7 @@ public interface GhostAI
         return num > MaxBodies ? MaxBodies : num;
     }
 
-    static protected void BlendNoise(Ghost ghost, NoiseDestination destination, Func<float> generator, float weight, bool multiplyFlag)
+    protected static void BlendNoise(Ghost ghost, NoiseDestination destination, Func<float> generator, float weight, bool multiplyFlag)
     {
         switch (destination)
         {

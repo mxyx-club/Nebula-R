@@ -1,9 +1,9 @@
 ﻿namespace Nebula.Events;
 
-class Schedule
+internal class Schedule
 {
-    static List<Tuple<int, System.Action>> PreMeetingActions = new List<Tuple<int, System.Action>>();
-    static List<Tuple<int, System.Action>> PostMeetingActions = new List<Tuple<int, System.Action>>();
+    private static List<Tuple<int, Action>> PreMeetingActions = new List<Tuple<int, Action>>();
+    private static List<Tuple<int, Action>> PostMeetingActions = new List<Tuple<int, Action>>();
 
     public static void Initialize()
     {

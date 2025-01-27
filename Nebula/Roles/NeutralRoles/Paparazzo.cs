@@ -20,7 +20,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
     public static RemoteProcess<PaparazzoImageMessage> SharePaparazzoImage = new RemoteProcess<PaparazzoImageMessage>(
         "SharePaparazzoImage",
-        (writer,message) => { 
+        (writer, message) =>
+        {
             writer.Write(message.sender);
             writer.Write(message.id);
             writer.Write(message.angle);
@@ -43,22 +44,22 @@ public class Paparazzo : Role, Template.HasWinTrigger
         },
         (message, isCalledByMe) =>
         {
-            IncompleteImageMessage.ReceiveMessage(message.sender,message.id,message.angle,message.division,message.index,message.data);
+            IncompleteImageMessage.ReceiveMessage(message.sender, message.id, message.angle, message.division, message.index, message.data);
         }
         );
 
     public class IncompleteImageMessage
     {
-        static Dictionary<int, IncompleteImageMessage> allMessages = new Dictionary<int, IncompleteImageMessage>();
-        static public void Initialize()
+        private static Dictionary<int, IncompleteImageMessage> allMessages = new Dictionary<int, IncompleteImageMessage>();
+        public static void Initialize()
         {
             allMessages.Clear();
         }
-        static public void ReceiveMessage(byte sender,int id,float angle,int division,int index, byte[] data)
+        public static void ReceiveMessage(byte sender, int id, float angle, int division, int index, byte[] data)
         {
             int key = (sender << 16) + id;
             IncompleteImageMessage message;
-            if (allMessages.TryGetValue(key,out message))
+            if (allMessages.TryGetValue(key, out message))
             {
                 message.data[index] = data;
             }
@@ -70,30 +71,30 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 allMessages[key] = message;
             }
 
-            foreach(var d in message.data) if (d == null) return;
+            foreach (var d in message.data) if (d == null) return;
 
             //データをすべて受け取ったとき
             allMessages.Remove(key);
             int length = 0;
             foreach (var d in message.data) length += d.Length;
-            byte[] received=new byte[length];
+            byte[] received = new byte[length];
             int i = 0;
-            foreach (var d in message.data) {
-                Array.Copy(d,0, received, i, d.Length);
+            foreach (var d in message.data)
+            {
+                Array.Copy(d, 0, received, i, d.Length);
                 i += d.Length;
             }
 
             Texture2D texture = new Texture2D(1, 1);
 
-            ImageConversion.LoadImage(texture,received);
+            ImageConversion.LoadImage(texture, received);
             new MeetingHudExpansion.DisclosedPicture(texture, angle);
         }
 
-        byte[]?[] data;
+        private byte[]?[] data;
     }
-    
 
-    Transform PicturesHolder;
+    private Transform PicturesHolder;
 
     public class PictureData
     {
@@ -101,11 +102,14 @@ public class Paparazzo : Role, Template.HasWinTrigger
         {
             public byte PlayerId { get; private set; }
             public Vector2 Pos { get; private set; }
-            public PoolablePlayer Display { get {
+            public PoolablePlayer Display
+            {
+                get
+                {
                     if (poolablePlayer == null) poolablePlayer = Helpers.playerById(PlayerId).CopyToPoolablePlayer();
-                    
+
                     return poolablePlayer;
-                } 
+                }
             }
             private PoolablePlayer poolablePlayer = null;
 
@@ -113,12 +117,12 @@ public class Paparazzo : Role, Template.HasWinTrigger
             {
                 Pos = pos;
                 PlayerId = player.PlayerId;
-            }   
+            }
         }
 
         public Texture2D Picture { get; private set; }
         public int Id { get; private set; }
-        static public int AvailableId { get; set; }
+        public static int AvailableId { get; set; }
         public float Angle { get; private set; }
         public PlayerInfo[] Players { get; private set; }
         public bool IsShown { get; private set; }
@@ -130,7 +134,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         {
             IsShown = true;
 
-            foreach(var p in Players)
+            foreach (var p in Players)
             {
                 if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
                 Roles.Paparazzo.activePlayers.Add(p.PlayerId);
@@ -140,13 +144,13 @@ public class Paparazzo : Role, Template.HasWinTrigger
             if (bytes.Length == 0) return;
 
             int sent = 0;
-            int division = (int)((bytes.Length - 1) / 512) + 1;
+            int division = (bytes.Length - 1) / 512 + 1;
             int i = 0;
             while (sent < bytes.Length)
             {
                 int length = bytes.Length - sent;
                 if (length > 512) length = 512;
-                var subBytes = bytes.SubArray(sent,length);
+                var subBytes = bytes.SubArray(sent, length);
 
                 SharePaparazzoImage.Invoke(new PaparazzoImageMessage
                 {
@@ -162,10 +166,10 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 sent += length;
                 i++;
             }
-                    
 
-            
-            
+
+
+
         }
         public PictureData(GameObject finder, Texture2D picture, Vector2 size)
         {
@@ -177,7 +181,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             Id = AvailableId++;
 
             List<PlayerInfo> playersList = new();
-            foreach(var p in PlayerControl.AllPlayerControls)
+            foreach (var p in PlayerControl.AllPlayerControls)
             {
                 if (!p.Visible) continue;
                 if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
@@ -191,7 +195,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
                     if (locPosPositive.x < 0) locPosPositive.x = -locPosPositive.x;
                     if (locPosPositive.y < 0) locPosPositive.y = -locPosPositive.y;
 
-                    if (!(locPosPositive.x < size.x/2f && locPosPositive.y < size.y/2f))
+                    if (!(locPosPositive.x < size.x / 2f && locPosPositive.y < size.y / 2f))
                     {
                         flag = false;
                         break;
@@ -218,7 +222,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         {
             if (CannotShow) return;
 
-            foreach(var p in Players)
+            foreach (var p in Players)
             {
                 if (PlayerControl.LocalPlayer.PlayerId == p.PlayerId) continue;
                 if (!Helpers.playerById(p.PlayerId).Data.IsDead) return;
@@ -227,15 +231,15 @@ public class Paparazzo : Role, Template.HasWinTrigger
         }
     }
 
-    private PictureData TakePicture(GameObject finder,Vector2 size,int roughness)
+    private PictureData TakePicture(GameObject finder, Vector2 size, int roughness)
     {
         GameObject.Destroy(finder.GetComponent<PassiveButton>());
         var scale = finder.transform.localScale;
         size = size * 100f;
         GameObject camObj = new GameObject();
         camObj.transform.SetParent(finder.transform);
-        camObj.transform.localScale = new Vector3(1,1);
-        camObj.transform.localPosition = new Vector3(0,0);
+        camObj.transform.localScale = new Vector3(1, 1);
+        camObj.transform.localPosition = new Vector3(0, 0);
         camObj.transform.localEulerAngles = new Vector3(0, 0, 0);
         var pos = camObj.transform.position;
         pos.z = -0.5f;
@@ -273,27 +277,29 @@ public class Paparazzo : Role, Template.HasWinTrigger
         return pictureData;
     }
 
-    static public Color RoleColor = new Color(202f / 255f, 118f / 255f, 140f / 255f);
+    public static Color RoleColor = new Color(202f / 255f, 118f / 255f, 140f / 255f);
 
-    static private CustomButton cameraButton;
+    private static CustomButton cameraButton;
     private GameObject finderObject;
     private List<PictureData> pictures;
     private HashSet<byte> activePlayers;
     private HashSet<byte> filmedPlayers;
     private float shareCount;
 
-    private bool CanSharePicture { get
+    private bool CanSharePicture
+    {
+        get
         {
             if (PlayerControl.LocalPlayer.Data.IsDead) return false;
             if (!MeetingHud.Instance) return false;
             if (!(shareCount > 0)) return false;
             return (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion || MeetingHud.Instance.state == MeetingHud.VoteStates.NotVoted || MeetingHud.Instance.state == MeetingHud.VoteStates.Voted);
-        } 
+        }
     }
 
     private void UpdatePlayersInfo()
     {
-        foreach(var picture in pictures)
+        foreach (var picture in pictures)
         {
             picture.UpdateProgress();
             foreach (var player in picture.Players)
@@ -315,10 +321,10 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 if (!Helpers.playerById(player.PlayerId).Data.IsDead && !activePlayers.Contains(player.PlayerId)) return false;
             }
 
-            if(p.Holder)GameObject.Destroy(p.Holder);
+            if (p.Holder) GameObject.Destroy(p.Holder);
             if (p.Picture) GameObject.Destroy(p.Picture);
             return true;
-            
+
         });
     }
 
@@ -334,7 +340,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         hourglassObj.layer = LayerExpansion.GetUILayer();
         hourglassObj.transform.SetParent(PicturesHolder);
         hourglassObj.AddComponent<SpriteRenderer>().sprite = hourglassSprite.GetSprite();
-        hourglassText = GameObject.Instantiate(HudManager.Instance.KillButton.cooldownTimerText,hourglassObj.transform);
+        hourglassText = GameObject.Instantiate(HudManager.Instance.KillButton.cooldownTimerText, hourglassObj.transform);
         hourglassText.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         hourglassText.text = ((int)shareCount).ToString();
     }
@@ -347,7 +353,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         if (hourglassObj)
         {
             GameObject.Destroy(hourglassObj);
-            hourglassObj= null;
+            hourglassObj = null;
             hourglassText = null;
         }
     }
@@ -363,11 +369,11 @@ public class Paparazzo : Role, Template.HasWinTrigger
         }
     }
 
-    private Module.CustomOption shootCoolDownOption;
-    private Module.CustomOption winConditionSubjectOption;
-    private Module.CustomOption winConditionDisclosedOption;
-    private Module.CustomOption canUseVentsOption;
-    private Module.CustomOption isGuessableOption;
+    private CustomOption shootCoolDownOption;
+    private CustomOption winConditionSubjectOption;
+    private CustomOption winConditionDisclosedOption;
+    private CustomOption canUseVentsOption;
+    private CustomOption isGuessableOption;
 
     public override bool IsGuessableRole { get => isGuessableOption.getBool(); }
 
@@ -406,7 +412,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             }
         }
         else if ((int)winConditionSubjectOption.getFloat() > filmedPlayers.Count) return;
-        
+
         RPCEventInvoker.WinTrigger(this);
     }
 
@@ -421,18 +427,18 @@ public class Paparazzo : Role, Template.HasWinTrigger
         detail = Language.Language.GetString("role.paparazzo.taskTextDisclosed")
             .Replace("%GD%", winConditionDisclosedOption.getFloat().ToString())
             .Replace("%CD%", activePlayers.Count.ToString());
-        if (winConditionSubjectOption.getSelection() != 0 && winConditionDisclosedOption.getFloat()<winConditionSubjectOption.getFloat()) {
+        if (winConditionSubjectOption.getSelection() != 0 && winConditionDisclosedOption.getFloat() < winConditionSubjectOption.getFloat())
+        {
             detail = Language.Language.GetString("role.paparazzo.taskTextSubject")
                 .Replace("%GS%", winConditionSubjectOption.getFloat().ToString())
                 .Replace("%CS%", filmedPlayers.Count.ToString())
                 + ", " + detail;
         }
-        return text.Replace("%DETAIL%",detail);
+        return text.Replace("%DETAIL%", detail);
     }
 
-
-    SpriteLoader cameraSprite = new SpriteLoader("Nebula.Resources.CameraButton.png", 115f, "ui.button.paparazzo.film");
-    SpriteLoader hourglassSprite = new SpriteLoader("Nebula.Resources.Hourglass.png", 100f);
+    private SpriteLoader cameraSprite = new SpriteLoader("Nebula.Resources.CameraButton.png", 115f, "ui.button.paparazzo.film");
+    private SpriteLoader hourglassSprite = new SpriteLoader("Nebula.Resources.Hourglass.png", 100f);
 
     public override void GlobalIntroInitialize(PlayerControl __instance)
     {
@@ -467,10 +473,10 @@ public class Paparazzo : Role, Template.HasWinTrigger
         if (hourglassObj) GameObject.Destroy(hourglassObj);
         hourglassObj = null;
         hourglassText = null;
-        
-        if(finderObject) GameObject.Destroy(finderObject);
-        foreach(var p in pictures) if(p.Picture)GameObject.Destroy(p.Picture);
-        if(PicturesHolder) GameObject.Destroy(PicturesHolder.gameObject);
+
+        if (finderObject) GameObject.Destroy(finderObject);
+        foreach (var p in pictures) if (p.Picture) GameObject.Destroy(p.Picture);
+        if (PicturesHolder) GameObject.Destroy(PicturesHolder.gameObject);
 
         WinTrigger = false;
 
@@ -481,7 +487,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         }
     }
 
-    private IEnumerator GetShootEnumerator(GameObject finder,Vector2 size,PictureData picture)
+    private IEnumerator GetShootEnumerator(GameObject finder, Vector2 size, PictureData picture)
     {
         GameObject? holder = null;
         if (picture.Players.Length > 0 && picture.Players.Any((p) => !activePlayers.Contains(p.PlayerId)))
@@ -498,15 +504,15 @@ public class Paparazzo : Role, Template.HasWinTrigger
         obj.transform.SetParent(finder.transform);
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = new Vector3(1f / finder.transform.localScale.x, 1f / finder.transform.localScale.y, 1f);
-        obj.transform.localEulerAngles= Vector3.zero;
+        obj.transform.localEulerAngles = Vector3.zero;
         obj.layer = LayerExpansion.GetUILayer();
         var renderer = obj.AddComponent<SpriteRenderer>();
         Sprite sprite = Helpers.loadSpriteFromResources(picture.Picture, 100f, new Rect(0, 0, picture.Picture.width, picture.Picture.height)); ;
         renderer.sprite = sprite;
-        
+
 
         finder.transform.SetParent(HudManager.Instance.transform);
-       
+
 
         float p = 0f;
         while (p < 1f)
@@ -524,20 +530,22 @@ public class Paparazzo : Role, Template.HasWinTrigger
         if (holder != null)
         {
             renderer.material = ConsoleExpansion.GetHighlightMaterial();
-            
+
             var button = finder.AddComponent<PassiveButton>();
             button.OnMouseOut = new UnityEngine.Events.UnityEvent();
             button.OnMouseOver = new UnityEngine.Events.UnityEvent();
             button.OnClick.RemoveAllListeners();
             button.OnMouseOut.AddListener(
-                (UnityEngine.Events.UnityAction)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     renderer.material.SetFloat("_Outline", 0f);
                     if (picture.IsShown) return;
                     renderer.material.SetColor("_AddColor", Color.clear);
                 })
             );
             button.OnMouseOver.AddListener(
-                (UnityEngine.Events.UnityAction)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     if (!CanSharePicture || picture.IsShown) return;
 
                     renderer.material.SetFloat("_Outline", 1f);
@@ -546,12 +554,13 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 })
             );
             button.OnClick.AddListener(
-                (UnityEngine.Events.UnityAction)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     if (!CanSharePicture || picture.IsShown) return;
 
                     var dialog = MetaDialog.OpenDialog(new Vector2(5f, 3.5f), "");
 
-                    dialog.AddTopic(new MSString(4.2f, Language.Language.GetString("role.paparazzo.sharing.confirm"),2f,1f,TextAlignmentOptions.Center,FontStyles.Normal));
+                    dialog.AddTopic(new MSString(4.2f, Language.Language.GetString("role.paparazzo.sharing.confirm"), 2f, 1f, TextAlignmentOptions.Center, FontStyles.Normal));
                     dialog.CustomUse(2.1f);
                     GameObject pictureObj = new GameObject("Picture");
                     pictureObj.transform.SetParent(dialog.screen.screen.transform);
@@ -563,7 +572,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
                     dialog.AddTopic(
                         new MSButton(1f, 0.4f, Language.Language.GetString("config.option.yes"), FontStyles.Bold,
-                        () => {
+                        () =>
+                        {
                             MetaDialog.EraseDialogAll();
                             if (CanSharePicture && !picture.IsShown)
                             {
@@ -583,7 +593,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
                             }
                         }),
                         new MSButton(1f, 0.4f, Language.Language.GetString("config.option.no"), FontStyles.Bold,
-                        () => {
+                        () =>
+                        {
                             MetaDialog.EraseDialogAll();
                         }));
                 })
@@ -598,8 +609,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
             {
                 player.Display.setSemiTransparent(!activePlayers.Contains(player.PlayerId));
                 player.Display.transform.SetParent(holder.transform);
-                player.Display.transform.localPosition = new Vector3((float)(1 - l + (n * 2)) * 0.3f, 2.2f, 0f);
-                player.Display.transform.localScale = new Vector3(0.5f,0.5f,1f);
+                player.Display.transform.localPosition = new Vector3((1 - l + (n * 2)) * 0.3f, 2.2f, 0f);
+                player.Display.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
                 n++;
             }
 
@@ -611,7 +622,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             {
                 finder.transform.localEulerAngles += new Vector3(0, 0, angleLeft * 0.05f);
                 finder.transform.localPosition *= 0.82f;
-                holder.transform.localScale = holder.transform.localScale * 0.8f + new Vector3(0.2f, 0.2f,1f) * 0.2f;
+                holder.transform.localScale = holder.transform.localScale * 0.8f + new Vector3(0.2f, 0.2f, 1f) * 0.2f;
                 angleLeft *= 0.9f;
 
                 p += Time.deltaTime * 1f;
@@ -619,7 +630,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             }
             finder.transform.localEulerAngles += new Vector3(0, 0, angleLeft);
             finder.transform.localPosition = Vector3.zero;
-            holder.transform.localScale = new Vector3(0.2f, 0.2f,1f);
+            holder.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
         }
         else
         {
@@ -705,7 +716,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             //ある程度近距離なら倍率は一定
             if (distance < 1.5f) distance = 1.5f;
             finderObject.transform.localScale = finderObject.transform.localScale * 0.75f + Vector3.one * ((2.8f - distance) / 1.3f * 0.5f + 0.5f) * 0.25f;
-            if(!Input.GetMouseButton(0))finderObject.transform.eulerAngles = new Vector3(0, 0, -90f + angle * 180f / Mathf.PI);
+            if (!Input.GetMouseButton(0)) finderObject.transform.eulerAngles = new Vector3(0, 0, -90f + angle * 180f / Mathf.PI);
         }
         else
         {
@@ -717,7 +728,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         }
 
         //写真を整列する
-       for(int i = 0; i < PicturesHolder.childCount; i++)
+        for (int i = 0; i < PicturesHolder.childCount; i++)
         {
             var newPos = PicturesHolder.GetChild(i).transform.localPosition * 0.9f + new Vector3(0.65f * i - 0.4f, -0.36f) * 0.1f;
             newPos.z = i * -0.25f;
@@ -726,20 +737,20 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
         //会議中
         if (CanSharePicture) shareCount -= Time.deltaTime;
-        
+
     }
 
     public override void MyPlayerControlUpdate()
     {
         base.MyPlayerControlUpdate();
-        
+
         /*
         foreach (var player in PlayerControl.AllPlayerControls)
         {
             if(!filmedPlayers.Contains(player.PlayerId)) Patches.PlayerControlPatch.SetPlayerOutline(player, Color.yellow);
         }
         */
-        
+
     }
 
     public override void OnRoleRelationSetting()
@@ -760,7 +771,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
     public override void AfterTeleport(float time)
     {
-        if(cameraButton.Timer < time) cameraButton.Timer = time;
+        if (cameraButton.Timer < time) cameraButton.Timer = time;
     }
 
     public Paparazzo()

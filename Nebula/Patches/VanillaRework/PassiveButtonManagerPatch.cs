@@ -1,9 +1,9 @@
-﻿namespace Nebula.Patches.VanillaRework;
+namespace Nebula.Patches.VanillaRework;
 
 [HarmonyPatch]
-class PassiveButtonManagerPatch
+internal class PassiveButtonManagerPatch
 {
-    static public Vector2 ConvertToPosition(Vector2 mainCameraPosition, Camera camera, bool correctOrigin)
+    public static Vector2 ConvertToPosition(Vector2 mainCameraPosition, Camera camera, bool correctOrigin)
     {
         if (camera == Camera.main) return mainCameraPosition;
         if (correctOrigin) mainCameraPosition -= (Vector2)Camera.main.transform.position;
@@ -12,13 +12,13 @@ class PassiveButtonManagerPatch
         return result;
     }
 
-    static public float ConvertToScalar(float scalar, Camera camera)
+    public static float ConvertToScalar(float scalar, Camera camera)
     {
         if (camera == Camera.main) return scalar;
         return scalar * Camera.main.orthographicSize / camera.orthographicSize;
     }
 
-    static public DragState CheckDrag(Controller controller, Collider2D coll, Camera camera)
+    public static DragState CheckDrag(Controller controller, Collider2D coll, Camera camera)
     {
         if (!coll)
         {
@@ -67,10 +67,10 @@ class PassiveButtonManagerPatch
     }
 
     [HarmonyPatch(typeof(PassiveButtonManager), nameof(PassiveButtonManager.Update))]
-    class UpdatePatch
+    private class UpdatePatch
     {
         //Cameraに応じて座標を変換する
-        static public bool Prefix(PassiveButtonManager __instance)
+        public static bool Prefix(PassiveButtonManager __instance)
         {
             try
             {
@@ -208,12 +208,12 @@ class PassiveButtonManagerPatch
             }
             catch (Exception exception)
             {
-                NebulaPlugin.Instance.Logger.Print(exception.ToString());
+                Error(exception.ToString());
             }
             return false;
         }
 
-        static private bool predicate(float depth, PassiveButtonManager __instance, Vector2 point)
+        private static bool predicate(float depth, PassiveButtonManager __instance, Vector2 point)
         {
             foreach (var top in __instance.Buttons.GetFastEnumerator())
             {
@@ -233,7 +233,7 @@ class PassiveButtonManagerPatch
         }
 
         //Cameraに応じて座標を変換する
-        static public void HandleFocus(PassiveButtonManager __instance, Vector2 pt)
+        public static void HandleFocus(PassiveButtonManager __instance, Vector2 pt)
         {
             bool flag = false;
             for (int i = 0; i < __instance.FocusHolders.Count; i++)
@@ -274,7 +274,7 @@ class PassiveButtonManagerPatch
         }
 
         //Cameraに応じて座標を変換する
-        static public void HandleMouseOut(PassiveButtonManager __instance)
+        public static void HandleMouseOut(PassiveButtonManager __instance)
         {
             if (__instance.currentOver)
             {
@@ -309,7 +309,7 @@ class PassiveButtonManagerPatch
 
 
         //Cameraに応じて座標を変換する
-        static public void HandleMouseOver(PassiveButtonManager __instance, PassiveUiElement button, Collider2D col, Camera camera)
+        public static void HandleMouseOver(PassiveButtonManager __instance, PassiveUiElement button, Collider2D col, Camera camera)
         {
             if (!button.HandleOverOut || button == __instance.currentOver)
             {

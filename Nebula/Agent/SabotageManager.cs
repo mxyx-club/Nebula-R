@@ -1,13 +1,13 @@
-﻿namespace Nebula.Agent;
+namespace Nebula.Agent;
 
-static public class SabotageManager
+public static class SabotageManager
 {
-    static public bool ExistAnySabotages()
+    public static bool ExistAnySabotages()
     {
         return Helpers.SabotageIsActive();
     }
 
-    static public void BeginSabotage(SystemTypes room)
+    public static void BeginSabotage(SystemTypes room)
     {
         switch (room)
         {
@@ -29,34 +29,34 @@ static public class SabotageManager
         }
     }
 
-    static public void BeginReactorSabotage()
+    public static void BeginReactorSabotage()
     {
         ShipStatus.Instance.RpcRepairSystem(SystemTypes.Sabotage, 3);
     }
 
-    static public void BeginCommsSabotage()
+    public static void BeginCommsSabotage()
     {
         ShipStatus.Instance.RpcRepairSystem(SystemTypes.Sabotage, 14);
     }
 
-    static public void BeginOxygenSabotage()
+    public static void BeginOxygenSabotage()
     {
         ShipStatus.Instance.RpcRepairSystem(SystemTypes.Sabotage, 8);
     }
 
-    static public void BeginLightsSabotage()
+    public static void BeginLightsSabotage()
     {
         ShipStatus.Instance.RpcRepairSystem(SystemTypes.Sabotage, 7);
     }
 
-    static public void BeginSeismicSabotage()
+    public static void BeginSeismicSabotage()
     {
         ShipStatus.Instance.RpcRepairSystem(SystemTypes.Sabotage, 21);
     }
 
-    static public void BeginDoorSabotage(SystemTypes room)
+    public static void BeginDoorSabotage(SystemTypes room)
     {
-        NebulaPlugin.Instance.Logger.Print("Close " + room + "'s Door");
+        Info("Close " + room + "'s Door");
         ShipStatus.Instance.RpcCloseDoorsOfType(room);
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Nebula.Images;
-static class GlobalImage
+
+internal static class GlobalImage
 {
     private static Sprite MeetingButtonLeft = null;
     private static Sprite MeetingButtonRight = null;

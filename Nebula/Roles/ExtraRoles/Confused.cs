@@ -2,7 +2,7 @@
 
 public class Confused : Template.StandardExtraRole
 {
-    static public Color RoleColor = new Color(242f / 255f, 247f / 255f, 226f / 255f);
+    public static Color RoleColor = new Color(242f / 255f, 247f / 255f, 226f / 255f);
 
     protected override bool IsAssignableTo(Role role) => role.CanHaveExtraAssignable(this);
     public override Assignable AssignableOnHelp { get => null; }

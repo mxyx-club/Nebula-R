@@ -77,8 +77,8 @@ public class Sniper : Role
     }
 
     /* ボタン */
-    static private CustomButton sniperButton;
-    static private CustomButton killButton;
+    private static CustomButton sniperButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (sniperButton != null)
@@ -183,9 +183,9 @@ public class Sniper : Role
 
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
     {
-        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,shotEffectiveRangeOption.getFloat(), 16f); }),
-        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, noticeRangeOption.getFloat(),16f); }),
-        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, shotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,shotEffectiveRangeOption.getFloat(), 16f); }),
+        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, noticeRangeOption.getFloat(),16f); }),
+        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, shotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
     };
 
     private Sprite snipeArrowSprite = null;

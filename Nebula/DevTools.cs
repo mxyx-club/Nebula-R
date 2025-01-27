@@ -177,11 +177,11 @@ public static class DevTools
     public static string TestFunc()
     {
         var methods = typeof(UnityEngine.Object).GetMethods(BindingFlags.Static | BindingFlags.Public);
-        var method = methods.First(m => m.Name == "FindObjectsOfType" && m.GetParameters().Length == 0).MakeGenericMethod(typeof(UnityEngine.SpriteRenderer));
+        var method = methods.First(m => m.Name == "FindObjectsOfType" && m.GetParameters().Length == 0).MakeGenericMethod(typeof(SpriteRenderer));
         object returned = method.Invoke(null, new object[0]);
         Type type = returned.GetType();
         var indexer = type.GetMethod("get_Item");
-        UnityEngine.GameObject obj = (indexer.Invoke(returned, new object[] { 0 }) as Component).gameObject;
+        GameObject obj = (indexer.Invoke(returned, new object[] { 0 }) as Component).gameObject;
 
         return obj.name;
     }

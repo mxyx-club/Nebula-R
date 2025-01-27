@@ -1,6 +1,6 @@
 ﻿namespace Nebula.Roles.NeutralRoles;
 
-static public class SidekickSystem
+public static class SidekickSystem
 {
 
 }
@@ -14,13 +14,13 @@ public class Sidekick : Role
             };
     }
 
-    static private CustomButton killButton;
+    private static CustomButton killButton;
 
-    static public Module.CustomOption SidekickCanKillOption;
-    static public Module.CustomOption SidekickTakeOverOriginalRoleOption;
-    static public Module.CustomOption SidekickKillCoolDownOption;
-    static public Module.CustomOption SidekickCanCreateSidekickOption;
-    static public Module.CustomOption SidekickCanUseVentsOption;
+    public static Module.CustomOption SidekickCanKillOption;
+    public static Module.CustomOption SidekickTakeOverOriginalRoleOption;
+    public static Module.CustomOption SidekickKillCoolDownOption;
+    public static Module.CustomOption SidekickCanCreateSidekickOption;
+    public static Module.CustomOption SidekickCanUseVentsOption;
 
     public override void LoadOptionData()
     {
@@ -109,7 +109,7 @@ public class Sidekick : Role
         VentPermission = SidekickCanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
     }
 
-    public override void EditDisplayNameColor(byte playerId, ref Color displayColor) => Roles.Jackal.EditDisplayNameColor(playerId,ref displayColor);
+    public override void EditDisplayNameColor(byte playerId, ref Color displayColor) => Roles.Jackal.EditDisplayNameColor(playerId, ref displayColor);
     /*
     {
         if (PlayerControl.LocalPlayer.GetModData().role.side == Side.Jackal)
@@ -151,7 +151,7 @@ public class SecondarySidekick : ExtraRole
 {
     public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Jackal Identifer", this, 0, 14) }; }
 
-    public override void EditDisplayNameColor(byte playerId, ref Color displayColor) => Roles.Jackal.EditDisplayNameColor(playerId,ref displayColor);
+    public override void EditDisplayNameColor(byte playerId, ref Color displayColor) => Roles.Jackal.EditDisplayNameColor(playerId, ref displayColor);
     /*
     {
         if (PlayerControl.LocalPlayer.GetModData().role == Roles.Jackal)

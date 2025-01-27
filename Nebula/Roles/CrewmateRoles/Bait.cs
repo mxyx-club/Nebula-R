@@ -4,14 +4,14 @@ namespace Nebula.Roles.CrewmateRoles;
 
 public class Bait : Role
 {
-    static public Color RoleColor = new Color(0f / 255f, 247f / 255f, 255f / 255f);
+    public static Color RoleColor = new Color(0f / 255f, 247f / 255f, 255f / 255f);
 
     public Module.CustomOption killerCanKnowBaitKillByFlash;
     public Module.CustomOption canBeExtraRole;
 
     public class BaitEvent : Events.LocalEvent
     {
-        byte murderId;
+        private byte murderId;
         public BaitEvent(byte murderId) : base(0.2f + (float)NebulaPlugin.rnd.NextDouble() * 0.2f)
         {
             this.murderId = murderId;

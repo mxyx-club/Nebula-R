@@ -1,11 +1,11 @@
-﻿using System.Reflection;
-using Hazel;
-using System.Text;
-using Nebula.Patches;
 using System.IO.Compression;
+using System.Reflection;
+using System.Text;
+using Hazel;
+using InnerNet;
+using Nebula.CustomCosmetics;
+using Nebula.Patches;
 using TMPro;
-using Nebula.Module;
-using UnityEngine;
 
 namespace Nebula;
 
@@ -24,9 +24,9 @@ public static class Helpers
     }
     */
 
-    public static TMPro.TextMeshPro CreateButtonUpperText(this ActionButton button)
+    public static TextMeshPro CreateButtonUpperText(this ActionButton button)
     {
-        TMPro.TextMeshPro text = GameObject.Instantiate(HudManager.Instance.KillButton.cooldownTimerText, button.transform);
+        TextMeshPro text = GameObject.Instantiate(HudManager.Instance.KillButton.cooldownTimerText, button.transform);
         text.enableWordWrapping = false;
         text.transform.localScale = Vector3.one * 0.5f;
         text.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
@@ -50,7 +50,7 @@ public static class Helpers
         if (ExileController.Instance) return false;
 
         if (isImpostorKillButton) return PlayerControl.LocalPlayer.IsKillTimerEnabled;
-        
+
 
         //if (PlayerControl.LocalPlayer.onLadder) return true;
         //if (PlayerControl.LocalPlayer.inMovingPlat) return true;
@@ -59,7 +59,7 @@ public static class Helpers
         if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
             return !MapBehaviour.Instance.countOverlay.isActiveAndEnabled;
 
-        
+
         if (Minigame.Instance)
         {
             if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
@@ -164,17 +164,17 @@ public static class Helpers
         return null;
     }
 
-    public static Texture2D loadTextureFromZip(ZipArchive zip,string path)
+    public static Texture2D loadTextureFromZip(ZipArchive zip, string path)
     {
         try
         {
             var entry = zip.GetEntry(path);
-            if (entry!=null)
+            if (entry != null)
             {
                 Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
                 Stream stream = entry.Open();
                 byte[] byteTexture = new byte[entry.Length];
-                stream.Read(byteTexture,0, byteTexture.Length);
+                stream.Read(byteTexture, 0, byteTexture.Length);
                 stream.Close();
                 LoadImage(texture, byteTexture, false);
                 return texture;
@@ -203,6 +203,16 @@ public static class Helpers
             if (player.PlayerId == id)
                 return player;
         return null;
+    }
+
+    public static bool isLighterColor(this PlayerControl target)
+    {
+        return CustomColors.lighterColors.Contains(target.Data.DefaultOutfit.ColorId);
+    }
+
+    public static Color? GetPlayerColor(this PlayerControl player)
+    {
+        return player.GetModData()?.TransColor;
     }
 
     public static Dictionary<byte, PlayerControl> allPlayersById()
@@ -306,7 +316,7 @@ public static class Helpers
 
         try
         {
-            target.cosmetics.currentPet = UnityEngine.Object.Instantiate<PetBehaviour>(FastDestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
+            target.cosmetics.currentPet = UnityEngine.Object.Instantiate(FastDestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
             target.cosmetics.currentPet.transform.position = target.transform.position;
             target.cosmetics.currentPet.Source = target;
             target.cosmetics.currentPet.Visible = target.Visible;
@@ -398,7 +408,7 @@ public static class Helpers
         //Componentで探すよりタグで探す方が相当はやい
         var bodies = GameObject.FindGameObjectsWithTag("DeadBody");
         DeadBody[] deadBodies = new DeadBody[bodies.Count];
-        for (int i = 0; i < bodies.Count; i++) if(bodies[i].gameObject.active) deadBodies[i] = bodies[i].GetComponent<DeadBody>();
+        for (int i = 0; i < bodies.Count; i++) if (bodies[i].gameObject.active) deadBodies[i] = bodies[i].GetComponent<DeadBody>();
         return deadBodies;
     }
 
@@ -463,7 +473,7 @@ public static class Helpers
         }
 
         //GlobalMethod
-        return targetData.role.OnMurdered(killer.PlayerId, target.PlayerId);;
+        return targetData.role.OnMurdered(killer.PlayerId, target.PlayerId); ;
 
     }
 
@@ -513,15 +523,17 @@ public static class Helpers
             if (p < (fadeIn / duration))
             {
                 if (flash != null)
-                    flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha,0.2f) : maxAlpha) * p / (fadeIn / duration)));
+                    flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha, 0.2f) : maxAlpha) * p / (fadeIn / duration)));
             }
-            else if(1 - p < (fadeOut / duration))
+            else if (1 - p < (fadeOut / duration))
             {
                 if (flash != null)
-                    flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha,0.2f) : maxAlpha) * (1 - p) / (fadeOut / duration)));
-            }else{
+                    flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha, 0.2f) : maxAlpha) * (1 - p) / (fadeOut / duration)));
+            }
+            else
+            {
                 if (flash != null)
-                    flash.color = new Color(color.r,color.g,color.b,PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha,0.2f) : maxAlpha);
+                    flash.color = new Color(color.r, color.g, color.b, PlayerControl.LocalPlayer.Data.IsDead ? Mathf.Min(maxAlpha, 0.2f) : maxAlpha);
             }
             if ((p == 1f || MeetingHud.Instance) && flash != null)
             {
@@ -546,12 +558,12 @@ public static class Helpers
     /// </summary>
     /// <param name="chance">0～10の間で指定</param>
     /// <returns></returns>
-    static public int CalcProbabilityCount(int chance, int max)
+    public static int CalcProbabilityCount(int chance, int max)
     {
         if (max == 0) { return 0; }
 
         int count = 0;
-        double rate = (double)chance / 10.0;
+        double rate = chance / 10.0;
         for (int i = 0; i < max; i++)
         {
             if (NebulaPlugin.rnd.NextDouble() < rate) count++;
@@ -559,7 +571,7 @@ public static class Helpers
         return count;
     }
 
-    static public int[] GetRandomArray(int length)
+    public static int[] GetRandomArray(int length)
     {
         int[] arr = new int[length];
         for (int i = 0; i < length; i++)
@@ -573,7 +585,7 @@ public static class Helpers
         return arr;
     }
 
-    static public Type[] GetRandomArray<Type>(ICollection<Type> collection)
+    public static Type[] GetRandomArray<Type>(ICollection<Type> collection)
     {
         Type[] arr = new Type[collection.Count];
         int index = 0;
@@ -589,7 +601,7 @@ public static class Helpers
         return arr;
     }
 
-    static public void RoleAction(Game.PlayerData? player, System.Action<Roles.Assignable> action)
+    public static void RoleAction(Game.PlayerData? player, Action<Roles.Assignable> action)
     {
         if (player == null) return;
 
@@ -604,7 +616,7 @@ public static class Helpers
         }
 
     }
-    static public void RoleAction(byte playerId, System.Action<Roles.Assignable> action)
+    public static void RoleAction(byte playerId, Action<Roles.Assignable> action)
     {
         Game.PlayerData data;
         try
@@ -625,19 +637,19 @@ public static class Helpers
         catch (Exception e) { return; }
     }
 
-    static public void RoleAction(PlayerControl player, System.Action<Roles.Assignable> action)
+    public static void RoleAction(PlayerControl player, Action<Roles.Assignable> action)
     {
         RoleAction(player.PlayerId, action);
     }
 
-    static public Game.VentData GetVentData(this Vent vent)
+    public static Game.VentData GetVentData(this Vent vent)
     {
         if (vent == null) return null;
         if (Game.GameData.data == null) return null;
         return Game.GameData.data.GetVentData(vent.gameObject.name);
     }
 
-    static public bool SabotageIsActive()
+    public static bool SabotageIsActive()
     {
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks.GetFastEnumerator())
             if (task.TaskType == TaskTypes.FixLights || task.TaskType == TaskTypes.RestoreOxy || task.TaskType == TaskTypes.ResetReactor || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.FixComms || task.TaskType == TaskTypes.StopCharles)
@@ -645,7 +657,7 @@ public static class Helpers
         return false;
     }
 
-    static public void RepairSabotage()
+    public static void RepairSabotage()
     {
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {
@@ -681,7 +693,7 @@ public static class Helpers
         }
     }
 
-    static public Texture2D CreateReadabeTexture(Texture texture,int margin=0)
+    public static Texture2D CreateReadabeTexture(Texture texture, int margin = 0)
     {
         RenderTexture renderTexture = RenderTexture.GetTemporary(
                     texture.width,
@@ -783,7 +795,7 @@ public static class Helpers
         player.Tasks = tasks;
         player.Object.SetTasks(player.Tasks);
 
-        GameData.Instance.SetDirtyBit(1U << (int)player.PlayerId);
+        GameData.Instance.SetDirtyBit(1U << player.PlayerId);
     }
 
     public static List<GameData.TaskInfo> GetRandomTaskList(int newTasks, double longTaskChance)
@@ -807,7 +819,7 @@ public static class Helpers
         unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
         foreach (var t in ShipStatus.Instance.LongTasks)
             unused.Add(t);
-        Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+        Extensions.Shuffle(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
         ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
 
         unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
@@ -816,7 +828,7 @@ public static class Helpers
             if (t.TaskType == TaskTypes.PickUpTowels) continue;
             unused.Add(t);
         }
-        Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+        Extensions.Shuffle(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
         ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
 
         var result = new List<GameData.TaskInfo>();
@@ -868,8 +880,8 @@ public static class Helpers
         return result.ToArray();
     }
 
-    public static void Ping(Vector2 pos,bool smallenNearPing) => Ping(new Vector2[] { pos }, smallenNearPing);
-    public static void Ping(Vector2[] pos, bool smallenNearPing,Action<PingBehaviour>? enabledAction=null)
+    public static void Ping(Vector2 pos, bool smallenNearPing) => Ping(new Vector2[] { pos }, smallenNearPing);
+    public static void Ping(Vector2[] pos, bool smallenNearPing, Action<PingBehaviour>? enabledAction = null)
     {
         if (!HudManager.InstanceExists) return;
 
@@ -884,7 +896,7 @@ public static class Helpers
             ping.AmSeeker = smallenNearPing;
             ping.UpdatePosition();
             ping.gameObject.SetActive(true);
-            if(enabledAction == null)
+            if (enabledAction == null)
                 ping.SetImageEnabled(true);
             else
             {
@@ -898,13 +910,13 @@ public static class Helpers
         {
             yield return new WaitForSeconds(2f);
 
-            foreach(var p in pings)GameObject.Destroy(p.gameObject);
+            foreach (var p in pings) GameObject.Destroy(p.gameObject);
         }
 
         HudManager.Instance.StartCoroutine(GetEnumarator().WrapToIl2Cpp());
-    } 
+    }
 
-    public static bool IsPlaying(this PlayerControl player,AnimationClip animation)
+    public static bool IsPlaying(this PlayerControl player, AnimationClip animation)
     {
         return player.MyPhysics.Animations.Animator.m_currAnim == animation;
     }
@@ -912,7 +924,7 @@ public static class Helpers
     public static PoolablePlayer CopyToPoolablePlayer(this PlayerControl p)
     {
         GameData.PlayerInfo data = p.Data;
-        PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
+        PoolablePlayer player = UnityEngine.Object.Instantiate(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
 
         player.cosmetics.ResetCosmetics();
         player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
@@ -929,7 +941,7 @@ public static class Helpers
 
     public static float GetNormalizeRate()
     {
-        return 3f / ((float)Screen.height / 200f);
+        return 3f / (Screen.height / 200f);
     }
 
     public static float GetDefaultNormalizeRate()
@@ -937,7 +949,7 @@ public static class Helpers
         return 3f / (720f / 200f);
     }
 
-    public static TextMeshPro GenerateText(Transform parent, string text,float fontSize, Vector2 size, TextAlignmentOptions alignment,FontStyles fontStyle)
+    public static TextMeshPro GenerateText(Transform parent, string text, float fontSize, Vector2 size, TextAlignmentOptions alignment, FontStyles fontStyle)
     {
         var tmp = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
         tmp.transform.SetParent(parent);
@@ -954,7 +966,17 @@ public static class Helpers
         return tmp;
     }
 
-    static public Behaviour DoTransitionFade<Behaviour>(this TransitionFade transitionFade,string objName,float z) where Behaviour : MonoBehaviour
+    public static T Get<T>(this Il2CppSystem.Collections.Generic.List<T> list, int index)
+    {
+        return list._items[index];
+    }
+
+    public static T Get<T>(this Il2CppSystem.Collections.Generic.List<T> list, Index index)
+    {
+        return list._items[index];
+    }
+
+    public static Behaviour DoTransitionFade<Behaviour>(this TransitionFade transitionFade, string objName, float z) where Behaviour : MonoBehaviour
     {
         var obj = new GameObject(objName);
         obj.transform.localPosition = new Vector3(0, 0, z);
@@ -966,22 +988,22 @@ public static class Helpers
         return behaviour;
     }
 
-    static public void DoTransitionFade(this TransitionFade transitionFade, GameObject transitionFrom) 
+    public static void DoTransitionFade(this TransitionFade transitionFade, GameObject transitionFrom)
     {
         DestroyableSingleton<TransitionFade>.Instance.DoTransitionFade(transitionFrom, null, (Il2CppSystem.Action)(() => { GameObject.Destroy(transitionFrom); }));
     }
 
-    static public string ToUnicodeEscapeSequence(string unescaped)
+    public static string ToUnicodeEscapeSequence(string unescaped)
     {
         string result = "";
-        foreach(char c in unescaped)
+        foreach (char c in unescaped)
         {
-            result += "\\u"+((int)c).ToString("x4");
+            result += "\\u" + ((int)c).ToString("x4");
         }
         return result;
     }
 
-    static public bool CanBeCandidate(this string candidate,string text)
+    public static bool CanBeCandidate(this string candidate, string text)
     {
         return text.StartsWith(candidate) && candidate != text;
     }

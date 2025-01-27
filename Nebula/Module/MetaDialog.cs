@@ -3,10 +3,10 @@
 public class MetaDialog : MetaScreen
 {
 
-    static public List<MetaDialog> dialogOrder = new List<MetaDialog>();
-    static public MetaDialog? activeDialogue { get => dialogOrder.Count == 0 ? null : dialogOrder[dialogOrder.Count - 1]; }
-    static public bool AnyDialogShown => dialogOrder.Count != 0;
-    static public void Update()
+    public static List<MetaDialog> dialogOrder = new List<MetaDialog>();
+    public static MetaDialog? activeDialogue { get => dialogOrder.Count == 0 ? null : dialogOrder[dialogOrder.Count - 1]; }
+    public static bool AnyDialogShown => dialogOrder.Count != 0;
+    public static void Update()
     {
         for (int i = 0; i < dialogOrder.Count; i++)
         {
@@ -21,7 +21,7 @@ public class MetaDialog : MetaScreen
         }
     }
 
-    static public void Initialize()
+    public static void Initialize()
     {
         foreach (var dialog in dialogOrder.AsEnumerable().Reverse())
         {
@@ -34,7 +34,7 @@ public class MetaDialog : MetaScreen
         dialogOrder.Clear();
     }
 
-    static public void EraseDialogAll()
+    public static void EraseDialogAll()
     {
         Initialize();
     }
@@ -43,7 +43,7 @@ public class MetaDialog : MetaScreen
     /// 最前面から指定の数だけダイアログを閉じます。
     /// </summary>
     /// <param name="num"></param>
-    static public void EraseDialog(int num)
+    public static void EraseDialog(int num)
     {
         if (dialogOrder.Count < num) num = dialogOrder.Count;
         if (num == 0) return;
@@ -56,7 +56,7 @@ public class MetaDialog : MetaScreen
         dialogOrder.RemoveRange(dialogOrder.Count - num, num);
     }
 
-    static public void EraseDialog(MetaDialog dialog)
+    public static void EraseDialog(MetaDialog dialog)
     {
         if (!dialogOrder.Contains(dialog)) return;
         int index = dialogOrder.IndexOf(dialog);
@@ -76,7 +76,7 @@ public class MetaDialog : MetaScreen
 
 
 
-    static public MSDesigner GenerateIndependentDialog(Vector2 size,string title,string objName,Transform parent,float offsetZ,bool withBackground)
+    public static MSDesigner GenerateIndependentDialog(Vector2 size, string title, string objName, Transform parent, float offsetZ, bool withBackground)
     {
         DialogueBox dialogue = GameObject.Instantiate(HudManager.Instance.Dialogue);
         dialogue.name = objName;
@@ -112,16 +112,16 @@ public class MetaDialog : MetaScreen
         return new MSDesigner(metaDialog, size, title.Length > 0 ? dialogue.target.GetPreferredHeight() + 0.1f : 0.2f);
     }
 
-    static public MSDesigner OpenDialog(Vector2 size, string title)
+    public static MSDesigner OpenDialog(Vector2 size, string title)
     {
         Transform parent = activeDialogue?.dialog.transform ?? HudManager.Instance.transform;
         float offsetZ = parent == HudManager.Instance.transform ? -500f : 0f;
-        var result = GenerateIndependentDialog(size, title, "Dialogue" + dialogOrder.Count, parent, offsetZ,true);
+        var result = GenerateIndependentDialog(size, title, "Dialogue" + dialogOrder.Count, parent, offsetZ, true);
         dialogOrder.Add((MetaDialog)result.screen);
         return result;
     }
 
-    static public MSDesigner OpenMapDialog(byte mapId, bool canChangeMap, Action<GameObject, byte>? mapDecorator)
+    public static MSDesigner OpenMapDialog(byte mapId, bool canChangeMap, Action<GameObject, byte>? mapDecorator)
     {
         float[] rates = { 0.74f, 0.765f, 0.74f, 1f, 1.005f };
         string[] mapNames = { "The Skeld", "MIRA HQ", "Polus", "Undefined", "Airship" };
@@ -165,7 +165,7 @@ public class MetaDialog : MetaScreen
         return dialog;
     }
 
-    static public MSDesigner OpenPlayerDialog(Vector2 size, PlayerControl player)
+    public static MSDesigner OpenPlayerDialog(Vector2 size, PlayerControl player)
     {
         var dialog = OpenDialog(size, player.name);
 
@@ -185,7 +185,7 @@ public class MetaDialog : MetaScreen
         return dialog;
     }
 
-    static public MSDesigner OpenRolesDialog(Predicate<Roles.Role> roleCondition, int page, int rolesPerPage, Action<Roles.Role> onClick)
+    public static MSDesigner OpenRolesDialog(Predicate<Roles.Role> roleCondition, int page, int rolesPerPage, Action<Roles.Role> onClick)
     {
         var designer = Module.MetaDialog.OpenDialog(new Vector2(10.5f, 5.4f), "Roles");
         var designers = designer.Split(6, 0.14f);
@@ -229,8 +229,8 @@ public class MetaDialog : MetaScreen
         return designer;
     }
 
-    static public MSDesigner OpenPlayersDialog(string display, Action<PlayerControl, PassiveButton> setUpFunc, Action<PlayerControl> onClicked) => OpenPlayersDialog(display, 0.4f, 0f, setUpFunc, onClicked);
-    static public MSDesigner OpenPlayersDialog(string display, float height, float margin, Action<PlayerControl, PassiveButton> setUpFunc, Action<PlayerControl> onClicked)
+    public static MSDesigner OpenPlayersDialog(string display, Action<PlayerControl, PassiveButton> setUpFunc, Action<PlayerControl> onClicked) => OpenPlayersDialog(display, 0.4f, 0f, setUpFunc, onClicked);
+    public static MSDesigner OpenPlayersDialog(string display, float height, float margin, Action<PlayerControl, PassiveButton> setUpFunc, Action<PlayerControl> onClicked)
     {
         var designer = MetaDialog.OpenDialog(new Vector2(9f, (height + 0.12f) * 5f + 1f + margin), display);
         var designers = designer.Split(3, 0.2f);
@@ -253,7 +253,7 @@ public class MetaDialog : MetaScreen
         return designer;
     }
 
-    static private void AddRoleInfo(MSDesigner designer, Roles.Assignable assignable)
+    private static void AddRoleInfo(MSDesigner designer, Roles.Assignable assignable)
     {
         var designers = designer.SplitVertically(new float[] { 0.01f, 0.55f, 0.45f, 0.01f });
         designers[1].AddTopic(new MSString(designers[1].size.x, Helpers.cs(assignable.Color, Language.Language.GetString("role." + assignable.LocalizeName + ".name")), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Bold));
@@ -261,11 +261,11 @@ public class MetaDialog : MetaScreen
         foreach (var hs in assignable.helpSprite)
             designers[1].AddTopic(new MSSprite(hs.sprite, 0.1f, hs.ratio), new MSMultiString(designers[1].size.x - 0.8f, 1.2f, Language.Language.GetString(hs.localizedName), TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Normal));
         foreach (var hb in assignable.helpButton)
-            designers[1].AddTopic(new MSButton(4f,0.4f,Language.Language.GetString(hb.Item1),TMPro.FontStyles.Bold,hb.Item2));
+            designers[1].AddTopic(new MSButton(4f, 0.4f, Language.Language.GetString(hb.Item1), TMPro.FontStyles.Bold, hb.Item2));
         if ((assignable.AssignableOnHelp?.TopOption ?? null) != null) designers[2].AddTopic(new MSMultiString(designers[2].size.x, 1.4f, Module.GameOptionStringGenerator.optionsToString(assignable.AssignableOnHelp.TopOption), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
     }
 
-    static public MSDesigner OpenAssignableHelpDialog(Roles.Assignable assignable)
+    public static MSDesigner OpenAssignableHelpDialog(Roles.Assignable assignable)
     {
         var designer = MetaDialog.OpenDialog(new Vector2(8f, 4f), "");
         AddRoleInfo(designer, assignable);
@@ -282,7 +282,7 @@ public class MetaDialog : MetaScreen
 
         public static bool ShouldShowCategory(Roles.RoleCategory category)
         {
-            if(OnlyImpostor || OnlyCrewmate || OnlyNeutral)
+            if (OnlyImpostor || OnlyCrewmate || OnlyNeutral)
             {
                 if (OnlyImpostor && category == Roles.RoleCategory.Impostor) return true;
                 if (OnlyCrewmate && category == Roles.RoleCategory.Crewmate) return true;
@@ -292,7 +292,7 @@ public class MetaDialog : MetaScreen
             return true;
         }
 
-        public static void AddFilterTopic(MSDesigner designer,Action refresher,bool ShowSideFilter)
+        public static void AddFilterTopic(MSDesigner designer, Action refresher, bool ShowSideFilter)
         {
             List<MetaScreenContent> contents = new();
             contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.gameMode"), TMPro.FontStyles.Bold, () =>
@@ -343,7 +343,7 @@ public class MetaDialog : MetaScreen
         }
     }
 
-    static public MSDesigner OpenHelpDialog(int tab, int arg, List<string>? options = null)
+    public static MSDesigner OpenHelpDialog(int tab, int arg, List<string>? options = null)
     {
         var designer = MetaDialog.OpenDialog(new Vector2(9f, 5.5f), "");
 
@@ -431,7 +431,7 @@ public class MetaDialog : MetaScreen
                    TMPro.FontStyles.Bold,
                    () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 0, options); });
 
-                    if (arg == 1) assignable = (data.ShouldBeGhostRole) ? (Roles.Assignable)data.ghostRole : data.role;
+                    if (arg == 1) assignable = (data.ShouldBeGhostRole) ? data.ghostRole : data.role;
                     if (data.ShouldBeGhostRole)
                     {
                         yield return new MSButton(1.3f, 0.36f,

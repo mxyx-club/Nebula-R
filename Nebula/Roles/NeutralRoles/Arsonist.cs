@@ -2,9 +2,9 @@
 
 public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
 {
-    static public Color RoleColor = new Color(255f / 255f, 103f / 255f, 1 / 255f);
+    public static Color RoleColor = new Color(255f / 255f, 103f / 255f, 1 / 255f);
 
-    static private CustomButton arsonistButton;
+    private static CustomButton arsonistButton;
 
     private Module.CustomOption douseDurationOption;
     private Module.CustomOption douseCoolDownOption;
@@ -36,11 +36,10 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
         canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
     }
 
+    private SpriteLoader douseSprite = new SpriteLoader("Nebula.Resources.DouseButton.png", 115f, "ui.button.arsonist.douse");
+    private SpriteLoader igniteSprite = new SpriteLoader("Nebula.Resources.IgniteButton.png", 115f, "ui.button.arsonist.ignite");
 
-    SpriteLoader douseSprite = new SpriteLoader("Nebula.Resources.DouseButton.png", 115f, "ui.button.arsonist.douse");
-    SpriteLoader igniteSprite = new SpriteLoader("Nebula.Resources.IgniteButton.png", 115f, "ui.button.arsonist.ignite");
-
-    static private bool canIgnite = false;
+    private static bool canIgnite = false;
 
     public override void GlobalIntroInitialize(PlayerControl __instance)
     {

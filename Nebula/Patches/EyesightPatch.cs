@@ -1,6 +1,4 @@
-﻿using Hazel;
-
-namespace Nebula.Patches;
+﻿namespace Nebula.Patches;
 
 public static class BeginHubHelper
 {
@@ -38,7 +36,7 @@ public static class BeginHubHelper
 }
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
-class BeginHudPatch
+internal class BeginHudPatch
 {
     public static void Postfix(HudManager __instance)
     {
@@ -51,7 +49,7 @@ class BeginHudPatch
 }
 
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
-class BeginHudFinallyPatch
+internal class BeginHudFinallyPatch
 {
     public static void Postfix(IntroCutscene __instance)
     {
@@ -60,7 +58,7 @@ class BeginHudFinallyPatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
-class StartMeetingPatch
+internal class StartMeetingPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
     {
@@ -73,12 +71,12 @@ class StartMeetingPatch
 
 [HarmonyPriority(100)]
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-class EyesightPatch
+internal class EyesightPatch
 {
-    static private float Distance = 1f;
-    static private float ObserverModeRate = 1f;
-    static public bool ObserverMode = false;
-    static public int ObserverTarget = 0;
+    private static float Distance = 1f;
+    private static float ObserverModeRate = 1f;
+    public static bool ObserverMode = false;
+    public static int ObserverTarget = 0;
 
     public static void SuspendRemoteControl(int lastTarget)
     {
@@ -123,7 +121,7 @@ class EyesightPatch
     {
         try
         {
-            if (Game.GameData.data != null && Game.GameData.data.myData.CanControlOtherPlayers && Objects.PlayerList.Instance!=null && Objects.PlayerList.Instance.IsOpen && ObserverTarget!=0)
+            if (Game.GameData.data != null && Game.GameData.data.myData.CanControlOtherPlayers && Objects.PlayerList.Instance != null && Objects.PlayerList.Instance.IsOpen && ObserverTarget != 0)
             {
                 var p = PlayerControl.AllPlayerControls[ObserverTarget];
                 p.MyPhysics.SetNormalizedVelocity(__instance.joystick.DeltaL);

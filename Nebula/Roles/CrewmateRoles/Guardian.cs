@@ -1,15 +1,15 @@
-﻿using Nebula.Module;
+using Nebula.Module;
 
 namespace Nebula.Roles.CrewmateRoles;
 
 public class Guardian : Role
 {
-    static public Color RoleColor = new Color(171f / 255f, 131f / 255f, 85f / 255f);
+    public static Color RoleColor = new Color(171f / 255f, 131f / 255f, 85f / 255f);
 
     private CustomButton antennaButton;
     private CustomButton guardButton;
-    private HashSet<Objects.CustomObject> myAntennaSet = new HashSet<CustomObject>();
-    private Utilities.ObjectPool<SpriteRenderer>? indicatorsPool = null;
+    private HashSet<CustomObject> myAntennaSet = new HashSet<CustomObject>();
+    private ObjectPool<SpriteRenderer>? indicatorsPool = null;
 
     private CustomOption maxAntennaOption;
     private CustomOption placeCoolDownOption;
@@ -74,7 +74,7 @@ public class Guardian : Role
 
         if (indicatorsPool == null)
         {
-            indicatorsPool = new Utilities.ObjectPool<SpriteRenderer>(mapBehaviour.HerePoint, mapBehaviour.GetTrackOverlay().transform);
+            indicatorsPool = new ObjectPool<SpriteRenderer>(mapBehaviour.HerePoint, mapBehaviour.GetTrackOverlay().transform);
             indicatorsPool.SetInitializer((renderer) =>
             {
                 PlayerMaterial.SetColors(Palette.DisabledGrey, renderer);
@@ -107,7 +107,7 @@ public class Guardian : Role
             {
                 var icon = indicatorsPool.Get();
                 icon.transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.PlayerId);
-                PlayerMaterial.SetColors(Module.DynamicColors.IsLightColor(Palette.PlayerColors[p.GetModData().CurrentOutfit.ColorId]) ? Color.white : Palette.DisabledGrey, icon);
+                PlayerMaterial.SetColors(p.isLighterColor() ? Color.white : Palette.DisabledGrey, icon);
             }
         }
 
@@ -134,7 +134,7 @@ public class Guardian : Role
                 if (canIdentifyDeadBodyOption.getBool())
                     PlayerMaterial.SetColors(Color.red, icon);
                 else
-                    PlayerMaterial.SetColors(Module.DynamicColors.IsLightColor(Palette.PlayerColors[p.GetModData().GetOutfitData(0).ColorId]) ? Color.white : Palette.DisabledGrey, icon);
+                    PlayerMaterial.SetColors(Helpers.playerById(p.ParentId).isLighterColor() ? Color.white : Palette.DisabledGrey, icon);
             }
         }
     }
@@ -171,7 +171,7 @@ public class Guardian : Role
             killerPingTimer -= Time.deltaTime;
             if (killerPingTimer < 0f)
             {
-                Helpers.Ping(killer.GetTruePosition(),false);
+                Helpers.Ping(killer.GetTruePosition(), false);
                 killerPingTimer = alertIntervalOption.getFloat();
             }
         }
@@ -181,7 +181,7 @@ public class Guardian : Role
     {
         if (guardPlayer == null) return;
 
-        
+
         if (targetId == guardPlayer.PlayerId)
         {
             if (alertModeOption.getBool())
@@ -190,7 +190,7 @@ public class Guardian : Role
                 killerPingTimer = 0f;
                 RPCEventInvoker.RemoveGuardian(guardPlayer, PlayerControl.LocalPlayer);
             }
-            else if(showGuardFlashOption.getBool())
+            else if (showGuardFlashOption.getBool())
                 Helpers.PlayQuickFlash(RoleColor);
         }
     }
@@ -207,7 +207,7 @@ public class Guardian : Role
             () =>
             {
                 var obj = RPCEventInvoker.ObjectInstantiate(CustomObject.Type.Antenna, PlayerControl.LocalPlayer.transform.position);
-                new Objects.EffectCircle(obj.GameObject, Palette.CrewmateBlue,antennaEffectiveRangeOption.getFloat());
+                new EffectCircle(obj.GameObject, Palette.CrewmateBlue, antennaEffectiveRangeOption.getFloat());
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, remainAntennasId, -1);
                 myAntennaSet.Add(obj);
                 antennaButton.Timer = antennaButton.MaxTimer;

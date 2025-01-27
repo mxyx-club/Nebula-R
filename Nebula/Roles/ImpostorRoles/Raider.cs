@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Nebula.Roles.ImpostorRoles;
+﻿namespace Nebula.Roles.ImpostorRoles;
 
 public class Raider : Role
 {
@@ -29,8 +27,8 @@ public class Raider : Role
 
 
     /* ボタン */
-    static private CustomButton axeButton;
-    static private CustomButton killButton;
+    private static CustomButton axeButton;
+    private static CustomButton killButton;
 
     private CustomObject? lastAxe = null;
     private CustomObject? thrownAxe = null;
@@ -149,7 +147,7 @@ public class Raider : Role
 
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
     {
-        new Tuple<string, Action>("role.raider.help.axeSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, axeSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+        new Tuple<string, Action>("role.raider.help.axeSize",()=>{new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, axeSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
     };
 
     private IEnumerator GetMessageUpdater()
@@ -219,7 +217,7 @@ public class Raider : Role
         {
             if (lastAxe.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Static)
             {
-                Vector2 axeVec = (Vector2)lastAxe.GameObject.transform.position - (Vector2)PlayerControl.LocalPlayer.GetTruePosition();
+                Vector2 axeVec = (Vector2)lastAxe.GameObject.transform.position - PlayerControl.LocalPlayer.GetTruePosition();
                 if (PhysicsHelpers.AnyNonTriggersBetween(PlayerControl.LocalPlayer.GetTruePosition(), axeVec.normalized, axeVec.magnitude, Constants.ShipAndObjectsMask))
                 {
                     lastAxe.Renderer.color = Color.red;
@@ -323,7 +321,7 @@ public class Raider : Role
 
     public override void AfterTeleport(float time)
     {
-        if(killButton.Timer < time) killButton.Timer = time;
+        if (killButton.Timer < time) killButton.Timer = time;
     }
 
     public Raider()

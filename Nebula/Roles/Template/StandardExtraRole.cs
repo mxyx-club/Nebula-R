@@ -52,7 +52,7 @@ public class StandardExtraRole : ExtraRole
 
         int leftPlayers = (int)RoleCountOption.getFloat();
 
-        float probability = ((float)RoleChanceOption.getSelection() + 1f) / 10f;
+        float probability = (RoleChanceOption.getSelection() + 1f) / 10f;
 
         while (leftPlayers > 0)
         {
@@ -71,7 +71,7 @@ public class StandardExtraRole : ExtraRole
 
                 if (RoleChanceSecondaryOption.getSelection() != 0)
                 {
-                    probability = (float)RoleChanceOption.getSelection() / 10f;
+                    probability = RoleChanceOption.getSelection() / 10f;
                 }
             }
             leftPlayers--;

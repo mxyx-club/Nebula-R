@@ -4,7 +4,7 @@ namespace Nebula.Roles.MetaRoles;
 
 public class VOID : Role
 {
-    static public Color RoleColor = new Color(173f / 255f, 173f / 255f, 198f / 255f);
+    public static Color RoleColor = new Color(173f / 255f, 173f / 255f, 198f / 255f);
 
     public override bool CanHaveGhostRole { get => false; }
 
@@ -16,7 +16,7 @@ public class VOID : Role
 
     public override void GlobalInitialize(PlayerControl __instance)
     {
-        __instance.Die(DeathReason.Exile,false);
+        __instance.Die(DeathReason.Exile, false);
         __instance.GetModData().Die(Game.PlayerData.PlayerStatus.Exiled);
     }
 
@@ -48,7 +48,7 @@ public class VOID : Role
 
     private void MetaChangeRole(PlayerControl p)
     {
-        Module.MetaDialog.MSDesigner? dialog = null;
+        MetaScreen.MSDesigner? dialog = null;
         dialog = Module.MetaDialog.OpenRolesDialog((r) => r.category != RoleCategory.Complex, 0, 60, (r) =>
         {
             RPCEventInvoker.ImmediatelyChangeRole(p, r);
@@ -106,7 +106,7 @@ public class VOID : Role
         RPCEventInvoker.RevivePlayer(p, true);
     }
 
-    private void AddModifySpeedTopic(MetaDialog.MSDesigner designer, PlayerControl? p)
+    private void AddModifySpeedTopic(MetaScreen.MSDesigner designer, PlayerControl? p)
     {
         float speed = 1f;
         float duration = 10f;
@@ -161,7 +161,7 @@ public class VOID : Role
         }));
     }
 
-    private void AddRoleDataTopic(MetaDialog.MSDesigner designer, PlayerControl player, Game.PlayerData data, int id, string display, int min, int max, string suffix, string[]? replace)
+    private void AddRoleDataTopic(MetaScreen.MSDesigner designer, PlayerControl player, Game.PlayerData data, int id, string display, int min, int max, string suffix, string[]? replace)
     {
         if (replace == null)
             designer.AddNumericDataTopic(display, data.GetRoleData(id), suffix, min, max, (v) => RPCEventInvoker.UpdateRoleData(player.PlayerId, id, v));
@@ -169,7 +169,7 @@ public class VOID : Role
             designer.AddNumericDataTopic(display, data.GetRoleData(id), replace, min, max, (v) => RPCEventInvoker.UpdateRoleData(player.PlayerId, id, v));
     }
 
-    private void AddExtraRoleDataTopic(MetaDialog.MSDesigner designer, PlayerControl player, Game.PlayerData data, ExtraRole role, string display, int min, int max, string suffix, string[]? replace)
+    private void AddExtraRoleDataTopic(MetaScreen.MSDesigner designer, PlayerControl player, Game.PlayerData data, ExtraRole role, string display, int min, int max, string suffix, string[]? replace)
     {
         if (replace == null)
             designer.AddNumericDataTopic(display, (int)data.GetExtraRoleData(role.id), suffix, min, max, (v) => RPCEventInvoker.UpdateExtraRoleData(player.PlayerId, role.id, (ulong)v));
@@ -196,7 +196,7 @@ public class VOID : Role
             new MSString(1f, "Paint:", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
             new MSButton(1.5f, 0.4f, "Paint", TMPro.FontStyles.Bold, () =>
             {
-                MetaDialog.MSDesigner? designer = null;
+                MetaScreen.MSDesigner? designer = null;
                 designer = MetaDialog.OpenPlayersDialog("Select Source Player", (p, b) => { }, (selected) =>
                 {
                     RPCEventInvoker.Paint(p, selected.GetModData().GetOutfitData(50));

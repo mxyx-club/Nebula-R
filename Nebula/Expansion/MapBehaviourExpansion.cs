@@ -5,22 +5,22 @@ namespace Nebula;
 [HarmonyPatch]
 public static class MapBehaviourExpansion
 {
-    static GameObject? TrackOverlay = null;
-    static Sprite? defaultSprite;
-    static Dictionary<Int32, Sprite> divSprite = new Dictionary<int, Sprite>();
+    private static GameObject? TrackOverlay = null;
+    private static Sprite? defaultSprite;
+    private static Dictionary<Int32, Sprite> divSprite = new Dictionary<int, Sprite>();
 
-    static public void Initialize()
+    public static void Initialize()
     {
         defaultSprite = null;
         divSprite.Clear();
     }
 
-    static public GameObject? GetTrackOverlay(this MapBehaviour mapBehaviour)
+    public static GameObject? GetTrackOverlay(this MapBehaviour mapBehaviour)
     {
         return TrackOverlay;
     }
 
-    static public void ShowTrackOverlay(this MapBehaviour mapBehaviour)
+    public static void ShowTrackOverlay(this MapBehaviour mapBehaviour)
     {
         if (!TrackOverlay)
         {
@@ -35,21 +35,21 @@ public static class MapBehaviourExpansion
         }
     }
 
-    static public Vector3 ConvertMapLocalPosition(Vector3 position, byte order)
+    public static Vector3 ConvertMapLocalPosition(Vector3 position, byte order)
     {
         Vector3 vector = position;
         vector /= ShipStatus.Instance.MapScale;
         vector.x *= Mathf.Sign(ShipStatus.Instance.transform.localScale.x);
-        vector.z = -1f - 0.01f * (float)order;
+        vector.z = -1f - 0.01f * order;
         return vector;
     }
 
-    static public void EnmaskMap(Int32 mask)
+    public static void EnmaskMap(Int32 mask)
     {
         Sprite? sprite = null;
         Sprite defaultSprite = ShipStatus.Instance.MapPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite;
 
-        
+
 
         if (mask == Int32.MaxValue)
         {
@@ -67,9 +67,9 @@ public static class MapBehaviourExpansion
     }
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
-    static class MapBehaviourGenericShowPatch
+    private static class MapBehaviourGenericShowPatch
     {
-        static void Postfix(MapBehaviour __instance)
+        private static void Postfix(MapBehaviour __instance)
         {
             EnmaskMap(Int32.MaxValue);
             __instance.ShowTrackOverlay();
@@ -77,9 +77,9 @@ public static class MapBehaviourExpansion
     }
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowCountOverlay))]
-    static class ToggleMapPatch
+    private static class ToggleMapPatch
     {
-        static void Postfix(MapBehaviour __instance)
+        private static void Postfix(MapBehaviour __instance)
         {
             if (TrackOverlay) TrackOverlay.SetActive(false);
         }

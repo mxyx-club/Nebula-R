@@ -1,8 +1,8 @@
 ﻿namespace Nebula.Events;
 
-class Events
+internal class Events
 {
-    static public void Load()
+    public static void Load()
     {
         GlobalEvent.Register(GlobalEvent.Type.Camouflage, (duration, option) => { return new Variation.Camouflage(duration, option); });
         GlobalEvent.Register(GlobalEvent.Type.BlackOut, (duration, option) => { return new Variation.BlackOut(duration, option); });

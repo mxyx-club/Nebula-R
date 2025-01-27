@@ -119,9 +119,10 @@ public class EvilBusker : Role
             pseudocideFlag = false;
         });
 
-        if(killButton != null) killButton.Destroy();
+        if (killButton != null) killButton.Destroy();
         killButton = new CustomButton(
-            () => { 
+            () =>
+            {
                 PlayerControl target = Game.GameData.data.myData.currentTarget;
 
                 var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, true);

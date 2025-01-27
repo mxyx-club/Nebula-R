@@ -5,11 +5,11 @@ public class PlayerList
     public static PlayerList? Instance;
 
     public bool IsOpen { get; private set; }
-    GameObject listParent;
-    Dictionary<byte, Tuple<GameObject, PoolablePlayer>> allPlayers;
-    Coroutine? lastCoroutine = null;
 
-    PassiveButton[] changeTargetButtons;
+    private GameObject listParent;
+    private Dictionary<byte, Tuple<GameObject, PoolablePlayer>> allPlayers;
+    private Coroutine? lastCoroutine = null;
+    private PassiveButton[] changeTargetButtons;
 
     public PlayerList(PoolablePlayer playerPrefab)
     {
@@ -154,7 +154,7 @@ public class PlayerList
         }
 
         for (int i = 0; i < 2; i++)
-            changeTargetButtons[i].transform.localPosition = new Vector3((float)(i * 2 - 1) * (x * 0.5f + 0.4f), 0f, -10f);
+            changeTargetButtons[i].transform.localPosition = new Vector3((i * 2 - 1) * (x * 0.5f + 0.4f), 0f, -10f);
 
     }
 

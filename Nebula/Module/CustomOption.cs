@@ -1,11 +1,5 @@
-﻿using System.Text;
-using System.Reflection;
-using Hazel;
-using BepInEx.Configuration;
-using AmongUs.GameOptions;
-using UnityEngine;
-using static Nebula.Module.CustomOption;
-using JetBrains.Annotations;
+﻿using System.Reflection;
+using System.Text;
 
 namespace Nebula.Module;
 
@@ -43,14 +37,14 @@ public enum CustomOptionTab
 
 public static class CustomGameModes
 {
-    static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
+    public static List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
             CustomGameMode.Standard,CustomGameMode.FreePlay,CustomGameMode.Battle,CustomGameMode.VirusCrisis,
             CustomGameMode.Compete,CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,
             CustomGameMode.StandardHnS,CustomGameMode.FreePlayHnS
         };
 
-    static public CustomGameMode GetGameMode(int GameModeIndex)
+    public static CustomGameMode GetGameMode(int GameModeIndex)
     {
         if (AllGameModes.Count > GameModeIndex && GameModeIndex >= 0)
         {
@@ -68,24 +62,25 @@ public class CustomOption
 {
     public class MSOptionString : MSString
     {
-        string optionName;
-        public MSOptionString(string optionName, float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style):
-            base(width,text,alignment,style)
+        private string optionName;
+        public MSOptionString(string optionName, float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) :
+            base(width, text, alignment, style)
         {
             this.optionName = optionName;
         }
 
         public MSOptionString(string optionName, float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
-            : base(width, text, fontSize,fontSizeMin,alignment, style)
+            : base(width, text, fontSize, fontSizeMin, alignment, style)
         {
             this.optionName = optionName;
         }
 
         public MSOptionString(CustomOption option, float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) :
-           this(option.name, width, text, alignment, style){}
+           this(option.name, width, text, alignment, style)
+        { }
 
         public MSOptionString(CustomOption option, float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
-            : this(option.name,width, text, fontSize, fontSizeMin, alignment, style){}
+            : this(option.name, width, text, fontSize, fontSizeMin, alignment, style) { }
 
         public override void Generate(GameObject obj)
         {
@@ -99,20 +94,22 @@ public class CustomOption
             button.OnMouseOut = new UnityEngine.Events.UnityEvent();
             button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
 
-            button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => {
+            button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
                 if (!UnderInfo) return;
-                string str="";
+                string str = "";
                 if (Language.Language.TryGetString(optionName + ".info", ref str))
                     UnderInfo.text = str;
             }));
-            button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => {
+            button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
                 if (!UnderInfo) return;
                 UnderInfo.text = "";
             }));
         }
     }
 
-    private static void UpdateSelectionProcess(Tuple<int,int> param)
+    private static void UpdateSelectionProcess(Tuple<int, int> param)
     {
         int optionId = param.Item1;
         int selection = param.Item2;
@@ -130,15 +127,17 @@ public class CustomOption
         GameOptionsDataPatch.dirtyFlag = true;
     }
 
-    public static RemoteProcess<Tuple<int,int>> ShareOption = new("ShareGameOption",
-        (writer, message) => {
+    public static RemoteProcess<Tuple<int, int>> ShareOption = new("ShareGameOption",
+        (writer, message) =>
+        {
             writer.WritePacked(message.Item1);
             writer.WritePacked(message.Item2);
         },
-        (reader) => {
+        (reader) =>
+        {
             return new(reader.ReadPackedInt32(), reader.ReadPackedInt32());
         },
-        (message,calledByMe) =>
+        (message, calledByMe) =>
         {
             if (calledByMe) return;
             UpdateSelectionProcess(message);
@@ -184,20 +183,20 @@ public class CustomOption
         (message, calledByMe) =>
         {
             if (calledByMe) return;
-            foreach(var option in message) UpdateSelectionProcess(option);
+            foreach (var option in message) UpdateSelectionProcess(option);
         }
         );
-    
+
 
     public static DataSaver optionSaver;
 
     public static List<CustomOption> AllOptions = new List<CustomOption>();
     public static List<CustomOption> TopOptions = new List<CustomOption>();
 
-    static public CustomOptionTab CurrentTab = Module.CustomOptionTab.Settings;
+    public static CustomOptionTab CurrentTab = Module.CustomOptionTab.Settings;
 
     public int id;
-    public UnityEngine.Color color;
+    public Color color;
     public string identifierName;
     public string name;
     public string format;
@@ -222,9 +221,9 @@ public class CustomOption
 
     private static int availableId = 1;
 
-    static public CustomGameMode CurrentGameMode;
+    public static CustomGameMode CurrentGameMode;
 
-    static public TMPro.TextMeshPro UnderInfo = null;
+    public static TMPro.TextMeshPro UnderInfo = null;
 
     public List<CustomOption> prerequisiteOptions;
     public List<CustomOption> prerequisiteOptionsInv;
@@ -280,7 +279,7 @@ public class CustomOption
 
     public bool IsHiddenDisplayInternal(CustomGameMode gameMode)
     {
-        return isHidden || (0 == (int)(gameMode & GameMode))
+        return isHidden || (0 == (gameMode & GameMode))
             || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.getBool(); })
             || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.getBool(); })
             || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
@@ -288,7 +287,7 @@ public class CustomOption
 
     public bool IsHiddenInternal(CustomGameMode gameMode)
     {
-        return (tab != CustomOptionTab.None && ((tab & CurrentTab) == 0)) || isHidden || (0 == (int)(gameMode & GameMode))
+        return (tab != CustomOptionTab.None && ((tab & CurrentTab) == 0)) || isHidden || (0 == (gameMode & GameMode))
             || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.getBool(); })
             || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.getBool(); })
             || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
@@ -302,7 +301,7 @@ public class CustomOption
     public bool IsHiddenOnDisplay(CustomGameMode gameMode)
     {
         //try{
-            return isHiddenOnDisplay || IsHiddenDisplayInternal(gameMode) || (parent != null && parent.IsHiddenOnDisplay(gameMode));
+        return isHiddenOnDisplay || IsHiddenDisplayInternal(gameMode) || (parent != null && parent.IsHiddenOnDisplay(gameMode));
         //}catch{ Debug.LogError(this.format + "\n"); }
         //return false;
     }
@@ -406,7 +405,7 @@ public class CustomOption
 
     public static CustomOption Create(Color color, string name, int defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
     {
-        return new CustomOption(color, name, new string[] {}, defaultValue, parent, isHeader, isHidden, format, tab);
+        return new CustomOption(color, name, new string[] { }, defaultValue, parent, isHeader, isHidden, format, tab);
     }
 
     public static void loadOptionWithoutSync(string optionName, int selection)
@@ -423,7 +422,7 @@ public class CustomOption
         }
     }
 
-    
+
     public CustomOption AddPrerequisite(CustomOption option)
     {
         prerequisiteOptions.Add(option);
@@ -503,7 +502,7 @@ public class CustomOption
         }
 
         if (IntimateValueDecorator != null)
-            text = IntimateValueDecorator.Invoke(text,this);
+            text = IntimateValueDecorator.Invoke(text, this);
 
         return text;
     }
@@ -549,7 +548,7 @@ public class CustomOption
         if (AmongUsClient.Instance?.AmHost == true && PlayerControl.LocalPlayer)
         {
             if (entry != null) entry.Value = selection; // Save selection to config
-            ShareOption.Invoke(new(id,selection));
+            ShareOption.Invoke(new(id, selection));
         }
 
     }
@@ -568,7 +567,7 @@ public class CustomOption
         }
     }
 
-    public MetaScreenContent[] GetSelecterContents(Action refresher,float width = 1.5f)
+    public MetaScreenContent[] GetSelecterContents(Action refresher, float width = 1.5f)
     {
         return new MetaScreenContent[]
        {
@@ -703,7 +702,7 @@ public static class GameSettingMenuInitializePatch
     }
 }
 
-delegate void OptionInitializer(GameOptionsMenu menu, StringOption stringTemplate, List<OptionBehaviour> options, GameObject settings);
+internal delegate void OptionInitializer(GameOptionsMenu menu, StringOption stringTemplate, List<OptionBehaviour> options, GameObject settings);
 
 public class CustomOptionBehaviour : MonoBehaviour
 {
@@ -715,7 +714,7 @@ public class CustomOptionBehaviour : MonoBehaviour
 }
 
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
-class GameOptionsMenuStartPatch
+internal class GameOptionsMenuStartPatch
 {
     public static GameObject? nebulaSettings = null;
     public static GameObject? presetSettings = null;
@@ -724,7 +723,7 @@ class GameOptionsMenuStartPatch
     {
         var tabs = GameSettingMenu.Instance.transform.FindChild("Header").FindChild("Tabs");
         tabs.gameObject.SetActive(true);
-        
+
         if (currentSettings)
         {
             var gameGroup = currentSettings.transform.FindChild("GameGroup");
@@ -839,7 +838,7 @@ class GameOptionsMenuStartPatch
         designer.AddTopic(new MSString(0.4f, canIncrease ? "∨" : "", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
 
         designer.CustomUse(4.55f - designer.Used);
-        var underStr = new MSMultiString(8f,1.5f, " \n \n ", TMPro.TextAlignmentOptions.Top, TMPro.FontStyles.Bold);
+        var underStr = new MSMultiString(8f, 1.5f, " \n \n ", TMPro.TextAlignmentOptions.Top, TMPro.FontStyles.Bold);
         designer.AddTopic(underStr);
         CustomOption.UnderInfo = underStr.text;
 
@@ -1021,7 +1020,7 @@ class GameOptionsMenuStartPatch
                 int index = i;
                 MSButton button = new MSButton(2f, 0.37f, Helpers.cs(colors[i], Language.Language.GetString("option.tab." + names[i])), TMPro.FontStyles.Bold, () =>
                 {
-                    CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
+                    CustomOption.CurrentTab = (CustomOptionTab)(1 << index);
                     OpenConfigScreen(setting);
                     designer.screen.Close();
                 }, colors[i].Blend(Color.white, 0.65f));
@@ -1148,7 +1147,7 @@ class GameOptionsMenuStartPatch
                     if ((((int)Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & n) != 0)
                     {
                         tab.SetActive(true);
-                        tab.transform.localPosition = new Vector3((float)(index / 6) * -0.8f, -0.7f * (float)(index % 6));
+                        tab.transform.localPosition = new Vector3(index / 6 * -0.8f, -0.7f * (index % 6));
                         index++;
                     }
                     else
@@ -1207,7 +1206,7 @@ class GameOptionsMenuStartPatch
                 presetTabHighlight.enabled = false;
                 if (copiedIndex == 0)
                 {
-                    if(GameOptionsManager.Instance.currentGameMode==GameModes.Normal)
+                    if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
                         gameSettingMenu.RegularGameSettings.SetActive(true);
                     else
                         gameSettingMenu.HideNSeekSettings.SetActive(true);
@@ -1295,7 +1294,7 @@ public class PlayerJoinedPatch
 {
     public static void Postfix()
     {
-        if(AmongUsClient.Instance.AmHost) CustomOption.ShareAllOptions.Invoke(CustomOption.AllOptions);
+        if (AmongUsClient.Instance.AmHost) CustomOption.ShareAllOptions.Invoke(CustomOption.AllOptions);
         /*
         int randomInt = NebulaPlugin.rnd.Next(10000);
         TMPro.TMP_Text message = new();
@@ -1311,7 +1310,7 @@ public class PlayerJoinedPatch
 
 
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
-class GameOptionsMenuUpdatePatch
+internal class GameOptionsMenuUpdatePatch
 {
     private static float timer = 1f;
     public static void Postfix(GameOptionsMenu __instance)
@@ -1423,7 +1422,7 @@ public static class GameOptionStringGenerator
         int max;
         string optionValue;
 
-        if ((int)(CustomOptionHolder.crewmateRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
+        if ((CustomOptionHolder.crewmateRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
         {
             optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.crewmateRoles"));
             min = CustomOptionHolder.crewmateRolesCountMin.getSelection();
@@ -1433,7 +1432,7 @@ public static class GameOptionStringGenerator
             entry.AppendLine($"{optionName}: {optionValue}");
         }
 
-        if ((int)(CustomOptionHolder.neutralRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
+        if ((CustomOptionHolder.neutralRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
         {
             optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.neutralRoles"));
             min = CustomOptionHolder.neutralRolesCountMin.getSelection();
@@ -1443,7 +1442,7 @@ public static class GameOptionStringGenerator
             entry.AppendLine($"{optionName}: {optionValue}");
         }
 
-        if ((int)(CustomOptionHolder.impostorRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
+        if ((CustomOptionHolder.impostorRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
         {
             optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.impostorRoles"));
             min = CustomOptionHolder.impostorRolesCountMin.getSelection();
@@ -1530,7 +1529,7 @@ public static class GameOptionStringGenerator
 public class GameOptionsDataPatch
 {
     public static bool dirtyFlag = true;
-    static List<String> pages = new List<string>();
+    private static List<String> pages = new List<string>();
 
     private static void Postfix()
     {
@@ -1553,7 +1552,7 @@ public class GameOptionsDataPatch
 [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Deserialize))]
 public static class GameOptionsDeserializePatch
 {
-    static private int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+    private static int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
     public static bool Prefix(GameOptionsData __instance)
     {
         NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
@@ -1566,14 +1565,14 @@ public static class GameOptionsDeserializePatch
         {
             GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, NumImpostors);
         }
-        catch{ }
+        catch { }
     }
 }
 
 [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Serialize))]
 public static class GameOptionsSerializePatch
 {
-    static private int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+    private static int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
     public static bool Prefix(GameOptionsData __instance)
     {
         try

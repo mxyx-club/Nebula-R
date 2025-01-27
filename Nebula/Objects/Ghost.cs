@@ -2,7 +2,7 @@
 
 public class Ghost
 {
-    static public Sprite[] Sprites = new Sprite[3], FadeSprites = new Sprite[6];
+    public static Sprite[] Sprites = new Sprite[3], FadeSprites = new Sprite[6];
 
     public byte Id { get; }
 
@@ -18,7 +18,7 @@ public class Ghost
 
     private static bool LoadedFlag = false;
 
-    static public void Load()
+    public static void Load()
     {
         Sprites[0] = Helpers.loadSpriteFromResources("Nebula.Resources.Ghost.0.png", 150f);
         Sprites[1] = Helpers.loadSpriteFromResources("Nebula.Resources.Ghost.1.png", 150f);

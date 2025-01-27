@@ -2,7 +2,7 @@
 
 public class Drunk : Template.StandardExtraRole
 {
-    static public Color RoleColor = new Color(133f / 255f, 161f / 255f, 190f / 255f);
+    public static Color RoleColor = new Color(133f / 255f, 161f / 255f, 190f / 255f);
 
     public override void GlobalInitialize(PlayerControl __instance)
     {

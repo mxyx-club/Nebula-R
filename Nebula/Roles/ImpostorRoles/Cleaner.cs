@@ -11,7 +11,7 @@ public class Cleaner : Role
     }
 
     /* ボタン */
-    static private CustomButton cleanButton;
+    private static CustomButton cleanButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (cleanButton != null)

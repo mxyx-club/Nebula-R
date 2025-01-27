@@ -32,7 +32,7 @@ public class Alien : Role
     }
 
 
-    static public Color RoleColor = new Color(187f / 255f, 109f / 255f, 178f / 255f);
+    public static Color RoleColor = new Color(187f / 255f, 109f / 255f, 178f / 255f);
 
     private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EMIButton.png", 115f, "ui.button.alien.emi");
 
@@ -84,8 +84,8 @@ public class Alien : Role
     public override void ButtonInitialize(HudManager __instance)
     {
         sabotageCount = (int)countOfCallingSabotageOption.getFloat();
-        sabotageUsesObject = HudManager.Instance.SabotageButton.ShowUsesIcon(0,out sabotageUsesString);
-        
+        sabotageUsesObject = HudManager.Instance.SabotageButton.ShowUsesIcon(0, out sabotageUsesString);
+
 
         if (emiButton != null)
         {
@@ -95,7 +95,7 @@ public class Alien : Role
             () =>
             {
                 RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
-                new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject, RoleColor, emiRangeOption.getFloat(), emiDurationOption.getFloat());
+                new EffectCircle(PlayerControl.LocalPlayer.gameObject, RoleColor, emiRangeOption.getFloat(), emiDurationOption.getFloat());
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },

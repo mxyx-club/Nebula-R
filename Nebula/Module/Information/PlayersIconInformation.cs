@@ -16,8 +16,8 @@ public class PlayersIconInformation : UpperInformation
         }
     }
 
-    Dictionary<byte, PlayersIcon> allPlayers;
-    TMPro.TextMeshPro subText;
+    private Dictionary<byte, PlayersIcon> allPlayers;
+    private TMPro.TextMeshPro subText;
 
     public byte relatedPlayerId { get; private set; }
     public Roles.Assignable relatedRole { get; private set; }

@@ -49,7 +49,7 @@ public class BountyHunter : Template.HasHologram
     }
 
     /* ボタン */
-    static private CustomButton killButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (killButton != null)

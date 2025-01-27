@@ -1,66 +1,74 @@
-namespace Nebula.Roles.CrewmateRoles{
-    public class Minekeeper : Role{
-        public static Color RoleColor = new Color(100f / 255f,50f / 255f,0f / 255f);
+namespace Nebula.Roles.CrewmateRoles;
 
-        private Module.CustomOption setMineCooldownOption;
-        private Module.CustomOption maxMineCountOption;
+public class Minekeeper : Role
+{
+    public static Color RoleColor = new Color(100f / 255f, 50f / 255f, 0f / 255f);
 
-        public static int mineDataId { get; private set; }
-        Vent targetVent = null;
-        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CloseVentButton.png", 115f, "ui.button.minekeeper.set");
+    private Module.CustomOption setMineCooldownOption;
+    private Module.CustomOption maxMineCountOption;
 
-        public override void GlobalInitialize(PlayerControl __instance)
+    public static int mineDataId { get; private set; }
+
+    private Vent targetVent = null;
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CloseVentButton.png", 115f, "ui.button.minekeeper.set");
+
+    public override void GlobalInitialize(PlayerControl __instance)
+    {
+        targetVent = null;
+        __instance.GetModData().SetRoleData(mineDataId, 0);
+    }
+
+    public override void LoadOptionData()
+    {
+        TopOption.tab = Module.CustomOptionTab.GhostRoles;
+        setMineCooldownOption = CreateOption(Color.white, "setMineCooldown", 15f, 2.5f, 45f, 2.5f);
+        setMineCooldownOption.suffix = "second";
+
+        maxMineCountOption = CreateOption(Color.white, "maxMineCount", 5f, 1f, 30f, 1f);
+    }
+
+    private CustomButton set;
+    public override void ButtonInitialize(HudManager __instance)
+    {
+        if (set != null)
         {
-            targetVent = null;
-            __instance.GetModData().SetRoleData(mineDataId,0);
+            set.Destroy();
         }
 
-        public override void LoadOptionData()
+        set = new CustomButton(
+            () =>
+            {
+                Module.VentManager.setBomb(targetVent);
+                //foreach(Vent v in Module.VentManager.bombVents) Debug.LogWarning(v.name);
+                Warn(targetVent.transform.position.x.ToString() + " " + targetVent.transform.position.y.ToString() + " " + targetVent.transform.position.z.ToString());
+                targetVent = null;
+                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, mineDataId, 1);
+                set.Timer = set.MaxTimer;
+                set.UsesText.text = ((int)maxMineCountOption.getFloat() - PlayerControl.LocalPlayer.GetModData().GetRoleData(mineDataId)).ToString();
+            },
+            () => { return !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.GetModData().GetRoleData(mineDataId) < maxMineCountOption.getFloat(); },
+            () => { return targetVent && PlayerControl.LocalPlayer.CanMove; },
+            () => { set.Timer = set.MaxTimer; },
+            buttonSprite.GetSprite(),
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
+            __instance,
+            Module.NebulaInputManager.abilityInput.keyCode,
+            "button.label.set"
+        ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+        set.MaxTimer = setMineCooldownOption.getFloat();
+
+        set.UsesText.text = ((int)maxMineCountOption.getFloat()).ToString();
+    }
+
+    public override void CleanUp()
+    {
+        if (set != null)
         {
-            TopOption.tab = Module.CustomOptionTab.GhostRoles;
-            setMineCooldownOption = CreateOption(Color.white,"setMineCooldown",15f,2.5f,45f,2.5f);
-            setMineCooldownOption.suffix = "second";
-
-            maxMineCountOption = CreateOption(Color.white,"maxMineCount",5f,1f,30f,1f);
+            set.Destroy();
+            set = null;
         }
-
-        private CustomButton set;
-        public override void ButtonInitialize(HudManager __instance)
-        {
-            if(set != null){
-                set.Destroy();
-            }
-            set = new CustomButton(
-                () => {
-                    Module.VentManager.setBomb(targetVent);
-                    //foreach(Vent v in Module.VentManager.bombVents) Debug.LogWarning(v.name);
-                    Debug.LogWarning(targetVent.transform.position.x.ToString() + " " + targetVent.transform.position.y.ToString() + " " + targetVent.transform.position.z.ToString());
-                    targetVent = null;
-                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,mineDataId,1);
-                    set.Timer = set.MaxTimer;
-                    set.UsesText.text = ((int)maxMineCountOption.getFloat() - (int)PlayerControl.LocalPlayer.GetModData().GetRoleData(mineDataId)).ToString();
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.GetModData().GetRoleData(mineDataId) < maxMineCountOption.getFloat(); },
-                () => { return targetVent && PlayerControl.LocalPlayer.CanMove; },
-                () => { set.Timer = set.MaxTimer; },
-                buttonSprite.GetSprite(),
-                Expansion.GridArrangeExpansion.GridArrangeParameter.None,
-                __instance,
-                Module.NebulaInputManager.abilityInput.keyCode,
-                "button.label.set"
-            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
-            set.MaxTimer = setMineCooldownOption.getFloat();
-
-            set.UsesText.text = ((int)maxMineCountOption.getFloat()).ToString();
-        }
-
-        public override void CleanUp(){
-            if(set != null){
-                set.Destroy();
-                set = null;
-            }
-            targetVent = null;
-        }
+        targetVent = null;
+    }
 
     public override void MyPlayerControlUpdate()
     {
@@ -87,12 +95,12 @@ namespace Nebula.Roles.CrewmateRoles{
         targetVent = target;
     }
 
-        public Minekeeper()
-             : base("Minekeeper","minekeeper",RoleColor,RoleCategory.Crewmate,Side.Crewmate,Side.Crewmate,
-                    Crewmate.crewmateSideSet,Crewmate.crewmateSideSet,Crewmate.crewmateEndSet,
-                    false,VentPermission.CanNotUse,false,false,false){
-            set = null;
-            targetVent = null;
-        }
+    public Minekeeper()
+         : base("Minekeeper", "minekeeper", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+                Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
+                false, VentPermission.CanNotUse, false, false, false)
+    {
+        set = null;
+        targetVent = null;
     }
 }

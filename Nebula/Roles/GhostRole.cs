@@ -5,7 +5,7 @@ public class GhostRole : Assignable
     public byte id { get; private set; }
 
     //使用済みロールID
-    static private byte maxId = 0;
+    private static byte maxId = 0;
 
     protected GhostRole(string name, string localizeName, Color color) :
        base(name, localizeName, color)
@@ -16,12 +16,12 @@ public class GhostRole : Assignable
 
     public virtual bool IsAssignableTo(Game.PlayerData player) => true;
 
-    sealed public override void SetupRoleOptionData()
+    public sealed override void SetupRoleOptionData()
     {
         SetupRoleOptionData(Module.CustomOptionTab.GhostRoles);
     }
 
-    static public void LoadAllOptionData()
+    public static void LoadAllOptionData()
     {
         foreach (GhostRole role in Roles.AllGhostRoles)
         {

@@ -1,20 +1,23 @@
-namespace Nebula.Roles.ImpostorRoles{
-    public class Marker : Template.TImpostor{
+namespace Nebula.Roles.ImpostorRoles;
 
-        private static Module.CustomOption onlyImpCanSee;
+public class Marker : Template.TImpostor
+{
 
-        public override void LoadOptionData(){
-            TopOption.tab = Module.CustomOptionTab.GhostRoles;
-            onlyImpCanSee = CreateOption(Color.white,"onlyImpCanSee",true);
-        }
+    private static Module.CustomOption onlyImpCanSee;
 
-        private static GameObject guesserUI;
+    public override void LoadOptionData()
+    {
+        TopOption.tab = Module.CustomOptionTab.GhostRoles;
+        onlyImpCanSee = CreateOption(Color.white, "onlyImpCanSee", true);
+    }
 
-        public static void guesserOnClick(int buttonTarget, MeetingHud __instance)
-        {
+    private static GameObject guesserUI;
+
+    public static void guesserOnClick(int buttonTarget, MeetingHud __instance)
+    {
         if (__instance.CurrentState == MeetingHud.VoteStates.Discussion) return;
 
-        PlayerControl target = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
+        PlayerControl target = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
         if (target == null || target.Data.IsDead) return;
 
         if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
@@ -70,7 +73,7 @@ namespace Nebula.Roles.ImpostorRoles{
             int copiedIndex = i;
 
             button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+            if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 if (selectedButton != button)
                 {
@@ -86,8 +89,8 @@ namespace Nebula.Roles.ImpostorRoles{
                         return;
                     }
 
-                    PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
-                    RPCEventInvoker.SetRoleInfo(focusedTarget,Helpers.cs(role.Color,Language.Language.GetString("role." + role.LocalizeName + ".name")),onlyImpCanSee.getBool());
+                    PlayerControl focusedTarget = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
+                    RPCEventInvoker.SetRoleInfo(focusedTarget, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")), onlyImpCanSee.getBool());
 
                     // Reset the GUI
                     __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
@@ -126,10 +129,11 @@ namespace Nebula.Roles.ImpostorRoles{
             Teamlabel.autoSizeTextContainer = true;
             int copiedIndex = index;
             Teambutton.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            if (!PlayerControl.LocalPlayer.Data.IsDead) Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() => {
+            if (!PlayerControl.LocalPlayer.Data.IsDead) Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+            {
                 i = 0;
                 selectedButton = null;
-                foreach(Transform button in buttons) UnityEngine.Object.Destroy(button.gameObject);
+                foreach (Transform button in buttons) UnityEngine.Object.Destroy(button.gameObject);
                 buttons = new List<Transform>();
                 foreach (Role role in Roles.AllRoles)
                 {
@@ -157,7 +161,7 @@ namespace Nebula.Roles.ImpostorRoles{
                     label.transform.localScale *= 1.7f;
 
                     button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-                    if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+                    if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
                     {
                         if (selectedButton != button)
                         {
@@ -173,8 +177,8 @@ namespace Nebula.Roles.ImpostorRoles{
                                 return;
                             }
 
-                            PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
-                            RPCEventInvoker.SetRoleInfo(focusedTarget,Helpers.cs(role.Color,Language.Language.GetString("role." + role.LocalizeName + ".name")),onlyImpCanSee.getBool());
+                            PlayerControl focusedTarget = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
+                            RPCEventInvoker.SetRoleInfo(focusedTarget, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")), onlyImpCanSee.getBool());
 
                             // Reset the GUI
                             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
@@ -192,29 +196,29 @@ namespace Nebula.Roles.ImpostorRoles{
                 }));
             }));
         }
-        }
+    }
 
-        public override void SetupMeetingButton(MeetingHud __instance)
+    public override void SetupMeetingButton(MeetingHud __instance)
+    {
+        for (int i = 0; i < __instance.playerStates.Length; i++)
         {
-            for (int i = 0; i < __instance.playerStates.Length; i++)
-            {
-                PlayerVoteArea playerVoteArea = __instance.playerStates[i];
-                if(playerVoteArea.AmDead) continue;
-                GameObject template = playerVoteArea.Buttons.transform.Find("CancelButton").gameObject;
-                GameObject targetBox = UnityEngine.Object.Instantiate(template, playerVoteArea.transform);
-                targetBox.name = "MarkButton";
-                targetBox.transform.localPosition = new Vector3(1f, 0.03f, -1f);
-                SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-                renderer.sprite = ComplexRoles.FGuesser.targetSprite.GetSprite();
-                PassiveButton button = targetBox.GetComponent<PassiveButton>();
-                button.OnClick.RemoveAllListeners();
-                int copiedIndex = i;
-                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => guesserOnClick(copiedIndex, __instance)));
-            }
+            PlayerVoteArea playerVoteArea = __instance.playerStates[i];
+            if (playerVoteArea.AmDead) continue;
+            GameObject template = playerVoteArea.Buttons.transform.Find("CancelButton").gameObject;
+            GameObject targetBox = UnityEngine.Object.Instantiate(template, playerVoteArea.transform);
+            targetBox.name = "MarkButton";
+            targetBox.transform.localPosition = new Vector3(1f, 0.03f, -1f);
+            SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
+            renderer.sprite = ComplexRoles.FGuesser.targetSprite.GetSprite();
+            PassiveButton button = targetBox.GetComponent<PassiveButton>();
+            button.OnClick.RemoveAllListeners();
+            int copiedIndex = i;
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => guesserOnClick(copiedIndex, __instance)));
         }
+    }
 
-        public Marker() : base("Marker","marker",true){
-            CanCallEmergencyMeeting = false;
-        }
+    public Marker() : base("Marker", "marker", true)
+    {
+        CanCallEmergencyMeeting = false;
     }
 }

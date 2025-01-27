@@ -1,11 +1,10 @@
-﻿using TMPro;
-using PowerTools;
-using UnityEngine.Playables;
+﻿using PowerTools;
+using TMPro;
 
 namespace Nebula.Patches;
 
 [HarmonyPatch]
-class PrespawnPatch
+internal class PrespawnPatch
 {
     private static PassiveButton? selected = null;
 
@@ -90,7 +89,7 @@ class PrespawnPatch
 
                     if (__instance.amClosing != Minigame.CloseState.None) return;
 
-                    if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false,true,false) || p == 1f)
+                    if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false, true, false) || p == 1f)
                     {
                         PlayerControl.LocalPlayer.gameObject.SetActive(true);
                         __instance.StopAllCoroutines();
@@ -128,15 +127,15 @@ class PrespawnPatch
 
             if (GameOptionsManager.Instance.CurrentGameOptions.MapId != 4) return true;
 
-            SpawnInMinigame.SpawnLocation[] array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(__instance.Locations);
+            SpawnInMinigame.SpawnLocation[] array = Enumerable.ToArray(__instance.Locations);
             array = array.OrderBy((i) => Guid.NewGuid()).ToArray();
 
-            array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(Enumerable.ThenByDescending<SpawnInMinigame.SpawnLocation, float>(Enumerable.OrderBy<SpawnInMinigame.SpawnLocation, float>(Enumerable.Take<SpawnInMinigame.SpawnLocation>(array, __instance.LocationButtons.Length), (SpawnInMinigame.SpawnLocation s) => s.Location.x), (SpawnInMinigame.SpawnLocation s) => s.Location.y));
+            array = Enumerable.ToArray(Enumerable.ThenByDescending(Enumerable.OrderBy(Enumerable.Take(array, __instance.LocationButtons.Length), (SpawnInMinigame.SpawnLocation s) => s.Location.x), (SpawnInMinigame.SpawnLocation s) => s.Location.y));
             for (int i = 0; i < __instance.LocationButtons.Length; i++)
             {
                 PassiveButton passiveButton = __instance.LocationButtons[i];
                 SpawnInMinigame.SpawnLocation pt = array[i];
-                passiveButton.OnClick.AddListener((System.Action)(() =>
+                passiveButton.OnClick.AddListener((Action)(() =>
                 {
                     PrespawnSpawnAtPatch.SpawnAt(__instance, pt.Location);
                 }));
@@ -214,7 +213,7 @@ class PrespawnPatch
                 var spawnCandidates = Map.MapData.GetCurrentMapData().ValidSpawnCandidates;
                 if (spawnCandidates.Count < 3) return;
 
-                SpawnInMinigame spawnInMinigame = UnityEngine.Object.Instantiate<SpawnInMinigame>(Map.MapData.MapDatabase[4].Assets.gameObject.GetComponent<AirshipStatus>().SpawnInGame);
+                SpawnInMinigame spawnInMinigame = UnityEngine.Object.Instantiate(Map.MapData.MapDatabase[4].Assets.gameObject.GetComponent<AirshipStatus>().SpawnInGame);
 
                 spawnInMinigame.transform.SetParent(Camera.main.transform, false);
                 spawnInMinigame.transform.localPosition = new Vector3(0f, 0f, -600f);
@@ -246,14 +245,14 @@ class PrespawnPatch
                     int index = randomArray[i];
 
                     spawnCandidates[index].ReloadTexture();
-                    
+
                     passiveButton.OnClick.RemoveAllListeners();
-                    passiveButton.OnClick.AddListener(new System.Action(() =>
+                    passiveButton.OnClick.AddListener(new Action(() =>
                     {
                         PrespawnSpawnAtPatch.SpawnAt(spawnInMinigame, spawnCandidates[index].SpawnLocation);
                     }));
-                    passiveButton.OnMouseOver.AddListener(new System.Action(() => HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
-                    
+                    passiveButton.OnMouseOver.AddListener(new Action(() => HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
+
                     passiveButton.GetComponent<SpriteAnim>().Stop();
                     passiveButton.GetComponent<SpriteRenderer>().sprite = spawnCandidates[index].GetSprite();
                     passiveButton.GetComponentInChildren<TextMeshPro>().text = Language.Language.GetString("locations." + spawnCandidates[index].LocationKey);
@@ -286,18 +285,18 @@ class PrespawnPatch
                 Vector2? lastPos = Game.GameData.data.myData.getGlobalData().preMeetingPosition;
 
                 Vector2? spawnAt = null;
-                if (lastPos==null || !CustomOptionHolder.respawnNearbyFinalPosition.getBool())
+                if (lastPos == null || !CustomOptionHolder.respawnNearbyFinalPosition.getBool())
                 {
                     spawnAt = points[NebulaPlugin.rnd.Next(points.Count)];
-                    
+
                 }
                 else
                 {
                     float dis = -1f;
-                    foreach(var p in points)
+                    foreach (var p in points)
                     {
                         float t = ((Vector3)p).Distance(lastPos.Value);
-                        if (dis<0f || dis > t)
+                        if (dis < 0f || dis > t)
                         {
                             dis = t;
                             spawnAt = p;

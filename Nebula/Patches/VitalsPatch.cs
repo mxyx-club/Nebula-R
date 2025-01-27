@@ -1,11 +1,11 @@
 ﻿namespace Nebula.Patches;
 
 [HarmonyPatch]
-class VitalsPatch
+internal class VitalsPatch
 {
-    static float vitalsTimer = 0f;
-    static TMPro.TextMeshPro TimeRemaining;
-    static TMPro.TextMeshPro OutOfTime;
+    private static float vitalsTimer = 0f;
+    private static TMPro.TextMeshPro TimeRemaining;
+    private static TMPro.TextMeshPro OutOfTime;
 
 
     public static void ResetData()
@@ -24,7 +24,7 @@ class VitalsPatch
         }
     }
 
-    static void UseVitalsTime()
+    private static void UseVitalsTime()
     {
         if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.VitalsLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
         {
@@ -34,9 +34,9 @@ class VitalsPatch
     }
 
     [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Begin))]
-    class VitalsMinigameStartPatch
+    private class VitalsMinigameStartPatch
     {
-        static void Postfix(VitalsMinigame __instance)
+        private static void Postfix(VitalsMinigame __instance)
         {
             vitalsTimer = 0f;
 
@@ -45,9 +45,9 @@ class VitalsPatch
     }
 
     [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Update))]
-    class VitalsMinigameUpdatePatch
+    private class VitalsMinigameUpdatePatch
     {
-        static bool Prefix(VitalsMinigame __instance)
+        private static bool Prefix(VitalsMinigame __instance)
         {
             if (!__instance.BatteryText.IsActive())
             {
@@ -96,7 +96,7 @@ class VitalsPatch
             return true;
         }
 
-        static void Postfix(VitalsMinigame __instance)
+        private static void Postfix(VitalsMinigame __instance)
         {
             Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, role => role.VitalsUpdate(__instance));
         }

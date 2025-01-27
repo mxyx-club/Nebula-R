@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using Nebula.Module;
+﻿using Nebula.Module;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -65,7 +64,7 @@ public class RitualSpawnCandidate
 
 public class WiringData
 {
-    HashSet<int>[] WiringCandidate;
+    private HashSet<int>[] WiringCandidate;
 
     public WiringData()
     {
@@ -75,7 +74,7 @@ public class WiringData
 
 public class VectorRange
 {
-    float xMin, xMax, yMin, yMax;
+    private float xMin, xMax, yMin, yMax;
 
     public VectorRange(float x, float y)
     {
@@ -130,9 +129,9 @@ public class PointData
 
 public class SpawnPointData : PointData
 {
-    public Module.CustomOption option;
+    public CustomOption option;
 
-    public SpawnPointData(string name, Vector2 spawnPoint) :base(name,spawnPoint){ }
+    public SpawnPointData(string name, Vector2 spawnPoint) : base(name, spawnPoint) { }
 
     public void CreateOption(byte mapId)
     {
@@ -277,7 +276,7 @@ public class MapData
     public void SetUpAdminRoomButton(GameObject obj, Action reopener)
     {
         //0番目は外を表すので設定の必要なし
-        int i=1;
+        int i = 1;
         foreach (var point in AdminRooms)
         {
             int index = i;
@@ -291,7 +290,7 @@ public class MapData
                 PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(0.4f, 0.4f), "Point", (key + 1).ToString(), enabled ? Color.yellow : Color.white);
                 button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
                 button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
-                button.transform.localPosition += new Vector3((float)adminCount - 0.5f * (float)(LimitedAdmin.Count - 1), 0f, 0f) * 0.34f;
+                button.transform.localPosition += new Vector3(adminCount - 0.5f * (LimitedAdmin.Count - 1), 0f, 0f) * 0.34f;
 
                 SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
                 TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
@@ -302,8 +301,8 @@ public class MapData
                 var option = limitedAdmin.Value;
                 button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
-                    int selection = option.selection & ~(1<<index);
-                    if(!enabled)selection |= 1 << index;
+                    int selection = option.selection & ~(1 << index);
+                    if (!enabled) selection |= 1 << index;
                     option.updateSelection(selection);
                     reopener();
                 }));
@@ -383,7 +382,7 @@ public class MapData
             mapData.Value.CreateOption();
         }
     }
-    public static Map.MapData GetCurrentMapData()
+    public static MapData GetCurrentMapData()
     {
         if (MapDatabase.ContainsKey(GameOptionsManager.Instance.CurrentGameOptions.MapId))
         {
@@ -477,7 +476,7 @@ public class MapData
         {
             for (int x = x1; x < x2; x++)
             {
-                num = isOnTheShip_Debug(new Vector2(((float)x) / 10f, ((float)y) / 10f));
+                num = isOnTheShip_Debug(new Vector2(x / 10f, y / 10f));
                 //if (num > 20) num = 20;
                 texture.SetPixel(x - x1, y - y1, (num == 0) ? color : new Color((num > 1 ? 100 : 0) / 255f, (150 + (num * 5)) / 255f, 0));
                 if (num > 0) r++;
@@ -510,7 +509,7 @@ public class MapData
         yield break;
     }
 
-    public MapData(int mapId,string shipName)
+    public MapData(int mapId, string shipName)
     {
         MapId = mapId;
         ShipName = shipName;
@@ -561,7 +560,7 @@ public class MapData
             }
         }
         */
-        
+
         AssetReference assetReference = __instance.ShipPrefabs.ToArray()[MapId];
         if (assetReference.IsValid()) return;
         AsyncOperationHandle<GameObject> asset = assetReference.LoadAssetAsync<GameObject>();
@@ -582,7 +581,7 @@ public class MapData
 
     public Vector2 ConvertMinimapPosition(Vector2 pos)
     {
-        return (Vector2)(pos / Assets.MapScale) + (Vector2)Assets.MapPrefab.transform.GetChild(5).localPosition;
+        return pos / Assets.MapScale + (Vector2)Assets.MapPrefab.transform.GetChild(5).localPosition;
     }
 
 

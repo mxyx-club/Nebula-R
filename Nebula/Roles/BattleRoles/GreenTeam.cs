@@ -2,7 +2,7 @@ namespace Nebula.Roles.BattleRoles;
 
 public class GreenTeam : Role
 {
-    public static Color RoleColor = new(181f / 255f,230f / 255f,29f / 255f);
+    public static Color RoleColor = new(181f / 255f, 230f / 255f, 29f / 255f);
 
     private bool equipRifleFlag;
 
@@ -38,8 +38,8 @@ public class GreenTeam : Role
     }
 
     /* ボタン */
-    static private CustomButton sniperButton;
-    static private CustomButton killButton;
+    private static CustomButton sniperButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (sniperButton != null)
@@ -132,9 +132,9 @@ public class GreenTeam : Role
 
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
     {
-        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,CustomOptionHolder.BattleShotEffectiveRangeOption.getFloat(), 16f); }),
-        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, CustomOptionHolder.BattleNoticeRangeOption.getFloat(),16f); }),
-        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, CustomOptionHolder.BattleShotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,CustomOptionHolder.BattleShotEffectiveRangeOption.getFloat(), 16f); }),
+        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, CustomOptionHolder.BattleNoticeRangeOption.getFloat(),16f); }),
+        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, CustomOptionHolder.BattleShotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
     };
 
     private Sprite snipeArrowSprite = null;
@@ -199,11 +199,13 @@ public class GreenTeam : Role
         }
     }
 
-    public override void EditOthersDisplayNameColor(byte playerId,ref Color displayColor){
-        if(Helpers.playerById(playerId).GetModData().role.side == Side.GreenTeam) displayColor = RoleColor;
+    public override void EditOthersDisplayNameColor(byte playerId, ref Color displayColor)
+    {
+        if (Helpers.playerById(playerId).GetModData().role.side == Side.GreenTeam) displayColor = RoleColor;
     }
 
-    public override void OnMurdered(byte murderId){
+    public override void OnMurdered(byte murderId)
+    {
         Game.GameData.data.myData.CanSeeEveryoneInfo = true;
     }
 

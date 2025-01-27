@@ -2,9 +2,9 @@
 
 public class Seer : Role
 {
-    static public Color RoleColor = new Color(60f / 255f, 181f / 255f, 101f / 255f);
+    public static Color RoleColor = new Color(60f / 255f, 181f / 255f, 101f / 255f);
 
-    static public HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
+    public static HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
 
     public override void OnAnyoneMurdered(byte murderId, byte targetId)
     {
@@ -16,7 +16,7 @@ public class Seer : Role
         Helpers.PlayFlash(RoleColor);
     }
 
-    static public Module.CustomOption GhostDurationOption;
+    public static Module.CustomOption GhostDurationOption;
 
     public override void LoadOptionData()
     {

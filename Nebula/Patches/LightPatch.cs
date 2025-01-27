@@ -1,9 +1,7 @@
-﻿using JetBrains.Annotations;
-
-namespace Nebula.Patches;
+﻿namespace Nebula.Patches;
 
 [HarmonyPatch]
-class LightPatch
+internal class LightPatch
 {
     public static void Initialize()
     {
@@ -36,7 +34,7 @@ class LightPatch
     [HarmonyPatch(typeof(ShadowCollab), nameof(ShadowCollab.OnEnable))]
     public static class ShadowCameraPatch
     {
-        static public IEnumerator GetEnumerator(ShadowCollab __instance)
+        public static IEnumerator GetEnumerator(ShadowCollab __instance)
         {
             Camera cam = Camera.main;
             while (true)
@@ -53,12 +51,12 @@ class LightPatch
         }
     }
 
-    static public float PlayerRadius = 0.5f;
+    public static float PlayerRadius = 0.5f;
 
     [HarmonyPatch(typeof(LightSource), nameof(LightSource.Update))]
     public static class LightSourceUpdatePatch
     {
-        
+
         public static bool Prefix(LightSource __instance)
         {
             Vector3 position = __instance.transform.position;
@@ -82,14 +80,14 @@ class LightPatch
 
         public static bool Prefix(PlayerControl __instance)
         {
-            if (PlayerControl.LocalPlayer != __instance)return false;
-            
+            if (PlayerControl.LocalPlayer != __instance) return false;
+
             float num = 0f;
-            bool flashFlag=false;
+            bool flashFlag = false;
             if (FlashlightEnabled.HasValue) flashFlag = FlashlightEnabled.Value;
             else if (__instance.IsFlashlightEnabled()) flashFlag = true;
             else if (__instance.lightSource.useFlashlight) flashFlag = true;
-            
+
             if (__instance.IsFlashlightEnabled())
             {
                 if (__instance.Data.Role.IsImpostor)
@@ -117,8 +115,8 @@ class LightPatch
     [HarmonyPatch(typeof(LightSourceGpuRenderer), nameof(LightSourceGpuRenderer.GPUShadows))]
     public static class LightSourceGpuRendererPatch
     {
-        static Il2CppReferenceArray<Collider2D> origArray;
-        static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+        private static Il2CppReferenceArray<Collider2D> origArray;
+        private static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
 
         public static void Prefix(LightSourceGpuRenderer __instance)
         {
@@ -138,8 +136,8 @@ class LightPatch
     [HarmonyPatch(typeof(LightSourceRaycastRenderer), nameof(LightSourceRaycastRenderer.RaycastShadows))]
     public static class LightSourceRaycastRendererPatch
     {
-        static Il2CppReferenceArray<Collider2D> origArray;
-        static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+        private static Il2CppReferenceArray<Collider2D> origArray;
+        private static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
 
         public static void Prefix(LightSourceRaycastRenderer __instance)
         {

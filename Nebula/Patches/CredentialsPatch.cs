@@ -1,4 +1,5 @@
-﻿using Nebula.Module;
+using Nebula.CustomCosmetics;
+using Nebula.Module;
 using UnityEngine.Events;
 
 namespace Nebula.Patches;
@@ -9,18 +10,18 @@ public static class CredentialsPatch
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
     private static class VersionShowerPatch
     {
-        static void Postfix(VersionShower __instance)
+        private static void Postfix(VersionShower __instance)
         {
             var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
             if (amongUsLogo == null) return;
 
-            RuntimePrefabs.TextPrefab = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
+            RuntimePrefabs.TextPrefab = UnityEngine.Object.Instantiate(__instance.text);
             RuntimePrefabs.TextPrefab.enableAutoSizing = true;
             RuntimePrefabs.TextPrefab.text = "";
-            RuntimePrefabs.TextPrefab.gameObject.hideFlags= HideFlags.HideAndDontSave;
+            RuntimePrefabs.TextPrefab.gameObject.hideFlags = HideFlags.HideAndDontSave;
             GameObject.DontDestroyOnLoad(RuntimePrefabs.TextPrefab.gameObject);
 
-            var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
+            var credentials = UnityEngine.Object.Instantiate(__instance.text);
 
             credentials.transform.position = new Vector3(0, -0.6f, 0);
 
@@ -42,33 +43,21 @@ public static class CredentialsPatch
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     public static class PingTrackerPatch
     {
-        /*
-        public static GameObject modStamp { get; private set; }
-
-        static void Prefix(PingTracker __instance)
+        private static float DeltaTime;
+        private static void Postfix(PingTracker __instance)
         {
-            if (modStamp == null)
-            {
-                modStamp = new GameObject("ModStamp");
-                modStamp.layer = UnityEngine.LayerMask.NameToLayer("UI");
-                var rend = modStamp.AddComponent<SpriteRenderer>();
-                rend.sprite = NebulaPlugin.GetModStamp();
-                rend.color = new Color(1, 1, 1, 0.5f);
-                modStamp.transform.SetParent(__instance.transform);
-                modStamp.transform.localScale *= 0.6f;
-            }
-            float offset = (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started) ? 0.75f : 0f;
-            modStamp.transform.position = FastDestroyableSingleton<HudManager>.Instance.MapButton.transform.position + Vector3.down * offset;
-        }
-        */
+            DeltaTime += (Time.deltaTime - DeltaTime) * 0.1f;
+            var fps = Mathf.Ceil(1f / DeltaTime);
+            var PingText = $"<size=80%>Ping: {AmongUsClient.Instance.Ping}ms{$" FPS: {fps}"}</size>";
+            __instance.text.SetOutlineThickness(0.1f);
+            var host = $"<size=80%>房主: {GameData.Instance?.GetHost()?.PlayerName}</size>";
 
-        static void Postfix(PingTracker __instance)
-        {
             __instance.text.alignment = TMPro.TextAlignmentOptions.TopRight;
-            __instance.text.text = $"<size=130%><color=#9579ce>星雨舰</color></size> v{ NebulaPlugin.PluginVisualVersion }\n<color=#87CEEBFF>天牢就是歌姬吧</color>\n<size=80%>{ __instance.text.text }</size>\n<size=90%><color=#FFB793>星云百人房</color></size>";
+            __instance.text.text = $"<size=130%><color=#9579ce>星云舰</color></size> v{NebulaPlugin.PluginVisualVersion}\n<color=#FFB793FF><size=80%>沫夏悠轩 - mxyx.club</color>\n{PingText}\n{host}</size>";
+
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
             {
-                __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(1.2f, 0.8f, 0f);
+                __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.85f, 0.1f, 0);
             }
             else if (PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.Data.IsDead)
             {
@@ -76,7 +65,7 @@ public static class CredentialsPatch
             }
             else
             {
-                __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(1.2f, 0.1f, 0f);
+                __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.25f, 0.1f, 0);
             }
             __instance.gameObject.GetComponent<AspectPosition>().AdjustPosition();
         }
@@ -85,8 +74,14 @@ public static class CredentialsPatch
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     private static class LogoPatch
     {
-        static SpriteLoader DesignerToolButtonSprite = new SpriteLoader("Nebula.Resources.DesignerToolButton.png",100f);
-        static void Postfix(MainMenuManager __instance)
+        private static SpriteLoader DesignerToolButtonSprite = new("Nebula.Resources.DesignerToolButton.png", 100f);
+
+        private static void Prefix(MainMenuManager __instance)
+        {
+            CustomHatLoader.LaunchHatFetcher();
+        }
+
+        private static void Postfix(MainMenuManager __instance)
         {
             var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
             if (amongUsLogo != null)
@@ -107,7 +102,7 @@ public static class CredentialsPatch
 
             var bottomButtons = GameObject.Find("BottomButtons");
             var buttonObj = GameObject.Instantiate(bottomButtons.transform.GetChild(0).gameObject, bottomButtons.transform);
-            buttonObj.name="DesignerToolButton";
+            buttonObj.name = "DesignerToolButton";
 
             buttonObj.GetComponent<SpriteRenderer>().sprite = DesignerToolButtonSprite.GetSprite();
             var button = buttonObj.GetComponent<PassiveButton>();

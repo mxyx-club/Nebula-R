@@ -1,6 +1,4 @@
-﻿using Nebula.Patches;
-
-namespace Nebula.Roles.MinigameRoles.Hunters;
+﻿namespace Nebula.Roles.MinigameRoles.Hunters;
 
 public class Hadar : Role
 {
@@ -42,7 +40,7 @@ public class Hadar : Role
         }
     }
 
-    static private CustomButton ventButton;
+    private static CustomButton ventButton;
     private float lightRadius = 1f;
 
     private Sprite ventAppearButtonSprite = null, ventHideButtonSprite = null, auraButtonSprite = null;
@@ -102,8 +100,8 @@ public class Hadar : Role
             {
                 var property = PlayerControl.LocalPlayer.GetModData().Property;
 
-                    //ダメージを与える
-                    if (property.UnderTheFloor)
+                //ダメージを与える
+                if (property.UnderTheFloor)
                 {
                     var center = PlayerControl.LocalPlayer.transform.position;
                     foreach (var player in PlayerControl.AllPlayerControls)

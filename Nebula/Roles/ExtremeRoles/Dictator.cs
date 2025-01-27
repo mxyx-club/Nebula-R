@@ -1,7 +1,8 @@
 namespace Nebula.Roles.CrewmateRoles;
 
-public class Dictator : Role{
-    public static Color RoleColor = new Color(236f / 255f,107f / 255f,38f / 255f);
+public class Dictator : Role
+{
+    public static Color RoleColor = new Color(236f / 255f, 107f / 255f, 38f / 255f);
 
     private bool isVoted = false;
     private byte target;
@@ -14,7 +15,7 @@ public class Dictator : Role{
 
     public override void OnVote(byte targetId)
     {
-        if(targetId <= Game.GameData.data.AllPlayers.Count())
+        if (targetId <= Game.GameData.data.AllPlayers.Count())
         {
             RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, voteId);
             isVoted = true;
@@ -42,7 +43,7 @@ public class Dictator : Role{
 
     public override void OnRevived(byte playerId)
     {
-        if(playerId == PlayerControl.LocalPlayer.PlayerId) isVoted = false;
+        if (playerId == PlayerControl.LocalPlayer.PlayerId) isVoted = false;
     }
 
     public Dictator() : base("Dictator", "dictator", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,

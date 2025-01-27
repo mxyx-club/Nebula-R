@@ -39,8 +39,8 @@ public class AssignMap
     }
 }
 
-[HarmonyPatch(typeof(AmongUs.GameOptions.RoleOptionsData), nameof(AmongUs.GameOptions.RoleOptionsData.GetNumPerGame))]
-class RoleOptionsDataGetNumPerGamePatch
+[HarmonyPatch(typeof(RoleOptionsData), nameof(AmongUs.GameOptions.RoleOptionsData.GetNumPerGame))]
+internal class RoleOptionsDataGetNumPerGamePatch
 {
     public static void Postfix(ref int __result)
     {
@@ -83,7 +83,7 @@ public class AssignRoles
             {
                 //対象外のロールと非表示ロールはスキップする
                 //無効なロールは入れない
-                if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
+                if ((CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
 
                 if (role.category != category)
                 {
@@ -297,7 +297,7 @@ public class AssignRoles
         foreach (Role role in Roles.Roles.AllRoles)
         {
             //無効なロールは入れない
-            if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
+            if ((CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
 
             if (role.category != RoleCategory.Complex) continue;
 
@@ -380,7 +380,7 @@ public class AssignRoles
 }
 
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
-class RoleAssignmentPatch
+internal class RoleAssignmentPatch
 {
     public static void Postfix()
     {
@@ -478,46 +478,53 @@ class RoleAssignmentPatch
             crewmates.RemoveAll((p) => p.PlayerId == PlayerControl.LocalPlayer.PlayerId);
         }
 
-        if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.Battle){
+        if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.Battle)
+        {
             var allPlayers = new List<byte>();
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 allPlayers.Add(player.PlayerId);
             }
 
-            if((allPlayers.Count & 1) == 1){
+            if ((allPlayers.Count & 1) == 1)
+            {
                 int idx = rnd.Next(allPlayers.Count);
-                assignMap.AssignRole(allPlayers[idx],Roles.Roles.SchrodingersCat.id);
+                assignMap.AssignRole(allPlayers[idx], Roles.Roles.SchrodingersCat.id);
                 allPlayers.RemoveAt(idx);
             }
 
             var array = Helpers.GetRandomArray(allPlayers.Count);
 
-            for(int tmp = 0;tmp < allPlayers.Count;tmp++){
-                if(array[tmp] % 2 == 0) assignMap.AssignRole(allPlayers[tmp],Roles.Roles.YellowTeam.id);
-                else assignMap.AssignRole(allPlayers[tmp],Roles.Roles.GreenTeam.id);
+            for (int tmp = 0; tmp < allPlayers.Count; tmp++)
+            {
+                if (array[tmp] % 2 == 0) assignMap.AssignRole(allPlayers[tmp], Roles.Roles.YellowTeam.id);
+                else assignMap.AssignRole(allPlayers[tmp], Roles.Roles.GreenTeam.id);
             }
 
             //if(!Module.AssetLoader.audioSource.isPlaying) Module.AssetLoader.audioSource.Play();
 
             return;
-        }else if(CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.VirusCrisis){
+        }
+        else if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.VirusCrisis)
+        {
             var allPlayers = new List<byte>();
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 allPlayers.Add(player.PlayerId);
             }
 
-            var impidx = NebulaPlugin.rnd.Next(0,allPlayers.Count);
-            assignMap.AssignRole(allPlayers[impidx],Roles.Roles.Infected.id);
+            var impidx = NebulaPlugin.rnd.Next(0, allPlayers.Count);
+            assignMap.AssignRole(allPlayers[impidx], Roles.Roles.Infected.id);
             allPlayers.RemoveAt(impidx);
-            for(int i = 0;i < Roles.Roles.Gunner.neutrallySpawnCount.getFloat();i++){
-                var idx = NebulaPlugin.rnd.Next(0,allPlayers.Count);
-                assignMap.AssignRole(allPlayers[idx],Roles.Roles.Gunner.id);
+            for (int i = 0; i < Roles.Roles.Gunner.neutrallySpawnCount.getFloat(); i++)
+            {
+                var idx = NebulaPlugin.rnd.Next(0, allPlayers.Count);
+                assignMap.AssignRole(allPlayers[idx], Roles.Roles.Gunner.id);
                 allPlayers.RemoveAt(idx);
             }
-            foreach(var pi in allPlayers){
-                assignMap.AssignRole(pi,Roles.Roles.Survival.id);
+            foreach (var pi in allPlayers)
+            {
+                assignMap.AssignRole(pi, Roles.Roles.Survival.id);
             }
             return;
         }
@@ -552,7 +559,7 @@ class RoleAssignmentPatch
         if (property.RequireImpostors)
         {
 
-                //メタ的にインポスターを要求する場合
+            //メタ的にインポスターを要求する場合
             foreach (var entry in metaAssignment)
             {
                 if (entry.Value.category != RoleCategory.Impostor) continue;
@@ -624,7 +631,7 @@ class RoleAssignmentPatch
             }
             else
             {
-                foreach(var p in crewmates)
+                foreach (var p in crewmates)
                 {
                     if (p.Data.Role.Role == RoleTypes.Impostor) impostors.Add(p);
                 }
@@ -716,16 +723,16 @@ class RoleAssignmentPatch
     }
 }
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.OnPlayerDeath))]
-class GhostRoleAssignmentPatch
+internal class GhostRoleAssignmentPatch
 {
-    static Dictionary<GhostRole, int> assigned = new Dictionary<GhostRole, int>();
+    private static Dictionary<GhostRole, int> assigned = new Dictionary<GhostRole, int>();
 
-    static public void Initialize()
+    public static void Initialize()
     {
         assigned.Clear();
     }
 
-    static public void Postfix(GameManager __instance, [HarmonyArgument(0)] PlayerControl player)
+    public static void Postfix(GameManager __instance, [HarmonyArgument(0)] PlayerControl player)
     {
         var data = player.GetModData();
 
@@ -778,18 +785,18 @@ class GhostRoleAssignmentPatch
 }
 
 [HarmonyPatch(typeof(LogicRoleSelectionNormal), nameof(LogicRoleSelectionNormal.OnPlayerDeath))]
-class BlockGhostRoleAssignmentPatch
+internal class BlockGhostRoleAssignmentPatch
 {
-    static public bool Prefix()
+    public static bool Prefix()
     {
         return false;
     }
 }
 
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SetRole))]
-class SetRolePatch
+internal class SetRolePatch
 {
-    static public bool Prefix(RoleManager __instance, [HarmonyArgument(0)]PlayerControl targetPlayer, [HarmonyArgument(1)]RoleTypes roleType)
+    public static bool Prefix(RoleManager __instance, [HarmonyArgument(0)] PlayerControl targetPlayer, [HarmonyArgument(1)] RoleTypes roleType)
     {
         if (!targetPlayer)
         {

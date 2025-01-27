@@ -1,6 +1,4 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
-
-namespace Nebula.Roles.Perk.CrewmatePerks;
+﻿namespace Nebula.Roles.Perk.CrewmatePerks;
 
 public class Mayday : Perk
 {
@@ -13,7 +11,7 @@ public class Mayday : Perk
         return !result;
     }
 
-    IEnumerator CoNoticeSeeker()
+    private IEnumerator CoNoticeSeeker()
     {
         int left = (int)IP(0);
         float t = 0f;

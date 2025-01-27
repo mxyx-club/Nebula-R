@@ -1,4 +1,4 @@
-﻿namespace Nebula.Module;
+namespace Nebula.Module;
 
 
 public class CustomOptionPreset
@@ -15,11 +15,10 @@ public class CustomOptionPreset
         }
     }
 
-    static public List<CustomOptionPresetInfo> Presets = new List<CustomOptionPresetInfo>();
-    static public StringOption? SaveButton = null;
-
-    Dictionary<string, int> options;
-    bool notInitialize;
+    public static List<CustomOptionPresetInfo> Presets = new List<CustomOptionPresetInfo>();
+    public static StringOption? SaveButton = null;
+    private Dictionary<string, int> options;
+    private bool notInitialize;
 
     public CustomOptionPreset()
     {
@@ -27,7 +26,7 @@ public class CustomOptionPreset
         notInitialize = false;
     }
 
-    static public CustomOptionPreset Export()
+    public static CustomOptionPreset Export()
     {
         var data = new CustomOptionPreset();
 
@@ -58,13 +57,13 @@ public class CustomOptionPreset
                 data.SetInt(Int32OptionNames.NumImpostors, value);
                 break;
             case "vanilla.confirmImpostor":
-                data.SetBool(BoolOptionNames.ConfirmImpostor ,(value == 1));
+                data.SetBool(BoolOptionNames.ConfirmImpostor, (value == 1));
                 break;
             case "vanilla.emergencyMeeting":
                 data.SetInt(Int32OptionNames.NumEmergencyMeetings, value);
                 break;
             case "vanilla.anonymousVotes":
-                data.SetBool(BoolOptionNames.AnonymousVotes , (value == 1));
+                data.SetBool(BoolOptionNames.AnonymousVotes, (value == 1));
                 break;
             case "vanilla.emergencyCooldown":
                 data.SetInt(Int32OptionNames.EmergencyCooldown, value);
@@ -82,10 +81,10 @@ public class CustomOptionPreset
                 data.SetFloat(FloatOptionNames.CrewLightMod, value / 4f);
                 break;
             case "vanilla.impostorVision":
-                data.SetFloat(FloatOptionNames.ImpostorLightMod , value / 4f);
+                data.SetFloat(FloatOptionNames.ImpostorLightMod, value / 4f);
                 break;
             case "vanilla.killCooldown":
-                data.SetFloat(FloatOptionNames.KillCooldown , value / 2f);
+                data.SetFloat(FloatOptionNames.KillCooldown, value / 2f);
                 break;
             case "vanilla.killDistance":
                 data.SetInt(Int32OptionNames.KillDistance, value);
@@ -126,7 +125,7 @@ public class CustomOptionPreset
         writer.WriteLine("vanilla.killCooldown:" + (int)(data.GetFloat(FloatOptionNames.KillCooldown) * 2f));
         writer.WriteLine("vanilla.killDistance:" + data.GetInt(Int32OptionNames.KillDistance));
         writer.WriteLine("vanilla.visualTasks:" + (data.GetBool(BoolOptionNames.VisualTasks) ? 1 : 0));
-        writer.WriteLine("vanilla.taskBarUpdates:" + (int)data.GetInt(Int32OptionNames.TaskBarMode));
+        writer.WriteLine("vanilla.taskBarUpdates:" + data.GetInt(Int32OptionNames.TaskBarMode));
         writer.WriteLine("vanilla.commonTasks:" + data.GetInt(Int32OptionNames.NumCommonTasks));
         writer.WriteLine("vanilla.shortTasks:" + data.GetInt(Int32OptionNames.NumShortTasks));
         writer.WriteLine("vanilla.longTasks:" + data.GetInt(Int32OptionNames.NumLongTasks));
@@ -198,7 +197,7 @@ public class CustomOptionPreset
         {
             string[] strings = text.Split(":");
             if (strings.Length != 3) return;
-            var formula = new Module.Parser.FormulaAnalyzer(strings[1], masterVariables, variables);
+            var formula = new Parser.FormulaAnalyzer(strings[1], masterVariables, variables);
             if (formula.GetResult().GetBool())
             {
                 skipping = true;
@@ -209,7 +208,7 @@ public class CustomOptionPreset
         {
             string[] strings = text.Split(":");
             if (strings.Length != 3) return;
-            var formula = new Module.Parser.FormulaAnalyzer(strings[2], masterVariables, variables);
+            var formula = new Parser.FormulaAnalyzer(strings[2], masterVariables, variables);
             variables[strings[1]] = formula.GetResult().GetInt().ToString();
         }
     }
@@ -270,7 +269,7 @@ public class CustomOptionPreset
                     }
                     else
                     {
-                        var formula = new Module.Parser.FormulaAnalyzer(text.Substring(4), masterVariables, variables);
+                        var formula = new Parser.FormulaAnalyzer(text.Substring(4), masterVariables, variables);
                         conditionList.Add((byte)(formula.GetResult().GetBool() ? 1 : 0));
                     }
                 }
@@ -279,7 +278,7 @@ public class CustomOptionPreset
                     //条件を考慮するべき時は計算する
                     if (conditionList.Count != 0 && (conditionList[conditionList.Count - 1] == 0))
                     {
-                        var formula = new Module.Parser.FormulaAnalyzer(text.Substring(8), masterVariables, variables);
+                        var formula = new Parser.FormulaAnalyzer(text.Substring(8), masterVariables, variables);
                         conditionList[conditionList.Count - 1] = (byte)(formula.GetResult().GetBool() ? 1 : 0);
                     }
                     else if (conditionList.Count > 0)
@@ -314,7 +313,7 @@ public class CustomOptionPreset
                         }
                         else
                         {
-                            var formula = new Module.Parser.FormulaAnalyzer(strings[1], masterVariables, variables);
+                            var formula = new Parser.FormulaAnalyzer(strings[1], masterVariables, variables);
                             preset.options[strings[0]] = formula.GetResult().GetInt();
                         }
                     }
@@ -327,7 +326,7 @@ public class CustomOptionPreset
         }
         catch (Exception exp)
         {
-            NebulaPlugin.Instance.Logger.Print(exp.ToString());
+            Error(exp);
             return false;
         }
     }

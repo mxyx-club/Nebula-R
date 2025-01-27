@@ -71,14 +71,14 @@ public class PlayerControlSetAlphaPatch
 [HarmonyPatch]
 public class PlayerControlGetUsableComponentsPatch
 {
-    static System.Reflection.MethodBase TargetMethod()
+    private static System.Reflection.MethodBase TargetMethod()
     {
         string genericMethodName = nameof(GameObject.GetComponents)!;
         System.Reflection.MethodBase getComponentsMethod = typeof(GameObject).GetMethods().First((m) => m.Name == genericMethodName && m.IsGenericMethodDefinition && m.GetParameters().Length == 0).MakeGenericMethod(typeof(IUsable));
         return getComponentsMethod;
     }
 
-    static public void Postfix(ref Il2CppArrayBase<IUsable> __result)
+    public static void Postfix(ref Il2CppArrayBase<IUsable> __result)
     {
         if (__result.Count > 0)
         {
@@ -90,10 +90,10 @@ public class PlayerControlGetUsableComponentsPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 public class PlayerControlPatch
 {
-   
-    static private bool CheckTargetable(Vector2 position, Vector2 myPosition, ref float distanceCondition)
+
+    private static bool CheckTargetable(Vector2 position, Vector2 myPosition, ref float distanceCondition)
     {
-        Vector2 vector = (Vector2)position - myPosition;
+        Vector2 vector = position - myPosition;
         float magnitude = vector.magnitude;
 
         if (magnitude <= distanceCondition && !PhysicsHelpers.AnyNonTriggersBetween(myPosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
@@ -104,7 +104,7 @@ public class PlayerControlPatch
         return false;
     }
 
-    static public PlayerControl GetTarget(Vector3 position, float distance, bool onlyWhiteNames = false, List<byte>? untargetablePlayers = null)
+    public static PlayerControl GetTarget(Vector3 position, float distance, bool onlyWhiteNames = false, List<byte>? untargetablePlayers = null)
     {
         PlayerControl result = null;
         float num;
@@ -127,7 +127,7 @@ public class PlayerControlPatch
         return result;
     }
 
-    static public PlayerControl? SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte>? untargetablePlayers = null, PlayerControl? targetingPlayer = null)
+    public static PlayerControl? SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte>? untargetablePlayers = null, PlayerControl? targetingPlayer = null)
     {
         return SetMyTarget(range,
                 (player) =>
@@ -139,32 +139,32 @@ public class PlayerControlPatch
                 }, targetingPlayer);
     }
 
-    static public PlayerControl? SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+    public static PlayerControl? SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
     {
         return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)],
                 onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
     }
 
-    static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl targetingPlayer = null)
+    public static PlayerControl? SetMyTarget(Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl targetingPlayer = null)
     {
         return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)],
             targetablePlayers);
     }
 
-    static public PlayerControl? SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl? targetingPlayer = null)
+    public static PlayerControl? SetMyTarget(float range, Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl? targetingPlayer = null)
     {
         PlayerControl result = null;
         float num = range;
         if (!ShipStatus.Instance) return result;
         if (targetingPlayer == null) targetingPlayer = PlayerControl.LocalPlayer;
-        if (targetingPlayer.Data.IsDead && !(targetingPlayer.GetModData().role == Roles.Roles.EvilBusker && Roles.Roles.EvilBusker.pseudocideFlag) && !(targetingPlayer.GetModData().role == Roles.Roles.Puppeteer) && 
+        if (targetingPlayer.Data.IsDead && !(targetingPlayer.GetModData().role == Roles.Roles.EvilBusker && Roles.Roles.EvilBusker.pseudocideFlag) && !(targetingPlayer.GetModData().role == Roles.Roles.Puppeteer) &&
              !(targetingPlayer.GetModData().ghostRole == Roles.Roles.EvilGhost)) return result;
 
         Vector2 truePosition = targetingPlayer.GetTruePosition();
         Il2CppSystem.Collections.Generic.List<GameData.PlayerInfo> allPlayers = GameData.Instance.AllPlayers;
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            GameData.PlayerInfo playerInfo = allPlayers[i]; 
+            GameData.PlayerInfo playerInfo = allPlayers[i];
 
             if (playerInfo == null || (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object == null))
                 continue;
@@ -188,7 +188,7 @@ public class PlayerControlPatch
         return result;
     }
 
-    static public void SetPlayerOutline(PlayerControl? target, Color color)
+    public static void SetPlayerOutline(PlayerControl? target, Color color)
     {
         if (target == null || target.cosmetics.currentBodySprite.BodySprite == null) return;
 
@@ -196,9 +196,9 @@ public class PlayerControlPatch
         target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
     }
 
-    static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)]);
+    public static DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)]);
 
-    static public DeadBody? SetMyDeadTarget(float num)
+    public static DeadBody? SetMyDeadTarget(float num)
     {
         DeadBody? result = null;
         if (!ShipStatus.Instance) return result;
@@ -229,7 +229,7 @@ public class PlayerControlPatch
         return result;
     }
 
-    static public void SetDeadBodyOutline(DeadBody target, Color color)
+    public static void SetDeadBodyOutline(DeadBody target, Color color)
     {
         if (target == null) return;
 
@@ -237,8 +237,7 @@ public class PlayerControlPatch
         target.bodyRenderers[0].material.SetColor("_OutlineColor", color);
     }
 
-
-    static void ResetPlayerOutlines()
+    private static void ResetPlayerOutlines()
     {
         foreach (PlayerControl target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
@@ -248,7 +247,7 @@ public class PlayerControlPatch
         }
     }
 
-    static void ResetDeadBodyOutlines()
+    private static void ResetDeadBodyOutlines()
     {
         foreach (DeadBody deadBody in Helpers.AllDeadBodies())
         {
@@ -471,9 +470,9 @@ public class PlayerControlPatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
-class BlockRPCSetRolePatch
+internal class BlockRPCSetRolePatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)]RoleTypes roleType)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType)
     {
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost) return false;
 
@@ -484,7 +483,7 @@ class BlockRPCSetRolePatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
-class BlockSetRolePatch
+internal class BlockSetRolePatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
@@ -493,7 +492,7 @@ class BlockSetRolePatch
 }
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleAnimation))]
-class PlayerPhysicsHandleAnimationPatch
+internal class PlayerPhysicsHandleAnimationPatch
 {
     public static bool Prefix(PlayerPhysics __instance)
     {
@@ -503,7 +502,7 @@ class PlayerPhysicsHandleAnimationPatch
 }
 
 [HarmonyPatch(typeof(GameData), nameof(GameData.HandleDisconnect), typeof(PlayerControl), typeof(DisconnectReasons))]
-class PlayerDisconnectPatch
+internal class PlayerDisconnectPatch
 {
     public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
@@ -544,7 +543,7 @@ public static class MurderPlayerPatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
-class PlayerControlSetCoolDownPatch
+internal class PlayerControlSetCoolDownPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] float time)
     {
@@ -571,10 +570,10 @@ class PlayerControlSetCoolDownPatch
 }
 
 [HarmonyPatch(typeof(KillAnimation), nameof(KillAnimation.CoPerformKill))]
-class KillAnimationCoPerformKillPatch
+internal class KillAnimationCoPerformKillPatch
 {
     public static bool hideNextAnimation = true;
-    public static bool Prefix(KillAnimation __instance, ref Il2CppSystem.Collections.IEnumerator __result , [HarmonyArgument(0)] PlayerControl source, [HarmonyArgument(1)] PlayerControl target)
+    public static bool Prefix(KillAnimation __instance, ref Il2CppSystem.Collections.IEnumerator __result, [HarmonyArgument(0)] PlayerControl source, [HarmonyArgument(1)] PlayerControl target)
     {
         bool hideAnimation = hideNextAnimation;
         IEnumerator GetEnumerator()
@@ -626,7 +625,7 @@ class KillAnimationCoPerformKillPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
 public static class CompleteTaskPatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)]uint idx)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] uint idx)
     {
         GameData.Instance.RecomputeTaskCounts();
 
@@ -641,7 +640,7 @@ public static class CompleteTaskPatch
 
 //ベント移動その他
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.WalkPlayerTo))]
-class WalkPatch
+internal class WalkPatch
 {
     public static void Prefix(PlayerPhysics __instance)
     {
@@ -676,7 +675,7 @@ class WalkPatch
 
 //入力による移動
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
-class MyWalkPatch
+internal class MyWalkPatch
 {
     public static void Prefix(PlayerPhysics __instance)
     {
@@ -697,7 +696,7 @@ class MyWalkPatch
 
 //特別な会議を呼び出せるようにする
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
-class ReportDeadBodyPatch
+internal class ReportDeadBodyPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
@@ -705,10 +704,10 @@ class ReportDeadBodyPatch
         {
             return false;
         }
-        
+
         MeetingRoomManager.Instance.AssignSelf(__instance, target);
         if (!AmongUsClient.Instance.AmHost) return false;
-        
+
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
         __instance.RpcStartMeeting(target);
 
@@ -717,7 +716,7 @@ class ReportDeadBodyPatch
 }
 
 [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.FixedUpdate))]
-class WalkMagnitudePatch
+internal class WalkMagnitudePatch
 {
 
     public static void Prefix(CustomNetworkTransform __instance)
@@ -757,7 +756,7 @@ class WalkMagnitudePatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CanMove), MethodType.Getter)]
-class PlayerCanMovePatch
+internal class PlayerCanMovePatch
 {
     public static void Postfix(PlayerControl __instance, ref bool __result)
     {
@@ -779,7 +778,7 @@ class PlayerCanMovePatch
 
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.IsKillTimerEnabled), MethodType.Getter)]
-class PlayerIsKillTimerEnabledPatch
+internal class PlayerIsKillTimerEnabledPatch
 {
     public static void Postfix(PlayerControl __instance, ref bool __result)
     {
@@ -800,7 +799,7 @@ class PlayerIsKillTimerEnabledPatch
                     if (CustomOptionHolder.KillCoolDownProceedIgnoringEmergencySabotage.getBool() && (
                         Minigame.Instance.GetIl2CppType() == Il2CppType.Of<AirshipAuthGame>() ||
                         Minigame.Instance.GetIl2CppType() == Il2CppType.Of<ReactorMinigame>() ||
-                        Minigame.Instance.GetIl2CppType() == Il2CppType.Of<KeypadGame>() )) return;
+                        Minigame.Instance.GetIl2CppType() == Il2CppType.Of<KeypadGame>())) return;
                 }
                 __result = false;
             }
@@ -815,7 +814,7 @@ class PlayerIsKillTimerEnabledPatch
 }
 
 [HarmonyPatch(typeof(OverlayKillAnimation), nameof(OverlayKillAnimation.Initialize))]
-class OverlayKillAnimationPatch
+internal class OverlayKillAnimationPatch
 {
     public static bool Prefix(OverlayKillAnimation __instance, [HarmonyArgument(0)] GameData.PlayerInfo kInfo, [HarmonyArgument(1)] GameData.PlayerInfo vInfo)
     {

@@ -1,13 +1,13 @@
 ﻿namespace Nebula.Events.Variation;
 
-class BlackOut : GlobalEvent
+internal class BlackOut : GlobalEvent
 {
     public float VisionRate = 1f;
     public float MinRate = 1f;
 
     public BlackOut(float duration, ulong option) : base(GlobalEvent.Type.BlackOut, duration, option)
     {
-        MinRate = 1f * ((float)option / 100f);
+        MinRate = 1f * (option / 100f);
         if (MinRate < 0f) MinRate = 0f;
         if (MinRate > 1f) MinRate = 1f;
     }

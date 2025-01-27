@@ -26,7 +26,7 @@ public class PavlovsCat : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if(killButton != null)
+        if (killButton != null)
         {
             killButton.Destroy();
         }

@@ -96,7 +96,7 @@ public class MapEditor
     protected static Vent CreateVent(SystemTypes room, string ventName, Vector2 position)
     {
         var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
-        Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent, ShipStatus.Instance.FastRooms[room].transform);
+        Vent vent = UnityEngine.Object.Instantiate(referenceVent, ShipStatus.Instance.FastRooms[room].transform);
         vent.transform.localPosition = new Vector3(position.x, position.y, -1);
         vent.Left = null;
         vent.Right = null;

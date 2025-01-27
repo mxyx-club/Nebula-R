@@ -2,8 +2,8 @@
 
 public static class UpperInformationManager
 {
-    static List<UpperInformation> AllInformations = new List<UpperInformation>();
-    static GameObject manager;
+    private static List<UpperInformation> AllInformations = new List<UpperInformation>();
+    private static GameObject manager;
     public static void Initialize()
     {
         AllInformations.Clear();
@@ -28,7 +28,7 @@ public static class UpperInformationManager
         }
     }
 
-    static public void Register(UpperInformation information)
+    public static void Register(UpperInformation information)
     {
         AllInformations.Add(information);
         information.gameObject.transform.SetParent(manager.transform);

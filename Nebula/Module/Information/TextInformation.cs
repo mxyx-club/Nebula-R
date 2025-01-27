@@ -2,7 +2,7 @@
 
 public class TextInformation : UpperInformation
 {
-    TMPro.TextMeshPro text;
+    private TMPro.TextMeshPro text;
 
     public TextInformation(string text) : base("TextInfo")
     {

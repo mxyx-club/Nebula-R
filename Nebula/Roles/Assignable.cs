@@ -17,10 +17,10 @@ public class Assignable
     public string LocalizeName { get; private set; }
     public Color Color { get; private set; }
 
-    public Module.CustomOption TopOption { get; private set; }
-    public Module.CustomOption? RoleChanceOption { get; private set; } = null;
-    public Module.CustomOption? RoleChanceSecondaryOption { get; private set; } = null;
-    public Module.CustomOption? RoleCountOption { get; private set; } = null;
+    public CustomOption TopOption { get; private set; }
+    public CustomOption? RoleChanceOption { get; private set; } = null;
+    public CustomOption? RoleChanceSecondaryOption { get; private set; } = null;
+    public CustomOption? RoleCountOption { get; private set; } = null;
 
     /// <summary>
     /// FixedRoleCountが有効な場合この関数が呼び出されます。
@@ -43,10 +43,10 @@ public class Assignable
     /// 割り当てを設定しない場合はNoneにしてください。
     /// </summary>
     public AllocationType Allocation { get; protected set; }
-    
+
     public virtual bool IsUnsuitable { get { return false; } }
 
-    public Module.CustomGameMode ValidGamemode { get; set; }
+    public CustomGameMode ValidGamemode { get; set; }
 
     protected bool canFixSabotage { get; set; }
     public virtual bool CanFixSabotage { get { return canFixSabotage; } }
@@ -122,86 +122,86 @@ public class Assignable
         }
     }
     public virtual HelpSprite[] helpSprite { get => new HelpSprite[0]; }
-    public virtual Tuple<string,Action>[] helpButton { get => new Tuple<string, Action>[0]; }
+    public virtual Tuple<string, Action>[] helpButton { get => new Tuple<string, Action>[0]; }
 
     /*--------------------------------------------------------------------------------------*/
     /*--------------------------------------------------------------------------------------*/
 
-    protected Module.MetaScreenContent[] GetStandardTopOption(Action refresher)
+    protected MetaScreenContent[] GetStandardTopOption(Action refresher)
     {
         if (RoleCountOption.getSelection() >= 1)
         {
             return
-                new Module.MetaScreenContent[]{
-                    new Module.MSMargin(0.8f),
-                    new Module.MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                new MetaScreenContent[]{
+                    new MSMargin(0.8f),
+                    new MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
                         RoleCountOption.addSelection(-1);
                         refresher();
                     }),
-                    new Module.MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
                         RoleCountOption.addSelection(1);
                         refresher();
                     }),
-                    new Module.MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                    new MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
                         RoleChanceOption.addSelection(-1);
                         refresher();
                     }),
-                    new Module.MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
                         RoleChanceOption.addSelection(1);
                         refresher();
                     }),
-                    new Module.MSString(0.2f,"(",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.2f,"(",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
                         RoleChanceSecondaryOption.addSelection(-1);
                         refresher();
                     }),
-                    new Module.MSString(0.6f, RoleChanceSecondaryOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.6f, RoleChanceSecondaryOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
                         RoleChanceSecondaryOption.addSelection(1);
                         refresher();
                     }),
-                    new Module.MSString(0.2f,")",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold)
+                    new MSString(0.2f,")",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold)
             };
         }
         else
         {
             return
-                new Module.MetaScreenContent[]{
-                    new Module.MSMargin(0.8f),
-                    new Module.MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                new MetaScreenContent[]{
+                    new MSMargin(0.8f),
+                    new MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
                         RoleCountOption.addSelection(-1);
                         refresher();
                     }),
-                    new Module.MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
                         RoleCountOption.addSelection(1);
                         refresher();
                     }),
-                    new Module.MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                    new MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
                         RoleChanceOption.addSelection(-1);
                         refresher();
                     }),
-                    new Module.MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                    new MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
                         RoleChanceOption.addSelection(1);
                         refresher();
                     }),
-                    new Module.MSMargin(0.26f+0.66f+0.5f+0.5f+0.26f)
+                    new MSMargin(0.26f+0.66f+0.5f+0.5f+0.26f)
             };
         }
     }
 
-    protected void SetupRoleOptionData(Module.CustomOptionTab tab)
+    protected void SetupRoleOptionData(CustomOptionTab tab)
     {
         if (Allocation == AllocationType.None)
         {
@@ -235,7 +235,7 @@ public class Assignable
                 RoleChanceSecondaryOption.isHiddenOnMetaScreen = true;
                 RoleCountOption.isHiddenOnMetaScreen = true;
 
-                TopOption.preOptionScreenBuilder = (refresher) => new Module.MetaScreenContent[][] { GetStandardTopOption(refresher) };
+                TopOption.preOptionScreenBuilder = (refresher) => new MetaScreenContent[][] { GetStandardTopOption(refresher) };
             }
         }
 
@@ -261,28 +261,28 @@ public class Assignable
 
     }
 
-    public Module.CustomOption CreateMetaOption(Color color, string name, int defaultValue, bool isGeneral = false)
+    public CustomOption CreateMetaOption(Color color, string name, int defaultValue, bool isGeneral = false)
     {
-        Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, new object[0], defaultValue, TopOption, false, false, "", Module.CustomOptionTab.None);
+        CustomOption option = new CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, new object[0], defaultValue, TopOption, false, false, "", Module.CustomOptionTab.None);
         option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
         return option;
     }
 
-    public Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue, bool isGeneral = false)
+    public CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue, bool isGeneral = false)
     {
-        Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, Array.IndexOf(selections, defaultValue), TopOption, false, false, "", Module.CustomOptionTab.None);
+        CustomOption option = new CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, Array.IndexOf(selections, defaultValue), TopOption, false, false, "", Module.CustomOptionTab.None);
         option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
         return option;
     }
 
-    public Module.CustomOption CreateOption(Color color, string name, string[] selections, bool isGeneral = false)
+    public CustomOption CreateOption(Color color, string name, string[] selections, bool isGeneral = false)
     {
         return CreateOption(color, name, selections, "", isGeneral);
     }
 
-    public Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step, bool isGeneral = false)
+    public CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step, bool isGeneral = false)
     {
         List<float> selections = new List<float>();
         for (float s = min; s <= max; s += step)
@@ -290,7 +290,7 @@ public class Assignable
         return CreateOption(color, name, selections.Cast<object>().ToArray(), defaultValue, isGeneral);
     }
 
-    public Module.CustomOption CreateOption(Color color, string name, bool defaultValue, bool isGeneral = false)
+    public CustomOption CreateOption(Color color, string name, bool defaultValue, bool isGeneral = false)
     {
         return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off", isGeneral);
     }
@@ -421,7 +421,7 @@ public class Assignable
     /// 自身が特別な会議ボタンを押した際に呼び出されます。
     /// </summary>
     [RoleLocalMethod]
-    public virtual void OnCallSpecialMeeting() {}
+    public virtual void OnCallSpecialMeeting() { }
 
     /*--------------------------------------------------------------------------------------*/
 

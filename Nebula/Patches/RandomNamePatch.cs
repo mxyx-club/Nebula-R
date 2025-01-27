@@ -1,12 +1,12 @@
-﻿using System.Text;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Text;
 
 namespace Nebula.Patches;
 
 [HarmonyPatch]
-class RandomNamePatch
+internal class RandomNamePatch
 {
-    static private List<string> RandomNames = new List<string>();
+    private static List<string> RandomNames = new List<string>();
 
     private static void LoadNames()
     {
@@ -22,7 +22,7 @@ class RandomNamePatch
         }
     }
 
-    static public string GetRandomName()
+    public static string GetRandomName()
     {
         if (RandomNames.Count == 0) LoadNames();
 

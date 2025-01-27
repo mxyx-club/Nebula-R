@@ -3,7 +3,7 @@
 [Harmony]
 public class CameraPatch
 {
-    static float cameraTimer = 0f;
+    private static float cameraTimer = 0f;
 
     public static void ResetData()
     {
@@ -12,7 +12,7 @@ public class CameraPatch
         PlanetSurveillanceMinigamePatch.ResetData();
     }
 
-    static void UseCameraTime()
+    private static void UseCameraTime()
     {
         if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
         {
@@ -22,12 +22,12 @@ public class CameraPatch
     }
 
     [HarmonyPatch]
-    class SurveillanceMinigamePatch
+    private class SurveillanceMinigamePatch
     {
         private static int page = 0;
         private static float timer = 0f;
-        static TMPro.TextMeshPro TimeRemaining;
-        static List<TMPro.TextMeshPro> OutOfTime = new List<TMPro.TextMeshPro>();
+        private static TMPro.TextMeshPro TimeRemaining;
+        private static List<TMPro.TextMeshPro> OutOfTime = new List<TMPro.TextMeshPro>();
 
         public static void ResetData()
         {
@@ -44,7 +44,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(SurveillanceMinigame), nameof(SurveillanceMinigame.Begin))]
-        class SurveillanceMinigameBeginPatch
+        private class SurveillanceMinigameBeginPatch
         {
             public static void Prefix(SurveillanceMinigame __instance)
             {
@@ -54,7 +54,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(SurveillanceMinigame), nameof(SurveillanceMinigame.Update))]
-        class SurveillanceMinigameUpdatePatch
+        private class SurveillanceMinigameUpdatePatch
         {
             public static bool Prefix(SurveillanceMinigame __instance)
             {
@@ -131,9 +131,9 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(SurveillanceMinigame), nameof(SurveillanceMinigame.Close))]
-        class SurveillanceMinigameClosePatch
+        private class SurveillanceMinigameClosePatch
         {
-            static void Prefix(SurveillanceMinigame __instance)
+            private static void Prefix(SurveillanceMinigame __instance)
             {
                 UseCameraTime();
             }
@@ -141,10 +141,10 @@ public class CameraPatch
     }
 
     [HarmonyPatch]
-    class PlanetSurveillanceMinigamePatch
+    private class PlanetSurveillanceMinigamePatch
     {
-        static TMPro.TextMeshPro TimeRemaining;
-        static TMPro.TextMeshPro OutOfTime;
+        private static TMPro.TextMeshPro TimeRemaining;
+        private static TMPro.TextMeshPro OutOfTime;
 
         public static void ResetData()
         {
@@ -161,7 +161,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.Begin))]
-        class PlanetSurveillanceMinigameBeginPatch
+        private class PlanetSurveillanceMinigameBeginPatch
         {
             public static void Prefix(PlanetSurveillanceMinigame __instance)
             {
@@ -170,7 +170,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.Update))]
-        class PlanetSurveillanceMinigameUpdatePatch
+        private class PlanetSurveillanceMinigameUpdatePatch
         {
             public static bool Prefix(PlanetSurveillanceMinigame __instance)
             {
@@ -243,7 +243,7 @@ public class CameraPatch
 
 
         [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.Close))]
-        class PlanetSurveillanceMinigameClosePatch
+        private class PlanetSurveillanceMinigameClosePatch
         {
             public static void Prefix(PlanetSurveillanceMinigame __instance)
             {
@@ -252,7 +252,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.NextCamera))]
-        class PlanetSurveillanceMinigamePulseStaticPatch
+        private class PlanetSurveillanceMinigamePulseStaticPatch
         {
             public static bool Prefix(PlanetSurveillanceMinigame __instance, [HarmonyArgument(0)] int direction)
             {
@@ -291,10 +291,10 @@ public class CameraPatch
     }
 
     [HarmonyPatch]
-    class DoorLogPatch
+    private class DoorLogPatch
     {
-        static TMPro.TextMeshPro TimeRemaining;
-        static TMPro.TextMeshPro OutOfTime;
+        private static TMPro.TextMeshPro TimeRemaining;
+        private static TMPro.TextMeshPro OutOfTime;
 
         public static void ResetData()
         {
@@ -311,7 +311,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(Minigame), nameof(Minigame.Begin))]
-        class SecurityLogGameBeginPatch
+        private class SecurityLogGameBeginPatch
         {
             public static void Prefix(Minigame __instance)
             {
@@ -321,7 +321,7 @@ public class CameraPatch
         }
 
         [HarmonyPatch(typeof(SecurityLogGame), nameof(SecurityLogGame.Update))]
-        class SecurityLogGameUpdatePatch
+        private class SecurityLogGameUpdatePatch
         {
             public static bool Prefix(SecurityLogGame __instance)
             {
@@ -368,10 +368,9 @@ public class CameraPatch
 
 
         [HarmonyPatch(typeof(Minigame), nameof(Minigame.Close), new Type[0])]
-        class SecurityLogGameClosePatch
+        private class SecurityLogGameClosePatch
         {
-
-            static void Prefix(Minigame __instance)
+            private static void Prefix(Minigame __instance)
             {
                 if (__instance is SecurityLogGame)
                     UseCameraTime();

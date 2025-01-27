@@ -1,12 +1,12 @@
-﻿using System.Text;
 using System.Diagnostics;
+using System.Text;
 
 namespace Nebula.Utilities;
 
 public class TimeMeasure
 {
-    Stopwatch stopwatch;
-    List<Tuple<string, long>> record;
+    private Stopwatch stopwatch;
+    private List<Tuple<string, long>> record;
     public TimeMeasure()
     {
         record = new List<Tuple<string, long>>();
@@ -47,6 +47,6 @@ public class TimeMeasure
             if (!isFirst) output.Append(", "); else isFirst = false;
             output.Append(t);
         }
-        NebulaPlugin.Instance.Logger.Print(output.ToString());
+        Info(output.ToString());
     }
 }

@@ -7,7 +7,7 @@ public class AI_UrgencyCommsForDeadBodies : GhostWeightedAI
     {
         if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
 
-        float value = (float)Helpers.AllDeadBodies().Length / (float)MaxBodies;
+        float value = Helpers.AllDeadBodies().Length / (float)MaxBodies;
         ghost.SabotageMood[SystemTypes.Comms] += (value > 1 ? 1f : value) * Weight;
     }
 
@@ -30,7 +30,7 @@ public class AI_UrgencyCommsForAdmin : GhostWeightedAI
         if (room == null) return;
 
         int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * num / MaxPlayers;
     }
 
     public AI_UrgencyCommsForAdmin(uint priority, float weight, int maxPlayers) : base(priority, weight)
@@ -51,7 +51,7 @@ public class AI_UrgencyCommsForVital : GhostWeightedAI
         if (room == null) return;
 
         int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * num / MaxPlayers;
     }
 
     public AI_UrgencyCommsForVital(uint priority, float weight, int maxPlayers) : base(priority, weight)
@@ -72,7 +72,7 @@ public class AI_UrgencyCommsForCamera : GhostWeightedAI
         if (room == null) return;
 
         int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * num / MaxPlayers;
     }
 
     public AI_UrgencyCommsForCamera(uint priority, float weight, int maxPlayers) : base(priority, weight)

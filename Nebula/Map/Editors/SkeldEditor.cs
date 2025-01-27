@@ -1,6 +1,6 @@
 ﻿namespace Nebula.Map.Editors;
 
-class SkeldEditor : MapEditor
+internal class SkeldEditor : MapEditor
 {
     public SkeldEditor() : base(0)
     {
@@ -8,8 +8,8 @@ class SkeldEditor : MapEditor
 
     public override void AddVents()
     {
-        Vent v1 = CreateVent(SystemTypes.Cafeteria, "CafeUpperVent", new UnityEngine.Vector2(-2.1f, 3.8f));
-        Vent v2 = CreateVent(SystemTypes.Storage, "StorageVent", new UnityEngine.Vector2(0.45f, -3.6f));
+        Vent v1 = CreateVent(SystemTypes.Cafeteria, "CafeUpperVent", new Vector2(-2.1f, 3.8f));
+        Vent v2 = CreateVent(SystemTypes.Storage, "StorageVent", new Vector2(0.45f, -3.6f));
         v1.Left = v2;
         v2.Right = v1;
     }

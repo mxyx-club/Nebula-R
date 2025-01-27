@@ -16,7 +16,7 @@ public class CustomOverlays
     }
 
     [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
-    class TaskTextPatch
+    private class TaskTextPatch
     {
 
         public static void Postfix(TaskPanelBehaviour __instance)
@@ -34,7 +34,7 @@ public class CustomOverlays
                      Language.Language.GetString("role." + role.LocalizeName + ".hint"))
                     + "\n" + __instance.taskText.text;
                 string? append = data.role.GetCustomTaskText();
-                if (append != null) { text += "\n"+append; }
+                if (append != null) { text += "\n" + append; }
                 __instance.taskText.text = text;
             }
             catch { }

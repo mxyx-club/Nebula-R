@@ -4,8 +4,8 @@ public class Bloody : Template.StandardExtraRole
 {
     public class BloodyEvent : Events.LocalEvent
     {
-        int num;
-        float timer;
+        private int num;
+        private float timer;
 
         public BloodyEvent(float duration) : base(duration)
         {
@@ -45,7 +45,7 @@ public class Bloody : Template.StandardExtraRole
         }
     }
 
-    static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
+    public static Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
     private Module.CustomOption bloodyDurationOption;
 

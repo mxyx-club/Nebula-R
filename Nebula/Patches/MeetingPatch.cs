@@ -1,10 +1,7 @@
-﻿using Nebula.Module;
-using UnityEngine;
-
 namespace Nebula.Patches;
 
 [HarmonyPatch]
-class MeetingHudPatch
+internal class MeetingHudPatch
 {
     //最新の会議での得票数記録
     private static Dictionary<byte, int> VoteHistory = new Dictionary<byte, int>();
@@ -14,10 +11,9 @@ class MeetingHudPatch
     private static TMPro.TextMeshPro meetingInfoText;
 
     [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.Start))]
-    class PlayerVoteAreaRemovePlayerLevelPatch
+    private class PlayerVoteAreaRemovePlayerLevelPatch
     {
-
-        static void Postfix(PlayerVoteArea __instance)
+        private static void Postfix(PlayerVoteArea __instance)
         {
             try
             {
@@ -28,14 +24,13 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
-    class CastVotePatch
+    private class CastVotePatch
     {
-
-        static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
+        private static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
         {
             GameData.PlayerInfo playerById = GameData.Instance.GetPlayerById(srcPlayerId);
             GameData.PlayerInfo playerById2 = GameData.Instance.GetPlayerById(suspectPlayerId);
-            Debug.Log(playerById.PlayerName + " has voted for " + ((playerById2 != null) ? playerById2.PlayerName : "No one"));
+            Info(playerById.PlayerName + " has voted for " + ((playerById2 != null) ? playerById2.PlayerName : "No one"));
             int num = __instance.playerStates.IndexOf((Il2CppSystem.Predicate<PlayerVoteArea>)((PlayerVoteArea pv) => pv.TargetPlayerId == srcPlayerId));
             PlayerVoteArea playerVoteArea = __instance.playerStates[num];
             if (!playerVoteArea.AmDead && !playerVoteArea.DidVote)
@@ -59,10 +54,9 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.VoteForMe))]
-    class PlayerVoteAreaSelectPatch
+    private class PlayerVoteAreaSelectPatch
     {
-
-        static void Prefix(PlayerVoteArea __instance)
+        private static void Prefix(PlayerVoteArea __instance)
         {
             Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) =>
             {
@@ -72,7 +66,7 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
-    class MeetingCalculateVotesPatch
+    private class MeetingCalculateVotesPatch
     {
         public static void CalculateVotes(ref Dictionary<byte, int> dictionary, MeetingHud __instance)
         {
@@ -81,7 +75,7 @@ class MeetingHudPatch
             {
                 PlayerVoteArea playerVoteArea = __instance.playerStates[i];
 
-                PlayerControl player = Helpers.playerById((byte)playerVoteArea.TargetPlayerId);
+                PlayerControl player = Helpers.playerById(playerVoteArea.TargetPlayerId);
                 if (player == null || player.Data == null || player.Data.IsDead || player.Data.Disconnected) continue;
 
                 //無視する投票先
@@ -107,8 +101,9 @@ class MeetingHudPatch
 
             }
 
-            if(Roles.ComplexRoles.SwapSystem.isSwapped && !PlayerControl.LocalPlayer.Data.IsDead){
-                if(PlayerControl.LocalPlayer.GetModData().role == Roles.Roles.EvilSwapper || PlayerControl.LocalPlayer.GetModData().role == Roles.Roles.NiceSwapper) Roles.ComplexRoles.SwapSystem.OnMeetingEnd();
+            if (Roles.ComplexRoles.SwapSystem.isSwapped && !PlayerControl.LocalPlayer.Data.IsDead)
+            {
+                if (PlayerControl.LocalPlayer.GetModData().role == Roles.Roles.EvilSwapper || PlayerControl.LocalPlayer.GetModData().role == Roles.Roles.NiceSwapper) Roles.ComplexRoles.SwapSystem.OnMeetingEnd();
                 PlayerVoteArea swapped1 = null;
                 PlayerVoteArea swapped2 = null;
                 foreach (PlayerVoteArea playerVoteArea in __instance.playerStates)
@@ -122,8 +117,7 @@ class MeetingHudPatch
             }
         }
 
-
-        static bool Prefix(MeetingHud __instance)
+        private static bool Prefix(MeetingHud __instance)
         {
             if (__instance.playerStates.All((PlayerVoteArea ps) => ps.AmDead || ps.DidVote))
             {
@@ -174,15 +168,16 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
-    class MeetingHudUpdatePatch
+    private class MeetingHudUpdatePatch
     {
-        static MeetingHud.VoteStates lastState;
-        static void Prefix(MeetingHud __instance)
+        private static MeetingHud.VoteStates lastState;
+
+        private static void Prefix(MeetingHud __instance)
         {
             lastState = __instance.state;
         }
 
-        static void Postfix(MeetingHud __instance)
+        private static void Postfix(MeetingHud __instance)
         {
             if (__instance.state == MeetingHud.VoteStates.NotVoted && __instance.state != lastState && lastState != MeetingHud.VoteStates.Voted)
             {
@@ -211,9 +206,9 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.VotingComplete))]
-    class MeetingHudVotingCompletedPatch
+    private class MeetingHudVotingCompletedPatch
     {
-        static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte[] states, [HarmonyArgument(1)] GameData.PlayerInfo exiled, [HarmonyArgument(2)] bool tie)
+        private static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte[] states, [HarmonyArgument(1)] GameData.PlayerInfo exiled, [HarmonyArgument(2)] bool tie)
         {
             if (meetingInfoText != null) meetingInfoText.gameObject.SetActive(false);
 
@@ -236,7 +231,7 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.Init))]
-    class MeetingIntroAnimationPatch
+    private class MeetingIntroAnimationPatch
     {
         public static void Prefix(MeetingIntroAnimation __instance, [HarmonyArgument(1)] ref Il2CppReferenceArray<GameData.PlayerInfo> deadBodies)
         {
@@ -271,7 +266,7 @@ class MeetingHudPatch
     */
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
-    class StartMeetingPatch
+    private class StartMeetingPatch
     {
         public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
         {
@@ -286,26 +281,26 @@ class MeetingHudPatch
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
-    class MeetingServerStartPatch
+    private class MeetingServerStartPatch
     {
-        static private Sprite LightColorSprite;
-        static private Sprite DarkColorSprite;
+        private static Sprite LightColorSprite;
+        private static Sprite DarkColorSprite;
 
-        static private Sprite GetLightColorSprite()
+        private static Sprite GetLightColorSprite()
         {
             if (LightColorSprite) return LightColorSprite;
             LightColorSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorLight.png", 100f);
             return LightColorSprite;
         }
 
-        static private Sprite GetDarkColorSprite()
+        private static Sprite GetDarkColorSprite()
         {
             if (DarkColorSprite) return DarkColorSprite;
             DarkColorSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorDark.png", 100f);
             return DarkColorSprite;
         }
 
-        static void Postfix(MeetingHud __instance)
+        private static void Postfix(MeetingHud __instance)
         {
             //スポーンミニゲームの同期設定を予めリセット
             Game.GameData.data.SynchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
@@ -318,7 +313,8 @@ class MeetingHudPatch
             EmergencyPatch.MeetingUpdate();
 
             Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
-            foreach(var role in Game.GameData.data.myData.getGlobalData().extraRole){
+            foreach (var role in Game.GameData.data.myData.getGlobalData().extraRole)
+            {
                 role.OnMeetingStart();
             }
 
@@ -334,7 +330,7 @@ class MeetingHudPatch
             //色の明暗を表示
             foreach (var player in __instance.playerStates)
             {
-                bool isLightColor = Module.DynamicColors.IsLightColor(Palette.PlayerColors[player.TargetPlayerId]);
+                bool isLightColor = Helpers.playerById(player.TargetPlayerId).isLighterColor();
 
                 GameObject template = player.Buttons.transform.Find("CancelButton").gameObject;
                 GameObject targetBox = UnityEngine.Object.Instantiate(template, player.transform);
@@ -399,7 +395,7 @@ class MeetingHudPatch
     //ミーティング開始アニメーション
 
     [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.CoRun))]
-    class MeetingIntroCoRunPatch
+    private class MeetingIntroCoRunPatch
     {
         public static void Postfix(MeetingIntroAnimation __instance, Il2CppSystem.Collections.IEnumerator __result)
         {
@@ -421,9 +417,9 @@ class MeetingHudPatch
     */
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateResults))]
-    class MeetingHudPopulateVotesPatch
+    private class MeetingHudPopulateVotesPatch
     {
-        static bool Prefix(MeetingHud __instance, Il2CppStructArray<MeetingHud.VoterState> states)
+        private static bool Prefix(MeetingHud __instance, Il2CppStructArray<MeetingHud.VoterState> states)
         {
             PlayerVoteArea swapped1 = null;
             PlayerVoteArea swapped2 = null;
@@ -434,7 +430,7 @@ class MeetingHudPatch
             }
             if (Roles.ComplexRoles.SwapSystem.isSwapped)
             {
-                Debug.LogWarning("SwapAniBegan");
+                Warn("SwapAniBegan");
                 __instance.StartCoroutine(Effects.Slide3D(swapped1.transform, swapped1.transform.localPosition, swapped2.transform.localPosition, 1.5f));
                 __instance.StartCoroutine(Effects.Slide3D(swapped2.transform, swapped2.transform.localPosition, swapped1.transform.localPosition, 1.5f));
             }
@@ -460,7 +456,7 @@ class MeetingHudPatch
                     GameData.PlayerInfo playerById = GameData.Instance.GetPlayerById(voterState.VoterId);
                     if (playerById == null)
                     {
-                        Debug.LogError(string.Format("Couldn't find player info for voter: {0}", voterState.VoterId));
+                        Error(string.Format("Couldn't find player info for voter: {0}", voterState.VoterId));
                     }
                     else if (i == 0 && voterState.SkippedVote && !playerById.IsDead)
                     {
@@ -473,7 +469,8 @@ class MeetingHudPatch
                         num2++;
                     }
 
-                    if (!votesApplied.ContainsKey(voter.PlayerId)){
+                    if (!votesApplied.ContainsKey(voter.PlayerId))
+                    {
                         votesApplied[voter.PlayerId] = 0;
                     }
 
@@ -481,7 +478,7 @@ class MeetingHudPatch
                 }
             }
 
-            if(Roles.ComplexRoles.SwapSystem.isSwapped) Roles.ComplexRoles.SwapSystem.OnMeetingStart();
+            if (Roles.ComplexRoles.SwapSystem.isSwapped) Roles.ComplexRoles.SwapSystem.OnMeetingStart();
             return false;
         }
     }

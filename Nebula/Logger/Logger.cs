@@ -1,52 +1,55 @@
-﻿namespace Nebula.Logger;
-public class Logger
+using System.Text;
+using BepInEx;
+using BepInEx.Logging;
+
+namespace Nebula.Logger;
+
+public static class Logger
 {
-    private string Path;
-    private bool ValidFlag;
+    private static ManualLogSource? logSource { get; set; }
 
-    public Logger(bool isValid, string path = "NebulaLog.txt")
+    internal static void SetLogSource(ManualLogSource Source)
     {
-        ValidFlag = isValid;
-        if (!ValidFlag) return;
-
-        Path = path;
-
-        //以前のログを消去する
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
-
-        using (var writer = new StreamWriter(Path, true))
-        {
-            writer.WriteLine(" - Nebula on the Ship  " + NebulaPlugin.PluginStage + " v" + NebulaPlugin.PluginVisualVersion + "  Log File - ");
-        }
+        if (ConsoleManager.ConsoleEnabled) System.Console.OutputEncoding = Encoding.UTF8;
+        logSource = Source;
     }
 
-    private void __Print(string message)
-    {
-        using (var writer = new StreamWriter(Path, true))
-        {
-            writer.Write(message);
-        }
-    }
+    public static void Info(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Info);
+    public static void Message(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Message);
+    public static void Warn(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Warning);
+    public static void Error(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Error);
+    public static void Debug(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Debug);
+    public static void Fatal(object text, string Tag = "") => SendLog(text.ToString(), Tag, LogLevel.Fatal);
 
-    public void Print(string prefix,string message)
+    public static void SendLog(string? text, string tag = "", LogLevel logLevel = LogLevel.Info)
     {
-        Print("[" + prefix + "] " + message);
-    }
+        string time = DateTime.Now.ToString("HH:mm:ss");
+        if (!string.IsNullOrWhiteSpace(tag)) text = $"[{time}] [{tag}] {text}";
+        else text = $"[{time}] {text}";
 
-    public void Print(string message)
-    {
-        if (!ValidFlag) return;
-
-        if (message.EndsWith('\n'))
+        switch (logLevel)
         {
-            __Print(message);
-        }
-        else
-        {
-            __Print(message + "\n");
+            case LogLevel.Message:
+                logSource?.LogMessage(text);
+                break;
+            case LogLevel.Error:
+                logSource?.LogError(text);
+                break;
+            case LogLevel.Warning:
+                logSource?.LogWarning(text);
+                break;
+            case LogLevel.Fatal:
+                logSource?.LogFatal(text);
+                break;
+            case LogLevel.Info:
+                logSource?.LogInfo(text);
+                break;
+            case LogLevel.Debug:
+                logSource?.LogDebug(text);
+                break;
+            default:
+                logSource?.LogInfo(text);
+                break;
         }
     }
 }

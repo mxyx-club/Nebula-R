@@ -1,5 +1,4 @@
 ﻿using Nebula.Game;
-using Rewired.Utils.Platforms.Windows;
 
 namespace Nebula.Roles.ComplexRoles;
 
@@ -16,7 +15,7 @@ public class FTrapper : Template.HasBilateralness
     public Module.CustomOption rootTimeOption;
     public Module.CustomOption killTrapAudibleDistanceOption;
 
-    static public Color RoleColor = new Color(206f / 255f, 219f / 255f, 96f / 255f);
+    public static Color RoleColor = new Color(206f / 255f, 219f / 255f, 96f / 255f);
 
     public int remainTrapsId { get; private set; }
 
@@ -74,12 +73,12 @@ public class FTrapper : Template.HasBilateralness
             if (trap.ObjectType == Objects.ObjectTypes.VisibleTrap.AccelTrap)
             {
                 RPCEventInvoker.EmitSpeedFactor(player,
-                    new Game.SpeedFactor(1, accelTrapDurationOption.getFloat(), accelTrapSpeedOption.getFloat(), false));
+                    new SpeedFactor(1, accelTrapDurationOption.getFloat(), accelTrapSpeedOption.getFloat(), false));
             }
             else
             {
                 RPCEventInvoker.EmitSpeedFactor(player,
-                    new Game.SpeedFactor(1, decelTrapDurationOption.getFloat(), decelTrapSpeedOption.getFloat(), false));
+                    new SpeedFactor(1, decelTrapDurationOption.getFloat(), decelTrapSpeedOption.getFloat(), false));
             }
         });
     }
@@ -179,7 +178,7 @@ public class Trapper : Template.BilateralnessRole
 
                         if (player.transform.position.Distance(obj.GameObject.transform.position) < 1.125f / 2f)
                         {
-                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId],true, FTrapper.commArrowSprite.GetSprite());
+                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId], true, FTrapper.commArrowSprite.GetSprite());
                             arrow.arrow.SetActive(true);
                             arrow.Update(obj.GameObject.transform.position);
                             detectedPlayers.Add(player.PlayerId);
@@ -195,8 +194,8 @@ public class Trapper : Template.BilateralnessRole
                                 }
                                 if (p == 1f)
                                 {
-                                        //矢印を消す
-                                        UnityEngine.Object.Destroy(arrow.arrow);
+                                    //矢印を消す
+                                    UnityEngine.Object.Destroy(arrow.arrow);
                                 }
                             })));
                         }
@@ -271,7 +270,7 @@ public class Trapper : Template.BilateralnessRole
                 }
 
                 if (Roles.F_Trapper.rootTimeOption.getFloat() > 0f)
-                    RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2, Roles.F_Trapper.rootTimeOption.getFloat(), 0f, false));
+                    RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new SpeedFactor(2, Roles.F_Trapper.rootTimeOption.getFloat(), 0f, false));
 
                 trapButton.Timer = Roles.F_Trapper.rootTimeOption.getFloat();
 

@@ -1,4 +1,4 @@
-﻿namespace Nebula.Ghost;
+namespace Nebula.Ghost;
 
 public class Ghost
 {
@@ -24,12 +24,10 @@ public class Ghost
     public bool InSabotage { get; private set; }
 
     public Vector3 Position;
+    private HashSet<GhostAI> AISet;
+    private static HashSet<Func<Ghost>> AllGhosts = new HashSet<Func<Ghost>>();
 
-    HashSet<GhostAI> AISet;
-
-    static HashSet<Func<Ghost>> AllGhosts = new HashSet<Func<Ghost>>();
-
-    static public void Load()
+    public static void Load()
     {
         AllGhosts.Add(() => new Ghosts.TestGhost());
     }
@@ -92,7 +90,7 @@ public class Ghost
         {
             foreach (var room in DoorMood)
             {
-                NebulaPlugin.Instance.Logger.Print("Mood:" + room.Value + ", CoolDown:" + DoorCoolDown[room.Key]);
+                Info("Mood:" + room.Value + ", CoolDown:" + DoorCoolDown[room.Key]);
                 if (room.Value > 1f && DoorCoolDown[room.Key] < 0f)
                 {
                     Agent.SabotageManager.BeginDoorSabotage(room.Key);

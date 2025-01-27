@@ -4,9 +4,9 @@
 public static class EmergencyPatch
 {
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
-    class ReportDeadBodyPatch
+    private class ReportDeadBodyPatch
     {
-        static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
+        private static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
         {
             if (__instance.GetModData().role != Roles.Roles.VOID) return true;
 
@@ -20,11 +20,11 @@ public static class EmergencyPatch
         }
     }
 
-    static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
-    static public bool isSpecialEmergency = false;
+    private static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
+    public static bool isSpecialEmergency = false;
     public static int meetingsCount = 0, maxMeetingsCount = 15;
 
-    static public float GetPenaltyVotingTime()
+    public static float GetPenaltyVotingTime()
     {
         if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal)
         {
@@ -35,7 +35,7 @@ public static class EmergencyPatch
             {
                 return penalty;
             }
-            return (float)(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.VotingTime) - 10);
+            return GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.VotingTime) - 10;
         }
         else
         {
@@ -43,7 +43,7 @@ public static class EmergencyPatch
         }
     }
 
-    static public void Initialize()
+    public static void Initialize()
     {
         occurredSabotage = false;
         occurredKill = false;
@@ -71,12 +71,13 @@ public static class EmergencyPatch
     }
 
     private static bool isInSpecialEmergency = false;
-    
+
     [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Begin))]
-    class SpecialEmergencyMinigamePatch
+    private class SpecialEmergencyMinigamePatch
     {
-        static EmergencyMinigame? lastMinigame = null;
-        static void CallMeeting(EmergencyMinigame __instance)
+        private static EmergencyMinigame? lastMinigame = null;
+
+        private static void CallMeeting(EmergencyMinigame __instance)
         {
             __instance.StatusText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EmergencyRequested, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
             if (Constants.ShouldPlaySfx())
@@ -90,7 +91,7 @@ public static class EmergencyPatch
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => { r.OnCallSpecialMeeting(); });
         }
 
-        static void Postfix(EmergencyMinigame __instance)
+        private static void Postfix(EmergencyMinigame __instance)
         {
             if (lastMinigame != null && lastMinigame.gameObject && lastMinigame.GetInstanceID() == __instance.GetInstanceID()) return;
             lastMinigame = __instance;
@@ -102,15 +103,15 @@ public static class EmergencyPatch
             {
                 var onClickEvent = __instance.DefaultButtonSelected.GetComponent<ButtonBehavior>().OnClick;
                 onClickEvent.RemoveAllListeners();
-                onClickEvent.AddListener((UnityEngine.Events.UnityAction)(()=> { CallMeeting(__instance); }));
+                onClickEvent.AddListener((UnityEngine.Events.UnityAction)(() => { CallMeeting(__instance); }));
             }
         }
     }
 
     [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Update))]
-    class EmergencyMinigameUpdatePatch
+    private class EmergencyMinigameUpdatePatch
     {
-        static void Postfix(EmergencyMinigame __instance)
+        private static void Postfix(EmergencyMinigame __instance)
         {
             var roleCanCallEmergency = true;
             var statusText = "";
@@ -135,7 +136,8 @@ public static class EmergencyPatch
                 return;
             }
 
-            if (Game.GameData.data.IsTimeStopped){
+            if (Game.GameData.data.IsTimeStopped)
+            {
                 __instance.StatusText.text = Language.Language.GetString("meeting.timeIsStopped");
                 __instance.NumberText.text = string.Empty;
                 __instance.ClosedLid.gameObject.SetActive(true);
@@ -144,7 +146,8 @@ public static class EmergencyPatch
                 return;
             }
 
-            if (Game.GameData.data.IsLocked){
+            if (Game.GameData.data.IsLocked)
+            {
                 __instance.StatusText.text = Language.Language.GetString("meeting.isLocked");
                 __instance.NumberText.text = string.Empty;
                 __instance.ClosedLid.gameObject.SetActive(true);

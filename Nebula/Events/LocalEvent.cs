@@ -2,7 +2,7 @@
 
 public class LocalEvent
 {
-    static public List<LocalEvent> Events = new List<LocalEvent>();
+    public static List<LocalEvent> Events = new List<LocalEvent>();
 
     public float duration { get; private set; }
     public bool SpreadOverMeeting { get; protected set; }
@@ -38,11 +38,11 @@ public class LocalEvent
         this.duration = duration;
     }
 
-    static public void Update()
+    public static void Update()
     {
         foreach (LocalEvent localEvent in Events)
         {
-            if(Game.GameData.data.IsTimeStopped && localEvent.WillStop) continue;
+            if (Game.GameData.data.IsTimeStopped && localEvent.WillStop) continue;
             localEvent.LocalUpdate();
             localEvent.duration -= Time.deltaTime;
         }
@@ -50,13 +50,13 @@ public class LocalEvent
         Events.RemoveAll(e => e.CheckTerminal());
     }
 
-    static public void Activate(LocalEvent localEvent)
+    public static void Activate(LocalEvent localEvent)
     {
         localEvent.OnActivate();
         Events.Add(localEvent);
     }
 
-    static public void Inactivate(Predicate<LocalEvent> predicate)
+    public static void Inactivate(Predicate<LocalEvent> predicate)
     {
         Events.RemoveAll((e) =>
         {
@@ -69,12 +69,12 @@ public class LocalEvent
         });
     }
 
-    static public void Initialize()
+    public static void Initialize()
     {
         Events.Clear();
     }
 
-    static public void OnMeeting()
+    public static void OnMeeting()
     {
         foreach (LocalEvent localEvent in Events)
         {

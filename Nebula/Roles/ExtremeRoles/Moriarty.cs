@@ -2,10 +2,11 @@ using Nebula.Patches;
 
 namespace Nebula.Roles.NeutralRoles;
 
-public class Moriarty : Role, Template.HasWinTrigger{
+public class Moriarty : Role, Template.HasWinTrigger
+{
     public class MoriartyEvent : Events.LocalEvent
     {
-        PlayerControl target;
+        private PlayerControl target;
         public MoriartyEvent(PlayerControl target) : base(0.1f) { this.target = target; }
 
         public override void OnActivate()
@@ -17,7 +18,7 @@ public class Moriarty : Role, Template.HasWinTrigger{
     public bool WinTrigger { get; set; } = false;
     public byte Winner { get; set; } = Byte.MaxValue;
 
-    static public Color RoleColor = new Color(106f / 255f, 252f / 255f, 45f / 255f);
+    public static Color RoleColor = new Color(106f / 255f, 252f / 255f, 45f / 255f);
 
     private Module.CustomOption coolDownOption;
     public static Module.CustomOption canWinByKillHolmes;
@@ -25,7 +26,7 @@ public class Moriarty : Role, Template.HasWinTrigger{
     private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f, "ui.button.Moriarty.sidekick");
     private SpriteLoader suicideButtonSprite = new SpriteLoader("Nebula.Resources.SuicideButton.png", 115f, "ui.button.Moriarty.suicide");
 
-    int isCreated { get; set; }
+    private int isCreated { get; set; }
     private CustomButton sidekickButton;
     private CustomButton suicideButton;
 
@@ -39,7 +40,7 @@ public class Moriarty : Role, Template.HasWinTrigger{
     {
         coolDownOption = CreateOption(Color.white, "coolDown", 15f, 5f, 25f, 2.5f);
         coolDownOption.suffix = "second";
-        canWinByKillHolmes = CreateOption(Color.white,"canWinByKillHolmes",true);
+        canWinByKillHolmes = CreateOption(Color.white, "canWinByKillHolmes", true);
     }
 
     public override void ButtonInitialize(HudManager __instance)
@@ -51,7 +52,7 @@ public class Moriarty : Role, Template.HasWinTrigger{
         sidekickButton = new CustomButton(
             () =>
             {
-	            Events.LocalEvent.Activate(new MoriartyEvent(Game.GameData.data.myData.currentTarget));
+                Events.LocalEvent.Activate(new MoriartyEvent(Game.GameData.data.myData.currentTarget));
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, isCreated, -1);
                 Game.GameData.data.myData.currentTarget = null;
                 sidekickButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(isCreated).ToString();
@@ -68,26 +69,30 @@ public class Moriarty : Role, Template.HasWinTrigger{
         sidekickButton.MaxTimer = coolDownOption.getFloat();
         sidekickButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(isCreated).ToString();
 
-        if(!canWinByKillHolmes.getBool()) return;
+        if (!canWinByKillHolmes.getBool()) return;
 
-        if (suicideButton != null){
+        if (suicideButton != null)
+        {
             suicideButton.Destroy();
         }
         suicideButton = new CustomButton(
             () =>
             {
-	            PlayerControl target = Game.GameData.data.myData.currentTarget;
+                PlayerControl target = Game.GameData.data.myData.currentTarget;
                 RPCEventInvoker.UncheckedMurderPlayer(target.PlayerId, target.PlayerId, Game.PlayerData.PlayerStatus.Dead.Id, true);
-                if(target.GetModData().role == Roles.Holmes){
+                if (target.GetModData().role == Roles.Holmes)
+                {
                     RPCEventInvoker.WinTrigger(this);
-                }else{
+                }
+                else
+                {
                     RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, Game.PlayerData.PlayerStatus.Dead.Id, true);
                 }
                 Game.GameData.data.myData.currentTarget = null;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
-            () => {},
+            () => { },
             suicideButtonSprite.GetSprite(),
             Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
@@ -112,7 +117,8 @@ public class Moriarty : Role, Template.HasWinTrigger{
             sidekickButton.Destroy();
             sidekickButton = null;
         }
-        if(suicideButton != null){
+        if (suicideButton != null)
+        {
             suicideButton.Destroy();
             suicideButton = null;
         }
@@ -140,7 +146,7 @@ public class Moriarty : Role, Template.HasWinTrigger{
     public Moriarty()
         : base("Moriarty", "moriarty", RoleColor, RoleCategory.Neutral, Side.Moriarty, Side.Moriarty,
              new HashSet<Side>() { Side.Moriarty }, new HashSet<Side>() { Side.Moriarty },
-             new HashSet<Patches.EndCondition>() { Patches.EndCondition.MoriartyWin, Patches.EndCondition.MoriartyWinByKillHolmes },
+             new HashSet<EndCondition>() { Patches.EndCondition.MoriartyWin, Patches.EndCondition.MoriartyWinByKillHolmes },
              true, VentPermission.CanNotUse, false, false, false)
     {
         sidekickButton = null;
@@ -153,7 +159,8 @@ public class Moriarty : Role, Template.HasWinTrigger{
     }
 }
 
-public class Moran : Role{
+public class Moran : Role
+{
 
     public override bool IsSpawnable() => Roles.Moriarty.IsSpawnable();
 
@@ -188,7 +195,7 @@ public class Moran : Role{
         shotEffectiveRangeOption = CreateOption(Color.white, "shotEffectiveRange", 20f, 2f, 40f, 2f);
         shotEffectiveRangeOption.suffix = "cross";
 
-        canBeNoticedOption = CreateOption(Color.white,"canBeHeared",false);
+        canBeNoticedOption = CreateOption(Color.white, "canBeHeared", false);
         noticeRangeOption = CreateOption(Color.white, "soundEffectiveRange", 20f, 2f, 50f, 2f).AddPrerequisite(canBeNoticedOption);
         noticeRangeOption.suffix = "cross";
 
@@ -236,8 +243,8 @@ public class Moran : Role{
     }
 
     /* ボタン */
-    static private CustomButton sniperButton;
-    static private CustomButton killButton;
+    private static CustomButton sniperButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (sniperButton != null)
@@ -288,11 +295,11 @@ public class Moran : Role{
                 if (target != null)
                 {
                     var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
-                    if(target.GetModData().role == Roles.Holmes && Moriarty.canWinByKillHolmes.getBool()) RPCEventInvoker.WinTrigger(Roles.Moriarty);
+                    if (target.GetModData().role == Roles.Holmes && Moriarty.canWinByKillHolmes.getBool()) RPCEventInvoker.WinTrigger(Roles.Moriarty);
                     killButton.Timer = killButton.MaxTimer;
                 }
 
-                if(canBeNoticedOption.getBool()) RPCEventInvoker.SniperShot();
+                if (canBeNoticedOption.getBool()) RPCEventInvoker.SniperShot();
                 killButton.Timer = killButton.MaxTimer;
                 if (storeRifleOnFireOption.getBool())
                 {
@@ -340,9 +347,9 @@ public class Moran : Role{
 
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
     {
-        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,shotEffectiveRangeOption.getFloat(), 16f); }),
-        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, noticeRangeOption.getFloat(),16f); }),
-        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, shotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,shotEffectiveRangeOption.getFloat(), 16f); }),
+        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, noticeRangeOption.getFloat(),16f); }),
+        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, shotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
     };
 
     private Sprite snipeArrowSprite = null;
@@ -525,8 +532,9 @@ public class Moran : Role{
     public Moran()
         : base("Moran", "moran", Moriarty.RoleColor, RoleCategory.Neutral, Side.Moriarty, Side.Moriarty,
              new HashSet<Side>() { Side.Moriarty }, new HashSet<Side>() { Side.Moriarty },
-             new HashSet<Patches.EndCondition>() { Patches.EndCondition.MoriartyWin, Patches.EndCondition.MoriartyWinByKillHolmes },
-             true, VentPermission.CanUseUnlimittedVent, true, false, false){
+             new HashSet<EndCondition>() { Patches.EndCondition.MoriartyWin, Patches.EndCondition.MoriartyWinByKillHolmes },
+             true, VentPermission.CanUseUnlimittedVent, true, false, false)
+    {
 
         sniperButton = null;
         killButton = null;

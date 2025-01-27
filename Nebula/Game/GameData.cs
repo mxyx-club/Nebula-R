@@ -1,12 +1,7 @@
-﻿using Nebula.Roles;
-
-using static GameData;
-using Hazel;
-using AmongUs.Data.Player;
+﻿using Hazel;
 using Nebula.Map;
-using JetBrains.Annotations;
-using Nebula.Roles.CrewmateRoles;
-using UnityEngine;
+using Nebula.Roles;
+using static GameData;
 
 namespace Nebula.Game;
 
@@ -56,7 +51,7 @@ public class SynchronizeData
         return GetAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
     }
 
-    static private IEnumerator GetStaticAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
+    private static IEnumerator GetStaticAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         while (Game.GameData.data == null)
         {
@@ -65,12 +60,12 @@ public class SynchronizeData
         yield return Game.GameData.data.SynchronizeData.GetAlignEnumerator(tag, withGhost, withSurvivor);
     }
 
-    static public Il2CppSystem.Collections.IEnumerator GetStaticAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
+    public static Il2CppSystem.Collections.IEnumerator GetStaticAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         return GetStaticAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
     }
 
-    public bool Align(SynchronizeTag tag, bool withGhost, bool withSurvivor = true,bool withBot=true)
+    public bool Align(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         bool result = true;
 
@@ -80,7 +75,7 @@ public class SynchronizeData
         foreach (PlayerControl pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (!withBot && pc.isDummy) continue;
-            if ((withGhost&& withSurvivor) || pc.Data.IsDead ? withGhost : withSurvivor)
+            if ((withGhost && withSurvivor) || pc.Data.IsDead ? withGhost : withSurvivor)
                 result &= ((value & ((ulong)1 << pc.PlayerId)) != 0);
         }
 
@@ -113,8 +108,8 @@ public class VisionFactor
 
 public class VisionFactorManager
 {
-    HashSet<VisionFactor> Factors;
-    float currentVision;
+    private HashSet<VisionFactor> Factors;
+    private float currentVision;
 
     public VisionFactorManager()
     {
@@ -174,23 +169,32 @@ public class MyPlayerData
     private PlayerData globalData { get; set; }
     private bool canSeeEveryoneInfo;
     private bool? canControlOtherPlayers = null;
-    public bool CanSeeEveryoneInfo { get {
+    public bool CanSeeEveryoneInfo
+    {
+        get
+        {
             if (Patches.NebulaOption.configPreventSpoiler.Value) return false;
             if (CustomOptionHolder.streamersOption.getBool() && CustomOptionHolder.enforcePreventingSpoilerOption.getBool()) return false;
-            return canSeeEveryoneInfo;  
-        } set { canSeeEveryoneInfo = value; } }
-    public bool CanControlOtherPlayers { get {
+            return canSeeEveryoneInfo;
+        }
+        set { canSeeEveryoneInfo = value; }
+    }
+    public bool CanControlOtherPlayers
+    {
+        get
+        {
             if (!canControlOtherPlayers.HasValue)
             {
                 if (!ShipStatus.Instance) return false;
                 canControlOtherPlayers = true;
-                foreach(var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    if (!p.isDummy && !p.AmOwner) { canControlOtherPlayers = false;  break; }
+                    if (!p.isDummy && !p.AmOwner) { canControlOtherPlayers = false; break; }
                 }
             }
             return canControlOtherPlayers.Value;
-        } }
+        }
+    }
     public float VentDurationTimer { get; set; }
     public float VentCoolDownTimer { get; set; }
     public List<TaskInfo> InitialTasks { get; set; }
@@ -317,8 +321,8 @@ public class SpeedFactor
 
 public class SpeedFactorManager
 {
-    HashSet<SpeedFactor> Factors;
-    byte PlayerId;
+    private HashSet<SpeedFactor> Factors;
+    private byte PlayerId;
 
     public SpeedFactorManager(byte playerId)
     {
@@ -423,8 +427,8 @@ public class PlayerAttributeFactor
 
 public class PlayerAttributeFactorManager
 {
-    HashSet<PlayerAttributeFactor> Factors;
-    byte PlayerId;
+    private HashSet<PlayerAttributeFactor> Factors;
+    private byte PlayerId;
 
     public PlayerAttributeFactorManager(byte playerId)
     {
@@ -548,7 +552,7 @@ public class PlayerProperty
     {
         List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
 
-        sequence.Add(Effects.Action(new System.Action(() =>
+        sequence.Add(Effects.Action(new Action(() =>
         {
             player.MyPhysics.body.velocity = Vector2.zero;
             if (player.AmOwner)
@@ -557,7 +561,7 @@ public class PlayerProperty
             player.moveable = false;
         })));
         sequence.Add(player.MyPhysics.Animations.CoPlayEnterVentAnimation());
-        sequence.Add(Effects.Action(new System.Action(() =>
+        sequence.Add(Effects.Action(new Action(() =>
         {
             player.MyPhysics.myPlayer.Visible = false;
             player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
@@ -582,7 +586,7 @@ public class PlayerProperty
     {
         List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
 
-        sequence.Add(Effects.Action(new System.Action(() =>
+        sequence.Add(Effects.Action(new Action(() =>
         {
             player.MyPhysics.body.velocity = Vector2.zero;
             if (player.AmOwner)
@@ -590,12 +594,12 @@ public class PlayerProperty
             player.moveable = false;
             player.MyPhysics.myPlayer.Visible = true;
             player.cosmetics.AnimateSkinExitVent();
-            
+
             underTheFloor = false;
 
         })));
         sequence.Add(player.MyPhysics.Animations.CoPlayExitVentAnimation());
-        sequence.Add(Effects.Action(new System.Action(() =>
+        sequence.Add(Effects.Action(new Action(() =>
         {
             player.cosmetics.AnimateSkinIdle();
             player.MyPhysics.Animations.PlayIdleAnimation();
@@ -606,7 +610,7 @@ public class PlayerProperty
             }));
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = false;
-            
+
         })));
 
         var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
@@ -625,9 +629,9 @@ public class PlayerProperty
 
 public class GuardStatus
 {
-    byte myPlayerId;
-    HashSet<byte> Guardians;
-    int SingleUseGuardsNum;
+    private byte myPlayerId;
+    private HashSet<byte> Guardians;
+    private int SingleUseGuardsNum;
 
     public GuardStatus(byte playerId)
     {
@@ -686,9 +690,9 @@ public class PlayerData
         }
     }
 
-    static private Dictionary<byte, CosmicTimer> Cosmic = new Dictionary<byte, CosmicTimer>();
+    private static Dictionary<byte, CosmicTimer> Cosmic = new Dictionary<byte, CosmicTimer>();
 
-    static public CosmicTimer GetCosmicTimer(byte playerId)
+    public static CosmicTimer GetCosmicTimer(byte playerId)
     {
         if (!Cosmic.ContainsKey(playerId)) Cosmic[playerId] = new CosmicTimer();
         return Cosmic[playerId];
@@ -696,8 +700,8 @@ public class PlayerData
 
     public class PlayerStatus
     {
-        static private byte AvailableId = 0;
-        static Dictionary<byte, PlayerStatus> StatusMap = new System.Collections.Generic.Dictionary<byte, PlayerStatus>();
+        private static byte AvailableId = 0;
+        private static Dictionary<byte, PlayerStatus> StatusMap = new Dictionary<byte, PlayerStatus>();
 
         public static PlayerStatus Alive = new PlayerStatus("alive");
         public static PlayerStatus Revived = new PlayerStatus("revived");
@@ -732,7 +736,7 @@ public class PlayerData
             StatusMap[Id] = this;
         }
 
-        static public PlayerStatus GetStatusById(byte Id)
+        public static PlayerStatus GetStatusById(byte Id)
         {
             return StatusMap[Id];
         }
@@ -1036,12 +1040,12 @@ public class PlayerData
 
     }
 
-    public void SetExtraRoleData(Roles.ExtraRole role, ulong newValue)
+    public void SetExtraRoleData(ExtraRole role, ulong newValue)
     {
         SetExtraRoleData(role.id, newValue);
     }
 
-    public bool HasExtraRole(Roles.ExtraRole role)
+    public bool HasExtraRole(ExtraRole role)
     {
         return extraRole.Contains(role);
     }
@@ -1173,12 +1177,18 @@ public class VentData
 
 public class UtilityTimer
 {
-    float adminTimer, vitalsTimer, cameraTimer;
-    public float AdminTimer { get => adminTimer; set {
+    private float adminTimer, vitalsTimer, cameraTimer;
+    public float AdminTimer
+    {
+        get => adminTimer; set
+        {
             adminTimer = value;
-            if (value < 1000f) foreach (var text in AdminConsoleShowers)if(text) text.text = String.Format("{0:f1}s", adminTimer);
-        } }
-    public float VitalsTimer { get => vitalsTimer; set
+            if (value < 1000f) foreach (var text in AdminConsoleShowers) if (text) text.text = String.Format("{0:f1}s", adminTimer);
+        }
+    }
+    public float VitalsTimer
+    {
+        get => vitalsTimer; set
         {
             vitalsTimer = value;
             if (value < 1000f) foreach (var text in VitalsConsoleShowers) if (text) text.text = String.Format("{0:f1}s", vitalsTimer);
@@ -1199,7 +1209,7 @@ public class UtilityTimer
 
     public void SearchUpConsoles(ShipStatus shipStatus)
     {
-        TMPro.TextMeshPro createText(Transform parent,float height)
+        TMPro.TextMeshPro createText(Transform parent, float height)
         {
             var result = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText);
             result.transform.SetParent(parent);
@@ -1216,12 +1226,12 @@ public class UtilityTimer
         }
 
         var mapData = MapData.GetCurrentMapData();
-        foreach (var c in mapData.AllAdmins(shipStatus)) AdminConsoleShowers.Add(createText(c.Item1.transform,c.Item2));
+        foreach (var c in mapData.AllAdmins(shipStatus)) AdminConsoleShowers.Add(createText(c.Item1.transform, c.Item2));
         foreach (var c in mapData.AllVitals(shipStatus)) VitalsConsoleShowers.Add(createText(c.Item1.transform, c.Item2));
         foreach (var c in mapData.AllCameras(shipStatus)) CameraConsoleShowers.Add(createText(c.Item1.transform, c.Item2));
     }
 
-    
+
     public void DetachConsoles()
     {
         AdminConsoleShowers.Clear();
@@ -1229,7 +1239,8 @@ public class UtilityTimer
         CameraConsoleShowers.Clear();
     }
 
-    public UtilityTimer() {
+    public UtilityTimer()
+    {
         adminTimer = 100f;
         vitalsTimer = 100f;
         cameraTimer = 100f;
@@ -1240,17 +1251,18 @@ public class UtilityTimer
 
     public void Initialize()
     {
-        if(CustomOptionHolder.ShowTimeLeftOnConsolesOption.getBool())SearchUpConsoles(ShipStatus.Instance);
+        if (CustomOptionHolder.ShowTimeLeftOnConsolesOption.getBool()) SearchUpConsoles(ShipStatus.Instance);
         AdminTimer = CustomOptionHolder.AdminLimitOption.getBool() ? CustomOptionHolder.AdminLimitOption.getFloat() : 10000f;
         VitalsTimer = CustomOptionHolder.VitalsLimitOption.getBool() ? CustomOptionHolder.VitalsLimitOption.getFloat() : 10000f;
         CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getBool() ? CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat() : 10000f;
     }
 
-    public void OnMeetingStart(MeetingHud meetingHud) {
+    public void OnMeetingStart(MeetingHud meetingHud)
+    {
         if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.ShowTimeLeftOnMeetingOption.getBool())
         {
             var result = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText);
-            
+
             result.transform.SetParent(meetingHud.transform);
             result.transform.localPosition = new Vector3(0f, 0f, -10f);
             result.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -1261,8 +1273,8 @@ public class UtilityTimer
             result.fontStyle = TMPro.FontStyles.Bold;
             result.text = "";
 
-            if(adminTimer<1000f)
-                result.text+= String.Format("Admin: {0:f1}s", adminTimer);
+            if (adminTimer < 1000f)
+                result.text += String.Format("Admin: {0:f1}s", adminTimer);
             if (vitalsTimer < 1000f)
             {
                 if (result.text.Length > 0) result.text += "\n";
@@ -1278,7 +1290,7 @@ public class UtilityTimer
             var pos = result.gameObject.AddComponent<AspectPosition>();
             pos.parentCam = HudManager.Instance.UICamera;
             pos.Alignment = AspectPosition.EdgeAlignments.LeftTop;
-            pos.DistanceFromEdge = new Vector3(0.05f,0.05f,-50f);
+            pos.DistanceFromEdge = new Vector3(0.05f, 0.05f, -50f);
             pos.OnEnable();
         }
     }
@@ -1334,7 +1346,7 @@ public class GameData
     public Ghost.Ghost? Ghost;
 
     //ミニゲーム開始時のカウントダウン
-    public Objects.CustomMessage CountDownMessage;
+    public CustomMessage CountDownMessage;
 
     //Oracleの役職絞り込み
     public Roles.RoleAI.EstimationAI EstimationAI;
@@ -1346,7 +1358,7 @@ public class GameData
     public SynchronizeData SynchronizeData;
 
     //当たり判定
-    public Objects.ColliderManager ColliderManager;
+    public ColliderManager ColliderManager;
 
     public bool IsCanceled;
 
@@ -1383,7 +1395,7 @@ public class GameData
         UtilityTimer = new UtilityTimer();
 
         SynchronizeData = new SynchronizeData();
-        ColliderManager = new Objects.ColliderManager();
+        ColliderManager = new ColliderManager();
 
         Timer = 300f;
 
@@ -1485,7 +1497,7 @@ public class GameData
     public void LoadMapData()
     {
         if (CustomOptionHolder.DevicesOption.getBool()) Game.GameData.data.UtilityTimer.Initialize();
-        
+
 
         foreach (Vent vent in ShipStatus.Instance.AllVents)
         {
@@ -1508,7 +1520,7 @@ public class GameData
             Map.MapEditor.AddWirings(mapId);
         }
 
-        foreach (Roles.Role r in Roles.Roles.AllRoles) r.CustomizeMap(mapId);
+        foreach (Role r in Roles.Roles.AllRoles) r.CustomizeMap(mapId);
 
         Rooms = new List<SystemTypes>();
         foreach (SystemTypes type in ShipStatus.Instance.FastRooms.Keys)

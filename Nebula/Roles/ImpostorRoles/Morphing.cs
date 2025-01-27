@@ -17,7 +17,7 @@ public class Morphing : Role
             Helpers.GetModData(PlayerId).AddOutfit(outfit);
         }
 
-        public MorphEvent(byte playerId, Game.PlayerData.PlayerOutfitData outfit,float time = 0f) : base(time == 0f ? Roles.Morphing.morphDurationOption.getFloat() : time)
+        public MorphEvent(byte playerId, Game.PlayerData.PlayerOutfitData outfit, float time = 0f) : base(time == 0f ? Roles.Morphing.morphDurationOption.getFloat() : time)
         {
             PlayerId = playerId;
             this.outfit = outfit;
@@ -34,7 +34,7 @@ public class Morphing : Role
 
     private PlayerControl? morphTarget;
     private Game.PlayerData.PlayerOutfitData morphOutfit;
-    private Objects.Arrow? arrow;
+    private Arrow? arrow;
 
     private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f, "ui.button.morphing.sample");
     private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f, "ui.button.morphing.morph");
@@ -53,7 +53,7 @@ public class Morphing : Role
         morphDurationOption = CreateOption(Color.white, "morphDuration", 15f, 5f, 40f, 2.5f);
         morphDurationOption.suffix = "second";
 
-        canUseVent = CreateOption(Color.white,"canUseVent",false);
+        canUseVent = CreateOption(Color.white, "canUseVent", false);
     }
 
     public override void ButtonInitialize(HudManager __instance)
@@ -111,7 +111,7 @@ public class Morphing : Role
         });
     }
 
-    SpriteLoader arrowSprite = new SpriteLoader("role.morphing.arrow");
+    private SpriteLoader arrowSprite = new SpriteLoader("role.morphing.arrow");
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;

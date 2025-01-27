@@ -4,8 +4,8 @@ using Nebula.Roles.CrewmateRoles;
 
 namespace Nebula.Roles;
 
-public delegate EndCondition? EndCriteriaChecker(Patches.PlayerStatistics statistics, ShipStatus status);
-public delegate EndCondition? EndTakeoverChecker(EndCondition endCondition, Patches.PlayerStatistics statistics, ShipStatus status);
+public delegate EndCondition? EndCriteriaChecker(PlayerStatistics statistics, ShipStatus status);
+public delegate EndCondition? EndTakeoverChecker(EndCondition endCondition, PlayerStatistics statistics, ShipStatus status);
 
 public enum RoleCategory
 {
@@ -95,8 +95,8 @@ public abstract class Role : Assignable
     /// </summary>
     public virtual int AssignmentCost { get => 1; }
 
-    public HashSet<Patches.EndCondition> winReasons { get; }
-    public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
+    public HashSet<EndCondition> winReasons { get; }
+    public virtual bool CheckWin(PlayerControl player, EndCondition winReason)
     {
         //Madmateの場合は元陣営の勝利を無効化する
         if (player.IsMadmate() || player.GetModData().extraRole.Contains(Roles.SecondaryJackal)) return false;
@@ -144,7 +144,7 @@ public abstract class Role : Assignable
 
     public virtual bool CanHaveExtraAssignable(ExtraAssignable extraRole)
     {
-        Module.CustomOption? option;
+        CustomOption? option;
         if (extraAssignableOptions.TryGetValue(extraRole, out option) && option != null)
         {
             return CustomOptionHolder.advanceRoleOptions.getBool() ? option.getBool() : !defaultUnassignable.Contains(extraRole);
@@ -170,7 +170,7 @@ public abstract class Role : Assignable
     public bool HideInExclusiveAssignmentOption;
 
     //使用済みロールID
-    static private byte maxId = 0;
+    private static byte maxId = 0;
 
     /*--------------------------------------------------------------------------------------*/
     /*--------------------------------------------------------------------------------------*/
@@ -243,7 +243,7 @@ public abstract class Role : Assignable
         }
     }
 
-    protected Dictionary<ExtraAssignable, Module.CustomOption?> extraAssignableOptions = new Dictionary<ExtraAssignable, Module.CustomOption?>();
+    protected Dictionary<ExtraAssignable, CustomOption?> extraAssignableOptions = new Dictionary<ExtraAssignable, CustomOption?>();
     protected HashSet<ExtraAssignable> defaultUnassignable = new HashSet<ExtraAssignable>();
 
     public bool DefaultExtraAssignableFlag(ExtraAssignable role)
@@ -251,16 +251,16 @@ public abstract class Role : Assignable
         return !defaultUnassignable.Contains(role);
     }
 
-    protected Module.CustomOption? CanBeLoversOption = null;
-    protected Module.CustomOption? CanBeGuesserOption = null;
-    protected Module.CustomOption? CanBeDrunkOption = null;
-    protected Module.CustomOption? CanBeBloodyOption = null;
-    protected Module.CustomOption? CanBeMadmateOption = null;
-    protected Module.CustomOption? CanBeSecretOption = null;
+    protected CustomOption? CanBeLoversOption = null;
+    protected CustomOption? CanBeGuesserOption = null;
+    protected CustomOption? CanBeDrunkOption = null;
+    protected CustomOption? CanBeBloodyOption = null;
+    protected CustomOption? CanBeMadmateOption = null;
+    protected CustomOption? CanBeSecretOption = null;
 
-    sealed public override void SetupRoleOptionData()
+    public sealed override void SetupRoleOptionData()
     {
-        Module.CustomOptionTab tab = Module.CustomOptionTab.None;
+        CustomOptionTab tab = Module.CustomOptionTab.None;
         if (this == Roles.VOID) tab = Module.CustomOptionTab.AdvancedSettings;
         else if (this == Roles.F_Crewmate) tab = Module.CustomOptionTab.CrewmateRoles;
         else if (this == Roles.Avenger) tab = Module.CustomOptionTab.Modifiers;
@@ -287,7 +287,7 @@ public abstract class Role : Assignable
 
         if (Allocation == AllocationType.None) return;
 
-        Module.CustomOption? option;
+        CustomOption? option;
 
         foreach (var extraRole in Roles.AllExtraAssignable)
         {
@@ -297,10 +297,10 @@ public abstract class Role : Assignable
             if (option != null) extraAssignableOptions.Add(extraRole, option);
         }
 
-        TopOption.NameDecorator = new Module.CustomOptionDecorator((original, option) =>
+        TopOption.NameDecorator = new CustomOptionDecorator((original, option) =>
         {
-                //追加役職化した場合は何もしない
-                if (IsSecondaryGenerator) return original;
+            //追加役職化した場合は何もしない
+            if (IsSecondaryGenerator) return original;
 
             string suffix = "";
 
@@ -344,7 +344,7 @@ public abstract class Role : Assignable
 
     protected Role(string name, string localizeName, Color color, RoleCategory category,
         Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
-        HashSet<Patches.EndCondition> winReasons,
+        HashSet<EndCondition> winReasons,
         bool hasFakeTask, VentPermission canUseVents, bool canMoveInVents,
         bool ignoreBlackout, bool useImpostorLightRadius) :
         base(name, localizeName, color)
@@ -402,7 +402,7 @@ public abstract class Role : Assignable
         return null;
     }
 
-    static public void ExtractDisplayPlayers(ref Il2CppSystem.Collections.Generic.List<PlayerControl> players)
+    public static void ExtractDisplayPlayers(ref Il2CppSystem.Collections.Generic.List<PlayerControl> players)
     {
         players.Clear();
 
@@ -440,7 +440,8 @@ public abstract class Role : Assignable
             }
         }
 
-        if(myData.role.introMainDisplaySide.ShowOption == Side.IntroDisplayOption.Yanderes){
+        if (myData.role.introMainDisplaySide.ShowOption == Side.IntroDisplayOption.Yanderes)
+        {
             players.Add(Roles.Yandere.GetLover());
         }
     }
@@ -449,7 +450,7 @@ public abstract class Role : Assignable
         role.AffectedByLightAffectors = !UseImpostorLightRadius;
     }
 
-    static public void LoadAllOptionData()
+    public static void LoadAllOptionData()
     {
         foreach (Role role in Roles.AllRoles)
         {
@@ -467,7 +468,7 @@ public abstract class Role : Assignable
         {
             if (!base.ShowInHelpWindow) return false;
             if (!MetaDialog.HelpSearchFilter.ShouldShowCategory(category)) return false;
-            return true;            
+            return true;
         }
     }
 

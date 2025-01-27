@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Nebula.Tasks;
+﻿namespace Nebula.Tasks;
 
 [NebulaRPCHolder]
 public class TimedTask
@@ -65,14 +59,15 @@ public class TimedHudOverrideTask : PlayerTask, TimedSabotageTask
     {
         ClassInjector.RegisterTypeInIl2Cpp<TimedHudOverrideTask>(new RegisterTypeOptions()
         {
-            Interfaces = new [] { typeof(IHudOverrideTask) } 
+            Interfaces = new[] { typeof(IHudOverrideTask) }
         });
     }
 
 
     public override int TaskStep => 0;
     public override bool IsComplete => false;
-    public void FixedUpdate() {
+    public void FixedUpdate()
+    {
         LeftTime -= Time.deltaTime;
         if (LeftTime < 0f) Complete();
     }
@@ -84,7 +79,7 @@ public class TimedHudOverrideTask : PlayerTask, TimedSabotageTask
         PlayerControl.LocalPlayer.RemoveTask(this);
     }
 
-    bool even=false;
+    private bool even = false;
     public override void AppendTaskText(Il2CppSystem.Text.StringBuilder sb)
     {
         even = !even;
@@ -105,7 +100,8 @@ public class TimedHudOverrideTask : PlayerTask, TimedSabotageTask
         sb.AppendLine();
     }
 
-    public override void Initialize(){
+    public override void Initialize()
+    {
         this.TaskType = TaskTypes.FixComms;
     }
 }

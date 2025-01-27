@@ -16,14 +16,14 @@ public class AirshipEditor : MapEditor
 
     public override void AddVents()
     {
-        Vent v1 = CreateVent(SystemTypes.Electrical, "ElectricalVent", new UnityEngine.Vector2(-0.275f, -1.7f));
+        Vent v1 = CreateVent(SystemTypes.Electrical, "ElectricalVent", new Vector2(-0.275f, -1.7f));
         v1.transform.localPosition += new Vector3(0, 0, 1);
-        Vent v2 = CreateVent(SystemTypes.MeetingRoom, "MeetingVent", new UnityEngine.Vector2(-3.1f, -1.6f));
+        Vent v2 = CreateVent(SystemTypes.MeetingRoom, "MeetingVent", new Vector2(-3.1f, -1.6f));
         v2.transform.localPosition += new Vector3(0, 0, 2);
-        Vent GapVent = ShipStatus.Instance.AllVents.FirstOrDefault((vent) => { return Vector2.Distance(vent.transform.position,new Vector3(3.6049998f,6.9230003f,0.1f)) <= 0.01f; });
+        Vent GapVent = ShipStatus.Instance.AllVents.FirstOrDefault((vent) => { return Vector2.Distance(vent.transform.position, new Vector3(3.6049998f, 6.9230003f, 0.1f)) <= 0.01f; });
         v2.Center = GapVent;
         GapVent.Center = v2;
-        Vent HallVent = ShipStatus.Instance.AllVents.FirstOrDefault((vent) => { return Vector2.Distance(vent.transform.position,new Vector3(7.0210004f,-3.7309995f,0.1f)) <= 0.01f; });;
+        Vent HallVent = ShipStatus.Instance.AllVents.FirstOrDefault((vent) => { return Vector2.Distance(vent.transform.position, new Vector3(7.0210004f, -3.7309995f, 0.1f)) <= 0.01f; }); ;
         v1.Left = HallVent;
         HallVent.Center = v1;
     }
@@ -121,8 +121,8 @@ public class AirshipEditor : MapEditor
 
     }
 
-    static private SpriteLoader customMeetingSideSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeeting.png", 100f);
-    static private SpriteLoader customMeetingLadderSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeetingLadder.png", 100f);
+    private static SpriteLoader customMeetingSideSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeeting.png", 100f);
+    private static SpriteLoader customMeetingLadderSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeetingLadder.png", 100f);
 
     public override void ModifyMap()
     {
@@ -319,9 +319,9 @@ public class AirshipEditor : MapEditor
 
 //これだけ定数なのでパッチで対応
 [HarmonyPatch(typeof(HeliSabotageSystem), nameof(HeliSabotageSystem.RepairDamage))]
-class HeliSabotageSystemPatch
+internal class HeliSabotageSystemPatch
 {
-    static void Postfix(HeliSabotageSystem __instance, [HarmonyArgument(1)] byte amount)
+    private static void Postfix(HeliSabotageSystem __instance, [HarmonyArgument(1)] byte amount)
     {
         if (!CustomOptionHolder.SabotageOption.getBool()) return;
 

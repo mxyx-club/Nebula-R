@@ -1,15 +1,14 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Reflection;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Unicode;
-using System.Reflection;
-using Nebula.Utilities;
 
 namespace Nebula.Language;
 public class Language
 {
-   private static TMPro.TMP_FontAsset? FontJP = null, FontSC = null, FontKR = null;
-        
+    private static TMPro.TMP_FontAsset? FontJP = null, FontSC = null, FontKR = null;
+
     public static void LoadFont()
     {
         var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<TMPro.TMP_FontAsset>());
@@ -51,12 +50,12 @@ public class Language
         }
     }
 
-    static private Language? language = null;
-    static private Dictionary<string, string> defaultLanguageSet = new Dictionary<string, string>();
+    private static Language? language = null;
+    private static Dictionary<string, string> defaultLanguageSet = new Dictionary<string, string>();
 
     public Dictionary<string, string> languageSet;
 
-    public static bool TryGetString(string key,ref string str)
+    public static bool TryGetString(string key, ref string str)
     {
         if (language?.languageSet.ContainsKey(key) ?? false)
         {

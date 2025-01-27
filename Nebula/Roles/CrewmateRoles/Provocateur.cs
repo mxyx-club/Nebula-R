@@ -2,7 +2,7 @@
 
 public class Provocateur : Role
 {
-    static public Color RoleColor = new Color(112f / 255f, 255f / 255f, 89f / 255f);
+    public static Color RoleColor = new Color(112f / 255f, 255f / 255f, 89f / 255f);
 
 
     private CustomButton embroilButton;

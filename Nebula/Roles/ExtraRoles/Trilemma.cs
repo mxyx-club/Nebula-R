@@ -27,7 +27,7 @@ public class Trilemma : ExtraRole
     }
 
 
-    private void ActionForLover(PlayerControl player, System.Action<PlayerControl> action)
+    private void ActionForLover(PlayerControl player, Action<PlayerControl> action)
     {
         ulong myLoverId = player.GetModData().GetExtraRoleData(this);
         PlayerControl target;
@@ -47,7 +47,7 @@ public class Trilemma : ExtraRole
         }
     }
 
-    private void ActionForMyLover(System.Action<PlayerControl> action)
+    private void ActionForMyLover(Action<PlayerControl> action)
     {
         ActionForLover(PlayerControl.LocalPlayer, (player) =>
         {

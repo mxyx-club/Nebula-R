@@ -21,7 +21,7 @@ public class AI_FarthestSabotageForPlayers : GhostWeightedAI
                 dis += entry.Value.Position.Distance(player.transform.position);
             }
 
-            ghost.SabotageMood[entry.Key] += Weight * (dis / (float)count) / map.MapScale;
+            ghost.SabotageMood[entry.Key] += Weight * (dis / count) / map.MapScale;
         }
     }
 
@@ -49,7 +49,7 @@ public class AI_NearestSabotageForPlayers : GhostWeightedAI
                 dis += entry.Value.Position.Distance(player.transform.position);
             }
 
-            ghost.SabotageMood[entry.Key] += Weight * (map.MapScale - (dis / (float)count)) / map.MapScale;
+            ghost.SabotageMood[entry.Key] += Weight * (map.MapScale - (dis / count)) / map.MapScale;
         }
     }
 
@@ -93,7 +93,7 @@ public class AI_FarthestSabotageForDeadBodies : GhostWeightedAI
                 dis += entry.Value.Position.Distance(body.transform.position);
             }
 
-            ghost.SabotageMood[entry.Key] += Weight * (dis / (float)count) / map.MapScale;
+            ghost.SabotageMood[entry.Key] += Weight * (dis / count) / map.MapScale;
         }
     }
 

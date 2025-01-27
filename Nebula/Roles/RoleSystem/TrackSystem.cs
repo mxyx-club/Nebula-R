@@ -1,11 +1,11 @@
 ﻿namespace Nebula.Roles.RoleSystem;
 
-static public class TrackSystem
+public static class TrackSystem
 {
-    static public Objects.CustomButton DeadBodySearch_ButtonInitialize(HudManager __instance, Dictionary<byte, Objects.Arrow> arrows, Sprite buttonSprite, float duration, float coolDown)
+    public static CustomButton DeadBodySearch_ButtonInitialize(HudManager __instance, Dictionary<byte, Arrow> arrows, Sprite buttonSprite, float duration, float coolDown)
     {
-        Objects.CustomButton result = null;
-        result = new Objects.CustomButton(
+        CustomButton result = null;
+        result = new CustomButton(
             () =>
             {
 
@@ -35,7 +35,7 @@ static public class TrackSystem
         return result;
     }
 
-    static public void DeadBodySearch_MyControlUpdate(bool showFlag, Dictionary<byte, Objects.Arrow> arrows,SpriteLoader arrowSprite)
+    public static void DeadBodySearch_MyControlUpdate(bool showFlag, Dictionary<byte, Arrow> arrows, SpriteLoader arrowSprite)
     {
         if (!showFlag)
         {
@@ -79,7 +79,7 @@ static public class TrackSystem
             {
                 if (!arrows.ContainsKey(body.ParentId))
                 {
-                    arrows.Add(body.ParentId, new Objects.Arrow(Color.blue,true,arrowSprite.GetSprite()));
+                    arrows.Add(body.ParentId, new Arrow(Color.blue, true, arrowSprite.GetSprite()));
                 }
             }
 
@@ -90,7 +90,7 @@ static public class TrackSystem
         }
     }
 
-    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, PlayerControl? target, Color color,SpriteLoader arrowSprite)
+    public static void PlayerTrack_MyControlUpdate(ref Arrow? arrow, PlayerControl? target, Color color, SpriteLoader arrowSprite)
     {
         if (target == null || target.Data.IsDead)
         {
@@ -102,12 +102,12 @@ static public class TrackSystem
             return;
         }
 
-        if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
+        if (arrow == null) arrow = new Arrow(color, true, arrowSprite.GetSprite());
 
         arrow.Update(target.transform.position);
     }
 
-    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, Game.PlayerObject? target, Color color,SpriteLoader arrowSprite)
+    public static void PlayerTrack_MyControlUpdate(ref Arrow? arrow, Game.PlayerObject? target, Color color, SpriteLoader arrowSprite)
     {
         if (target == null || target.control == null)
         {
@@ -143,13 +143,13 @@ static public class TrackSystem
                 return;
             }
 
-            if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
+            if (arrow == null) arrow = new Arrow(color, true, arrowSprite.GetSprite());
 
             arrow.Update(target.deadBody.transform.position);
         }
         else
         {
-            if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
+            if (arrow == null) arrow = new Arrow(color, true, arrowSprite.GetSprite());
 
             arrow.Update(target.control.transform.position);
         }

@@ -1,24 +1,25 @@
-﻿using static MeetingHud;
-
-namespace Nebula.Patches;
+﻿namespace Nebula.Patches;
 
 [HarmonyPatch]
-class ExileControllerPatch
+internal class ExileControllerPatch
 {
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
-    class ExileControllerBeginPatch
+    private class ExileControllerBeginPatch
     {
 
         public static void Postfix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
         {
-            if(!CustomOptionHolder.useSpecialRoleExiledText.getBool()){
-                try{
+            if (!CustomOptionHolder.useSpecialRoleExiledText.getBool())
+            {
+                try
+                {
                     if (CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showRoleOfExiled.getBool() && GameManager.Instance.LogicOptions.GetConfirmImpostor())
                     {
                         var role = exiled.GetModData()?.role;
                         if (role != null) __instance.completeString = Language.Language.GetString("game.exile.roleText").Replace("%PLAYER%", exiled.PlayerName).Replace("%ROLE%", Language.Language.GetString("role." + role.LocalizeName + ".name"));
                     }
-                }catch{ }
+                }
+                catch { }
             }
 
             OnExiled(exiled);
@@ -27,14 +28,14 @@ class ExileControllerPatch
 
 
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.ReEnableGameplay))]
-    class ExileControllerReEnableGameplayPatch
+    private class ExileControllerReEnableGameplayPatch
     {
         public static void Postfix(ExileController __instance)
         {
-            if(CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.additionalEmergencyCoolDown.getFloat() > 0f)
+            if (CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.additionalEmergencyCoolDown.getFloat() > 0f)
             {
                 int deadPlayers = 0;
-                foreach(var p in PlayerControl.AllPlayerControls)
+                foreach (var p in PlayerControl.AllPlayerControls)
                 {
                     if (p.Data.IsDead) deadPlayers++;
                 }
@@ -48,7 +49,7 @@ class ExileControllerPatch
 
 
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
-    class BaseExileControllerPatch
+    private class BaseExileControllerPatch
     {
         public static bool Prefix(ExileController __instance)
         {
@@ -61,9 +62,9 @@ class ExileControllerPatch
             if (DestroyableSingleton<TutorialManager>.InstanceExists || !GameManager.Instance.LogicFlow.IsGameOverDueToDeath())
             {
                 sequence.Add(ShipStatus.Instance.PrespawnStep());
-                sequence.Add(Effects.Action(new System.Action(() => { __instance.ReEnableGameplay(); })));
+                sequence.Add(Effects.Action(new Action(() => { __instance.ReEnableGameplay(); })));
             }
-            sequence.Add(Effects.Action(new System.Action(() =>
+            sequence.Add(Effects.Action(new Action(() =>
             {
                 UnityEngine.Object.Destroy(__instance.gameObject);
             })));
@@ -77,7 +78,7 @@ class ExileControllerPatch
     }
 
     [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
-    class AirshipExileControllerPatch
+    private class AirshipExileControllerPatch
     {
         public static void Prefix(AirshipExileController __instance)
         {
@@ -90,7 +91,7 @@ class ExileControllerPatch
     }
 
     [HarmonyPatch(typeof(PbExileController), nameof(PbExileController.PlayerSpin))]
-    class ExilePolusHatFixPatch
+    private class ExilePolusHatFixPatch
     {
         public static void Prefix(PbExileController __instance)
         {
@@ -98,8 +99,7 @@ class ExileControllerPatch
         }
     }
 
-
-    static void OnExiled(GameData.PlayerInfo? exiled)
+    private static void OnExiled(GameData.PlayerInfo? exiled)
     {
         if (exiled != null)
         {
@@ -153,19 +153,20 @@ class ExileControllerPatch
         Expansion.GridArrangeExpansion.OnMeetingEnd();
     }
 
-    static void WrapUpPrefix(ExileController __instance)
+    private static void WrapUpPrefix(ExileController __instance)
     {
         __instance.exiled = null;
     }
 
-    static void WrapUpPostfix()
+    private static void WrapUpPostfix()
     {
 
         Game.GameData.data.ColliderManager.OnMeetingEnd();
         Game.GameData.data.UtilityTimer.OnMeetingEnd();
 
         Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnMeetingEnd());
-        foreach(var role in Game.GameData.data.myData.getGlobalData().extraRole){
+        foreach (var role in Game.GameData.data.myData.getGlobalData().extraRole)
+        {
             role.OnMeetingEnd();
         }
 
@@ -177,73 +178,76 @@ class ExileControllerPatch
     }
 
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), new Type[] { typeof(StringNames), typeof(Il2CppReferenceArray<Il2CppSystem.Object>) })]
-    class ExileControllerMessagePatch
+    private class ExileControllerMessagePatch
     {
-        static void Postfix(ref string __result, [HarmonyArgument(0)] StringNames id)
+        private static void Postfix(ref string __result, [HarmonyArgument(0)] StringNames id)
         {
-            if(!CustomOptionHolder.useSpecialRoleExiledText.getBool()) return;
+            if (!CustomOptionHolder.useSpecialRoleExiledText.getBool()) return;
             try
             {
                 if (ExileController.Instance != null && ExileController.Instance.exiled != null)
                 {
                     PlayerControl player = Helpers.playerById(ExileController.Instance.exiled.Object.PlayerId);
-                    if (player == null){
-                        if (id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS){
-                            if(CustomOptionHolder.dontShowImpostorCountIfDidntExile.getBool()) __result = "";
+                    if (player == null)
+                    {
+                        if (id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS)
+                        {
+                            if (CustomOptionHolder.dontShowImpostorCountIfDidntExile.getBool()) __result = "";
                         }
                         return;
                     }
-                    if((id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS) && 
-                    CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showNumberOfEvilNeutralRoles.getBool()){
+                    if ((id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS) &&
+                    CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showNumberOfEvilNeutralRoles.getBool())
+                    {
                         int sums = 0;
                         foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                         {
-                            if (p.GetModData() != null && !p.Data.IsDead && (p.GetModData().role.side == Roles.Side.Jackal || 
-                            p.GetModData().role.side == Roles.Side.Spectre || 
-                            p.GetModData().role.side == Roles.Side.Pavlov || 
-                            p.GetModData().role.side == Roles.Side.Moriarty || 
-                            p.GetModData().role.side == Roles.Side.Arsonist || 
-                            p.GetModData().role.side == Roles.Side.Vulture || 
-                            p.GetModData().role.side == Roles.Side.Madman || 
-                            p.GetModData().role.side == Roles.Side.Cascrubinter || 
+                            if (p.GetModData() != null && !p.Data.IsDead && (p.GetModData().role.side == Roles.Side.Jackal ||
+                            p.GetModData().role.side == Roles.Side.Spectre ||
+                            p.GetModData().role.side == Roles.Side.Pavlov ||
+                            p.GetModData().role.side == Roles.Side.Moriarty ||
+                            p.GetModData().role.side == Roles.Side.Arsonist ||
+                            p.GetModData().role.side == Roles.Side.Vulture ||
+                            p.GetModData().role.side == Roles.Side.Madman ||
+                            p.GetModData().role.side == Roles.Side.Cascrubinter ||
                             p.GetModData().role.side == Roles.Side.Avenger ||
-                            p.GetModData().role.side == Roles.Side.Challenger || 
-                            p.GetModData().role.side == Roles.Side.Werewolf || 
-                            p.GetModData().role.side == Roles.Side.Yandere || 
-                            p.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) || 
-                            p.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) || 
+                            p.GetModData().role.side == Roles.Side.Challenger ||
+                            p.GetModData().role.side == Roles.Side.Werewolf ||
+                            p.GetModData().role.side == Roles.Side.Yandere ||
+                            p.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) ||
+                            p.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) ||
                             p.GetModData().role.side == Roles.Side.Jester ||
-                            p.GetModData().role.side == Roles.Side.Challenger || 
-                            p.GetModData().role.side == Roles.Side.Oracle || 
+                            p.GetModData().role.side == Roles.Side.Challenger ||
+                            p.GetModData().role.side == Roles.Side.Oracle ||
                             p.GetModData().role.side == Roles.Side.HighRoller
                             )) sums++;
                             //Debug.LogWarning(string.Format("ExileControllPatch - {0} : {1}", p.name, p.GetModData().role.LocalizeName));
                         }
-                        if (player.GetModData() != null && !player.Data.IsDead && (player.GetModData().role.side == Roles.Side.Jackal || 
-                            player.GetModData().role.side == Roles.Side.Spectre || 
-                            player.GetModData().role.side == Roles.Side.Pavlov || 
-                            player.GetModData().role.side == Roles.Side.Moriarty || 
-                            player.GetModData().role.side == Roles.Side.Arsonist || 
-                            player.GetModData().role.side == Roles.Side.Vulture || 
-                            player.GetModData().role.side == Roles.Side.Madman || 
+                        if (player.GetModData() != null && !player.Data.IsDead && (player.GetModData().role.side == Roles.Side.Jackal ||
+                            player.GetModData().role.side == Roles.Side.Spectre ||
+                            player.GetModData().role.side == Roles.Side.Pavlov ||
+                            player.GetModData().role.side == Roles.Side.Moriarty ||
+                            player.GetModData().role.side == Roles.Side.Arsonist ||
+                            player.GetModData().role.side == Roles.Side.Vulture ||
+                            player.GetModData().role.side == Roles.Side.Madman ||
                             player.GetModData().role.side == Roles.Side.Cascrubinter ||
-                            player.GetModData().role.side == Roles.Side.Cascrubinter || 
+                            player.GetModData().role.side == Roles.Side.Cascrubinter ||
                             player.GetModData().role.side == Roles.Side.Avenger ||
-                            player.GetModData().role.side == Roles.Side.Challenger || 
-                            player.GetModData().role.side == Roles.Side.Werewolf || 
-                            player.GetModData().role.side == Roles.Side.Yandere || 
-                            player.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) || 
-                            player.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) || 
+                            player.GetModData().role.side == Roles.Side.Challenger ||
+                            player.GetModData().role.side == Roles.Side.Werewolf ||
+                            player.GetModData().role.side == Roles.Side.Yandere ||
+                            player.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) ||
+                            player.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) ||
                             player.GetModData().role.side == Roles.Side.Jester ||
-                            player.GetModData().role.side == Roles.Side.Challenger || 
+                            player.GetModData().role.side == Roles.Side.Challenger ||
                             player.GetModData().role.side == Roles.Side.Oracle ||
                             player.GetModData().role.side == Roles.Side.SantaClaus ||
-                            player.GetModData().role.side == Roles.Side.Ghost || 
+                            player.GetModData().role.side == Roles.Side.Ghost ||
                             player.GetModData().role.side == Roles.Side.HighRoller
                         )) sums--;
                         //__result.Remove('.');
                         //__result.Remove('。');
-                        __result += Language.Language.GetString("text.exile.evilNeutral").Replace("%COUNT%",sums.ToString());
+                        __result += Language.Language.GetString("text.exile.evilNeutral").Replace("%COUNT%", sums.ToString());
                     }
                     /*
                     if (id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS)
@@ -258,53 +262,60 @@ class ExileControllerPatch
                     }
                     */
                     // Exile role text
-                    if ((id is StringNames.ExileTextPN or StringNames.ExileTextSN or StringNames.ExileTextPP or StringNames.ExileTextSP) && 
+                    if ((id is StringNames.ExileTextPN or StringNames.ExileTextSN or StringNames.ExileTextPP or StringNames.ExileTextSP) &&
                     CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showRoleOfExiled.getBool())
                     {
-                        __result = Language.Language.GetString("text.exile.role").Replace("%PLAYER%",player.Data.PlayerName);
-                        string roleText = Helpers.cs(player.GetModData().role.Color,Language.Language.GetString("role." + player.GetModData().role.GetActualRole(player.GetModData()).LocalizeName + ".name"));
-                        if(CustomOptionHolder.showExtraRoles.getBool()){
-                            RPCEventInvoker.UnsetExtraRole(player,Roles.Roles.FakeLover,false);
-                            foreach(Roles.ExtraRole extra in player.GetModData().extraRole){
-                                roleText += Language.Language.GetString("text.exile.connection") + Helpers.cs(extra.Color,Language.Language.GetString("role." + extra.LocalizeName + ".name"));
+                        __result = Language.Language.GetString("text.exile.role").Replace("%PLAYER%", player.Data.PlayerName);
+                        string roleText = Helpers.cs(player.GetModData().role.Color, Language.Language.GetString("role." + player.GetModData().role.GetActualRole(player.GetModData()).LocalizeName + ".name"));
+                        if (CustomOptionHolder.showExtraRoles.getBool())
+                        {
+                            RPCEventInvoker.UnsetExtraRole(player, Roles.Roles.FakeLover, false);
+                            foreach (Roles.ExtraRole extra in player.GetModData().extraRole)
+                            {
+                                roleText += Language.Language.GetString("text.exile.connection") + Helpers.cs(extra.Color, Language.Language.GetString("role." + extra.LocalizeName + ".name"));
                             }
                         }
-                        __result = __result.Replace("%ROLE%",roleText);
+                        __result = __result.Replace("%ROLE%", roleText);
                     }
                     // Hide number of remaining impostors on Jester win
                     if (id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS)
                     {
-                        if (player.GetModData().role == Roles.Roles.Jester){
-                            __result = Helpers.cs(Roles.NeutralRoles.Jester.RoleColor,Language.Language.GetString("text.exile.jesterAddition"));
+                        if (player.GetModData().role == Roles.Roles.Jester)
+                        {
+                            __result = Helpers.cs(Roles.NeutralRoles.Jester.RoleColor, Language.Language.GetString("text.exile.jesterAddition"));
                             return;
                         }
-                        else if (PlayerControl.AllPlayerControls.GetFastEnumerator().FirstOrDefault((p) => { return !p.Data.IsDead && p.GetModData().role == Roles.Roles.Cascrubinter; }) != null && player.PlayerId == Roles.Roles.Cascrubinter.target.PlayerId){
-                            __result = Helpers.cs(Roles.NeutralRoles.Cascrubinter.RoleColor,Language.Language.GetString("text.exile.cascrubinterAddition"));
+                        else if (PlayerControl.AllPlayerControls.GetFastEnumerator().FirstOrDefault((p) => { return !p.Data.IsDead && p.GetModData().role == Roles.Roles.Cascrubinter; }) != null && player.PlayerId == Roles.Roles.Cascrubinter.target.PlayerId)
+                        {
+                            __result = Helpers.cs(Roles.NeutralRoles.Cascrubinter.RoleColor, Language.Language.GetString("text.exile.cascrubinterAddition"));
                             RPCEventInvoker.WinTrigger(Roles.Roles.Cascrubinter);
                         }
-                    } 
-                }else{
-                    if((id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS) && 
-                    CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showNumberOfEvilNeutralRoles.getBool()){
+                    }
+                }
+                else
+                {
+                    if ((id is StringNames.ImpostorsRemainP or StringNames.ImpostorsRemainS) &&
+                    CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showNumberOfEvilNeutralRoles.getBool())
+                    {
                         int sums = 0;
                         foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                         {
-                            if (p.GetModData() != null && !p.Data.IsDead && (p.GetModData().role.side == Roles.Side.Jackal || 
-                            p.GetModData().role.side == Roles.Side.Spectre || 
-                            p.GetModData().role.side == Roles.Side.Pavlov || 
-                            p.GetModData().role.side == Roles.Side.Moriarty || 
-                            p.GetModData().role.side == Roles.Side.Arsonist || 
-                            p.GetModData().role.side == Roles.Side.Vulture || 
-                            p.GetModData().role.side == Roles.Side.Madman || 
-                            p.GetModData().role.side == Roles.Side.Cascrubinter || 
+                            if (p.GetModData() != null && !p.Data.IsDead && (p.GetModData().role.side == Roles.Side.Jackal ||
+                            p.GetModData().role.side == Roles.Side.Spectre ||
+                            p.GetModData().role.side == Roles.Side.Pavlov ||
+                            p.GetModData().role.side == Roles.Side.Moriarty ||
+                            p.GetModData().role.side == Roles.Side.Arsonist ||
+                            p.GetModData().role.side == Roles.Side.Vulture ||
+                            p.GetModData().role.side == Roles.Side.Madman ||
+                            p.GetModData().role.side == Roles.Side.Cascrubinter ||
                             p.GetModData().role.side == Roles.Side.Avenger ||
-                            p.GetModData().role.side == Roles.Side.Challenger || 
-                            p.GetModData().role.side == Roles.Side.Werewolf || 
-                            p.GetModData().role.side == Roles.Side.Yandere || 
-                            p.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) || 
-                            p.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) || 
+                            p.GetModData().role.side == Roles.Side.Challenger ||
+                            p.GetModData().role.side == Roles.Side.Werewolf ||
+                            p.GetModData().role.side == Roles.Side.Yandere ||
+                            p.GetModData().HasExtraRole(Roles.Roles.SecondaryJackal) ||
+                            p.GetModData().HasExtraRole(Roles.Roles.SecondarySidekick) ||
                             p.GetModData().role.side == Roles.Side.Jester ||
-                            p.GetModData().role.side == Roles.Side.Challenger || 
+                            p.GetModData().role.side == Roles.Side.Challenger ||
                             p.GetModData().role.side == Roles.Side.Oracle ||
                             p.GetModData().role.side == Roles.Side.SantaClaus ||
                             p.GetModData().role.side == Roles.Side.Ghost
@@ -313,8 +324,8 @@ class ExileControllerPatch
                         }
                         //__result.Remove('.');
                         //__result.Remove('。');
-                        __result += Language.Language.GetString("text.exile.evilNeutral").Replace("%COUNT%",sums.ToString());
-                        if(CustomOptionHolder.dontShowImpostorCountIfDidntExile.getBool()) __result = "";
+                        __result += Language.Language.GetString("text.exile.evilNeutral").Replace("%COUNT%", sums.ToString());
+                        if (CustomOptionHolder.dontShowImpostorCountIfDidntExile.getBool()) __result = "";
                     }
                 }
             }

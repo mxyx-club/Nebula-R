@@ -1,11 +1,10 @@
-﻿using Nebula.Patches;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 namespace Nebula.Objects;
 
 public static class ButtonEffect
 {
-    static public void ShowButtonText(this ActionButton button, string text)
+    public static void ShowButtonText(this ActionButton button, string text)
     {
         TMPro.TextMeshPro textObj = GameObject.Instantiate(button.cooldownTimerText, button.cooldownTimerText.transform.parent);
         textObj.color = Color.white;
@@ -30,7 +29,7 @@ public static class ButtonEffect
         })));
     }
 
-    static public GameObject ShowUsesIcon(this ActionButton button)
+    public static GameObject ShowUsesIcon(this ActionButton button)
     {
         Transform template = HudManager.Instance.AbilityButton.transform.GetChild(2);
         var usesObject = GameObject.Instantiate(template.gameObject);
@@ -40,7 +39,7 @@ public static class ButtonEffect
         return usesObject;
     }
 
-    static public GameObject ShowUsesIcon(this ActionButton button,int iconVariation, out TMPro.TextMeshPro text)
+    public static GameObject ShowUsesIcon(this ActionButton button, int iconVariation, out TMPro.TextMeshPro text)
     {
         GameObject result = ShowUsesIcon(button);
         var renderer = result.GetComponent<SpriteRenderer>();
@@ -49,7 +48,7 @@ public static class ButtonEffect
         return result;
     }
 
-    static public SpriteRenderer AddOverlay(this ActionButton button,Sprite sprite,float order)
+    public static SpriteRenderer AddOverlay(this ActionButton button, Sprite sprite, float order)
     {
         GameObject obj = new GameObject("Overlay");
         obj.layer = LayerExpansion.GetUILayer();
@@ -89,7 +88,7 @@ public class CustomButton
     private bool canInvokeAidActionWithMouseRightButton = true;
     private string buttonText;
     private ImageNames textType;
-    private GameObject? usesObject=null;
+    private GameObject? usesObject = null;
     private TMPro.TextMeshPro? usesText = null;
     //ボタンの有効化フラグと、一時的な隠しフラグ
     private bool activeFlag, hideFlag;
@@ -109,9 +108,9 @@ public class CustomButton
 
     public static SpriteLoader lockedButtonSprite = new SpriteLoader("Nebula.Resources.LockedButton.png", 100f);
 
-    public SpriteRenderer AddOverlay(Sprite sprite,float order)
+    public SpriteRenderer AddOverlay(Sprite sprite, float order)
     {
-        return actionButton.AddOverlay(sprite,order);
+        return actionButton.AddOverlay(sprite, order);
     }
 
     public TMPro.TextMeshPro LabelText { get { return actionButton.buttonLabelText; } }
@@ -172,10 +171,10 @@ public class CustomButton
             return HudManager.Instance.AbilityButton.transform.GetChild(2).GetComponent<SpriteRenderer>().sprite;
         }
         if (variation < 0 || variation > 10) return null;
-        if (!textureUsesIcon)textureUsesIcon = Helpers.loadTextureFromResources("Nebula.Resources.UsesIcon.png");
+        if (!textureUsesIcon) textureUsesIcon = Helpers.loadTextureFromResources("Nebula.Resources.UsesIcon.png");
         if (!spriteCustomUsesIcon[variation])
         {
-            spriteCustomUsesIcon[variation] = Helpers.loadSpriteFromResources(textureUsesIcon, 100f, new Rect(57f * (float)(variation - 1),-56f,57f,56f));
+            spriteCustomUsesIcon[variation] = Helpers.loadSpriteFromResources(textureUsesIcon, 100f, new Rect(57f * (variation - 1), -56f, 57f, 56f));
         }
         return spriteCustomUsesIcon[variation];
     }
@@ -209,7 +208,7 @@ public class CustomButton
         button.OnClick = new Button.ButtonClickedEvent();
         button.OnClick.AddListener((UnityEngine.Events.UnityAction)onClickEvent);
 
-        Expansion.GridArrangeExpansion.AddGridArrangeContent(button.gameObject,GridParam);
+        Expansion.GridArrangeExpansion.AddGridArrangeContent(button.gameObject, GridParam);
 
         setActive(true);
 
@@ -219,7 +218,7 @@ public class CustomButton
     public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Expansion.GridArrangeExpansion.GridArrangeParameter GridParam, HudManager hudManager, KeyCode? hotkey, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
     : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, GridParam, hudManager, hotkey, false, 0f, () => { }, buttonText, labelType) { }
 
-    static public GameObject? SetKeyGuide(GameObject button, KeyCode key, Vector2 pos)
+    public static GameObject? SetKeyGuide(GameObject button, KeyCode key, Vector2 pos)
     {
         Sprite? numSprite = null;
         if (Module.NebulaInputManager.allKeyCodes.ContainsKey(key)) numSprite = Module.NebulaInputManager.allKeyCodes[key].GetSprite();
@@ -244,12 +243,12 @@ public class CustomButton
         return obj;
     }
 
-    static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
+    public static GameObject? SetKeyGuide(GameObject button, KeyCode key)
     {
         return SetKeyGuide(button, key, new Vector2(0.48f, 0.48f));
     }
 
-    static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
+    public static GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
     {
         return SetKeyGuide(button, key, new Vector2(0.28f, 0.28f));
     }
@@ -399,7 +398,7 @@ public class CustomButton
                 buttons[i].Timer = buttons[i].MaxTimer;
             }
             catch (NullReferenceException)
-            {}
+            { }
         }
     }
 
@@ -465,10 +464,12 @@ public class CustomButton
 
     public void Update()
     {
-        if(Game.GameData.data.IsLocked && !lockRenderer){
-            lockRenderer = this.AddOverlay(lockedButtonSprite.GetSprite(),0f);
+        if (Game.GameData.data.IsLocked && !lockRenderer)
+        {
+            lockRenderer = this.AddOverlay(lockedButtonSprite.GetSprite(), 0f);
         }
-        if(!Game.GameData.data.IsLocked && lockRenderer != null){
+        if (!Game.GameData.data.IsLocked && lockRenderer != null)
+        {
             lockRenderer.gameObject.SetActive(false);
             lockRenderer = null;
         }

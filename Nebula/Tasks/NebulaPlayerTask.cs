@@ -1,16 +1,12 @@
-﻿
-
-using System.Runtime.CompilerServices;
-
-namespace Nebula.Tasks;
+﻿namespace Nebula.Tasks;
 
 [HarmonyPatch]
 public class NormalPlayerTaskPatch
 {
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.AppendTaskText))]
-    class AppendTaskTextPatch
+    private class AppendTaskTextPatch
     {
-        static public bool Prefix(NormalPlayerTask __instance, [HarmonyArgument(0)] Il2CppSystem.Text.StringBuilder sb)
+        public static bool Prefix(NormalPlayerTask __instance, [HarmonyArgument(0)] Il2CppSystem.Text.StringBuilder sb)
         {
             if (!Game.GameData.data.myData.getGlobalData().role.ShowTaskText) return false;
 
@@ -23,40 +19,40 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(WeatherNodeTask), nameof(WeatherNodeTask.AppendTaskText))]
-    class WeatherNodeAppendTaskTextPatch
+    private class WeatherNodeAppendTaskTextPatch
     {
-        static public bool Prefix(WeatherNodeTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;   
+        public static bool Prefix(WeatherNodeTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
     }
 
     [HarmonyPatch(typeof(UploadDataTask), nameof(UploadDataTask.AppendTaskText))]
-    class UploadDataAppendTaskTextPatch
+    private class UploadDataAppendTaskTextPatch
     {
-        static public bool Prefix(UploadDataTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+        public static bool Prefix(UploadDataTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
     }
 
     [HarmonyPatch(typeof(TowelTask), nameof(TowelTask.AppendTaskText))]
-    class TowelAppendTaskTextPatch
+    private class TowelAppendTaskTextPatch
     {
-        static public bool Prefix(TowelTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+        public static bool Prefix(TowelTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
     }
 
     [HarmonyPatch(typeof(DivertPowerTask), nameof(DivertPowerTask.AppendTaskText))]
-    class DivertPowerAppendTaskTextPatch
+    private class DivertPowerAppendTaskTextPatch
     {
-        static public bool Prefix(DivertPowerTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+        public static bool Prefix(DivertPowerTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
     }
 
     [HarmonyPatch(typeof(AirshipUploadTask), nameof(AirshipUploadTask.AppendTaskText))]
-    class AirshipUploadAppendTaskTextPatch
+    private class AirshipUploadAppendTaskTextPatch
     {
-        static public bool Prefix(AirshipUploadTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+        public static bool Prefix(AirshipUploadTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
     }
 
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.IsComplete), MethodType.Getter)]
-    class ISCompletePatch
+    private class ISCompletePatch
     {
-        static public bool Prefix(NormalPlayerTask __instance, ref bool __result)
+        public static bool Prefix(NormalPlayerTask __instance, ref bool __result)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -67,9 +63,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
-    class NextStepPatch
+    private class NextStepPatch
     {
-        static public bool Prefix(NormalPlayerTask __instance)
+        public static bool Prefix(NormalPlayerTask __instance)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -79,9 +75,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.Initialize))]
-    class InitializePatch
+    private class InitializePatch
     {
-        static public bool Prefix(NormalPlayerTask __instance)
+        public static bool Prefix(NormalPlayerTask __instance)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -94,9 +90,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.FixedUpdate))]
-    class UpdatePatch
+    private class UpdatePatch
     {
-        static public void Postfix(NormalPlayerTask __instance)
+        public static void Postfix(NormalPlayerTask __instance)
         {
             if (__instance.TaskType != TaskTypes.None) return;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -106,9 +102,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.UpdateArrow))]
-    class UpdateArrowPatch
+    private class UpdateArrowPatch
     {
-        static public bool Prefix(NormalPlayerTask __instance)
+        public static bool Prefix(NormalPlayerTask __instance)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -119,9 +115,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.ValidConsole))]
-    class ValidConsolePatch
+    private class ValidConsolePatch
     {
-        static public bool Prefix(NormalPlayerTask __instance, ref bool __result, [HarmonyArgument(0)] Console console)
+        public static bool Prefix(NormalPlayerTask __instance, ref bool __result, [HarmonyArgument(0)] Console console)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -132,9 +128,9 @@ public class NormalPlayerTaskPatch
     }
 
     [HarmonyPatch(typeof(PlayerTask), nameof(PlayerTask.Locations), MethodType.Getter)]
-    class GetLocationsPatch
+    private class GetLocationsPatch
     {
-        static public bool Prefix(PlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Vector2> __result)
+        public static bool Prefix(PlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Vector2> __result)
         {
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
@@ -150,7 +146,7 @@ public class NormalPlayerTaskPatch
 [NebulaRPCHolder]
 public static class PlayerTaskAdder
 {
-    static public RemoteProcess<Tuple<byte, byte>> AddTaskProcess = new(
+    public static RemoteProcess<Tuple<byte, byte>> AddTaskProcess = new(
         "AddTask",
         (writer, message) =>
         {
@@ -180,9 +176,9 @@ public static class PlayerTaskAdder
            }
         );
 
-    static public void AddTask(this PlayerControl player, byte taskId)
+    public static void AddTask(this PlayerControl player, byte taskId)
     {
-        AddTaskProcess.Invoke(new(player.PlayerId,taskId));
+        AddTaskProcess.Invoke(new(player.PlayerId, taskId));
     }
 }
 

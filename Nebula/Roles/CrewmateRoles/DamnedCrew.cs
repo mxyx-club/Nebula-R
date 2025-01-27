@@ -2,8 +2,8 @@
 
 public class DamnedCrew : Crewmate
 {
-    int guardLeftId;
-    bool changeTrigger;
+    private int guardLeftId;
+    private bool changeTrigger;
     public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(guardLeftId, "Damned Guard", 0, 20) }; }
 
     public override bool ShowInHelpWindow => false;

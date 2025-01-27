@@ -27,7 +27,7 @@ public class ExemptTasks : Role
 
     public override void LoadOptionData()
     {
-        if (UseExemptTasksOption) exemptTasksOption = CreateOption(Color.white, "exemptTasks", (float)InitialExemptTasks, 0f, (float)MaxExemptTasks, 1f);
+        if (UseExemptTasksOption) exemptTasksOption = CreateOption(Color.white, "exemptTasks", InitialExemptTasks, 0f, MaxExemptTasks, 1f);
     }
 
     //インポスターはModで操作するFakeTaskは所持していない

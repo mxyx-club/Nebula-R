@@ -3,8 +3,8 @@
 public class Escapist : Role
 {
     public Module.CustomOption escapeCoolDown;
-    bool mark;
-    Vector3 pos;
+    private bool mark;
+    private Vector3 pos;
 
     private SpriteLoader MarkSprite = new SpriteLoader("Nebula.Resources.AssassinMarkButton.png", 115f);
     private SpriteLoader ButtonSprite = new SpriteLoader("Nebula.Resources.ChainShiftButton.png", 115f);
@@ -25,14 +25,14 @@ public class Escapist : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if(escape != null)
+        if (escape != null)
         {
             escape.Destroy();
         }
         escape = new CustomButton(
             () =>
             {
-                if(mark)
+                if (mark)
                 {
                     mark = !mark;
                     pos = PlayerControl.LocalPlayer.transform.position;
@@ -40,7 +40,7 @@ public class Escapist : Role
                     return;
                 }
                 mark = !mark;
-                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.TeleportEvidence,PlayerControl.LocalPlayer.GetTruePosition());
+                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.TeleportEvidence, PlayerControl.LocalPlayer.GetTruePosition());
                 PlayerControl.LocalPlayer.transform.position = pos;
                 escape.Timer = escape.MaxTimer;
                 escape.Sprite = MarkSprite.GetSprite();
@@ -59,7 +59,7 @@ public class Escapist : Role
 
     public override void CleanUp()
     {
-        if(escape != null)
+        if (escape != null)
         {
             escape.Destroy();
             escape = null;

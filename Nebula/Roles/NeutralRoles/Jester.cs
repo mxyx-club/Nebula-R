@@ -2,7 +2,7 @@
 
 public class Jester : Template.Draggable, Template.HasWinTrigger
 {
-    static public Color RoleColor = new Color(253f / 255f, 84f / 255f, 167f / 255f);
+    public static Color RoleColor = new Color(253f / 255f, 84f / 255f, 167f / 255f);
 
     public bool WinTrigger { get; set; } = false;
     public byte Winner { get; set; } = Byte.MaxValue;
@@ -16,7 +16,10 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
     private Module.CustomOption canFireBlankShotsOption;
     private Module.CustomOption isGuessableOption;
 
-    public override bool IsGuessableRole { get {
+    public override bool IsGuessableRole
+    {
+        get
+        {
             if (Game.GameData.data.myData.getGlobalData().role.side == Side.Crewmate)
                 return isGuessableOption.getSelection() > 0;
             else
@@ -24,7 +27,7 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
         }
     }
 
-    private Objects.CustomButton blankButton;
+    private CustomButton blankButton;
 
     private SpriteLoader blankButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f, "ui.button.jester.blank");
     public override HelpSprite[] helpSprite => new HelpSprite[]
@@ -61,7 +64,7 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
         canInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
         canFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
 
-        isGuessableOption = CreateOption(Color.white, "isGuessable", new string[] { "option.switch.off", "role.jester.isGuessable.niceOnly", "option.switch.on" }, (object)"option.switch.on");
+        isGuessableOption = CreateOption(Color.white, "isGuessable", new string[] { "option.switch.off", "role.jester.isGuessable.niceOnly", "option.switch.on" }, "option.switch.on");
 
         ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
         ventCoolDownOption.suffix = "second";

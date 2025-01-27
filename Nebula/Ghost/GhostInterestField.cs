@@ -2,12 +2,12 @@
 
 public class GhostInterest
 {
-    Vector2 Position;
-    float Duration;
-    float Magnitude;
+    private Vector2 Position;
+    private float Duration;
+    private float Magnitude;
 }
 
 public class GhostInterestField
 {
-    HashSet<GhostInterest> InterestsSet;
+    private HashSet<GhostInterest> InterestsSet;
 }

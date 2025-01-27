@@ -39,7 +39,7 @@ public class NebulaInputManager
 
         public Sprite GetSprite()
         {
-            if (sprite == null || !sprite) sprite = Helpers.loadSpriteFromResources(texture.GetTexture(), 100f, new Rect(0f, -19f * (float)textureNum, 18f, -19f));
+            if (sprite == null || !sprite) sprite = Helpers.loadSpriteFromResources(texture.GetTexture(), 100f, new Rect(0f, -19f * textureNum, 18f, -19f));
 
             return sprite;
         }

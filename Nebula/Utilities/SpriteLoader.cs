@@ -1,5 +1,4 @@
 ﻿using Nebula.Module;
-using UnityEngine;
 
 namespace Nebula.Utilities;
 
@@ -15,8 +14,8 @@ public interface IOptionalSpriteLoader : ISpriteLoader
 
 public class CustumizableSpriteLoader : ISpriteLoader
 {
-    ISpriteLoader originalLoader;
-    IOptionalSpriteLoader optionalLoader;
+    private ISpriteLoader originalLoader;
+    private IOptionalSpriteLoader optionalLoader;
 
     public Sprite GetSprite()
     {
@@ -24,7 +23,7 @@ public class CustumizableSpriteLoader : ISpriteLoader
         return originalLoader.GetSprite();
     }
 
-    public CustumizableSpriteLoader(ISpriteLoader original,IOptionalSpriteLoader optional)
+    public CustumizableSpriteLoader(ISpriteLoader original, IOptionalSpriteLoader optional)
     {
         originalLoader = original;
         optionalLoader = optional;
@@ -33,12 +32,12 @@ public class CustumizableSpriteLoader : ISpriteLoader
 
 public class AssetSpriteLoader : ISpriteLoader
 {
-    NebulaAssetBundle assetBundle;
-    Sprite sprite = null;
-    string address;
-    float pixelsPerUnit;
+    private NebulaAssetBundle assetBundle;
+    private Sprite sprite = null;
+    private string address;
+    private float pixelsPerUnit;
 
-    public AssetSpriteLoader(NebulaAssetBundle assetBundle,string address,float pixelsPerUnit=100f)
+    public AssetSpriteLoader(NebulaAssetBundle assetBundle, string address, float pixelsPerUnit = 100f)
     {
         this.assetBundle = assetBundle;
         this.address = address;
@@ -64,9 +63,9 @@ public class AssetSpriteLoader : ISpriteLoader
 
 public class ResourceSpriteLoader : ISpriteLoader
 {
-    Sprite sprite = null;
-    string address;
-    float pixelsPerUnit;
+    private Sprite sprite = null;
+    private string address;
+    private float pixelsPerUnit;
 
     public ResourceSpriteLoader(string address, float pixelsPerUnit)
     {
@@ -84,10 +83,10 @@ public class ResourceSpriteLoader : ISpriteLoader
 
 public class UserSpriteLoader : ISpriteLoader
 {
-    string? textureId = null;
-    Module.CustomTextureAsset? textureAsset = null;
-    float pixelsPerUnit;
-    Sprite sprite;
+    private string? textureId = null;
+    private CustomTextureAsset? textureAsset = null;
+    private float pixelsPerUnit;
+    private Sprite sprite;
 
     public UserSpriteLoader(string textureId, float pixelsPerUnit = 100f)
     {
@@ -106,11 +105,11 @@ public class UserSpriteLoader : ISpriteLoader
 
 public class SpriteLoader : ISpriteLoader
 {
-    string? address;
-    string? textureId = null;
-    Module.CustomTextureAsset? textureAsset = null;
-    float pixelsPerUnit;
-    Sprite sprite;
+    private string? address;
+    private string? textureId = null;
+    private CustomTextureAsset? textureAsset = null;
+    private float pixelsPerUnit;
+    private Sprite sprite;
 
     public SpriteLoader(string address, float pixelsPerUnit)
     {
@@ -143,7 +142,7 @@ public class SpriteLoader : ISpriteLoader
         {
             if (textureId != null && (textureAsset != null || TexturePack.LoadAsset(textureId, null, ref textureAsset)))
                 sprite = textureAsset.staticSprite;
-            else if(address!=null)
+            else if (address != null)
                 sprite = Helpers.loadSpriteFromResources(address, pixelsPerUnit);
         }
         return sprite;
@@ -152,14 +151,14 @@ public class SpriteLoader : ISpriteLoader
 
 public class DividedSpriteLoader : ISpriteLoader
 {
-    string address;
-    float pixelsPerUnit;
-    Sprite[] sprites;
-    Texture2D texture;
-    int x, y;
-    int sizeX, sizeY;
+    private string address;
+    private float pixelsPerUnit;
+    private Sprite[] sprites;
+    private Texture2D texture;
+    private int x, y;
+    private int sizeX, sizeY;
 
-    public DividedSpriteLoader(string address, float pixelsPerUnit,int x,int y)
+    public DividedSpriteLoader(string address, float pixelsPerUnit, int x, int y)
     {
         this.address = address;
         this.pixelsPerUnit = pixelsPerUnit;
@@ -172,7 +171,8 @@ public class DividedSpriteLoader : ISpriteLoader
 
     public Sprite GetSprite(int index)
     {
-        if (!texture) {
+        if (!texture)
+        {
             texture = Helpers.loadTextureFromResources(address);
             sizeX = texture.width / x;
             sizeY = texture.height / y;

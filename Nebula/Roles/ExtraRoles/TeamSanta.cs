@@ -5,7 +5,7 @@ namespace Nebula.Roles.ExtraRoles;
 
 public class TeamSanta : ExtraRole
 {
-    static public Color RoleColor = new Color(255f / 255f, 120f / 255f, 120f / 255f);
+    public static Color RoleColor = new Color(255f / 255f, 120f / 255f, 120f / 255f);
 
 
     public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)

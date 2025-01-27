@@ -3,15 +3,15 @@
 public delegate GlobalEvent GlobalEventGenerator(float duration, ulong option);
 public class GlobalEvent
 {
-    static public List<GlobalEvent> Events = new List<GlobalEvent>();
-    static private Dictionary<Type, GlobalEventGenerator> Generators = new Dictionary<Type, GlobalEventGenerator>();
+    public static List<GlobalEvent> Events = new List<GlobalEvent>();
+    private static Dictionary<Type, GlobalEventGenerator> Generators = new Dictionary<Type, GlobalEventGenerator>();
 
     public class Type
     {
-        static private byte availableId = 0;
-        static public Type Camouflage = new Type();
-        static public Type EMI = new Type();
-        static public Type BlackOut = new Type();
+        private static byte availableId = 0;
+        public static Type Camouflage = new Type();
+        public static Type EMI = new Type();
+        public static Type BlackOut = new Type();
 
         public byte Id { get; }
 
@@ -76,7 +76,7 @@ public class GlobalEvent
         this.duration = duration;
     }
 
-    static public bool IsActive(Type type)
+    public static bool IsActive(Type type)
     {
         foreach (GlobalEvent globalEvent in Events)
         {
@@ -86,9 +86,9 @@ public class GlobalEvent
         return false;
     }
 
-    static public void Update()
+    public static void Update()
     {
-        if(Game.GameData.data.IsTimeStopped) return;
+        if (Game.GameData.data.IsTimeStopped) return;
         foreach (GlobalEvent globalEvent in Events)
         {
             globalEvent.duration -= Time.deltaTime;
@@ -98,7 +98,7 @@ public class GlobalEvent
         Events.RemoveAll(e => e.CheckTerminal());
     }
 
-    static public bool Activate(GlobalEvent.Type type, float duration, ulong option)
+    public static bool Activate(Type type, float duration, ulong option)
     {
         if (Generators.ContainsKey(type))
         {
@@ -110,17 +110,17 @@ public class GlobalEvent
         return false;
     }
 
-    static public void Register(GlobalEvent.Type type, GlobalEventGenerator generator)
+    public static void Register(Type type, GlobalEventGenerator generator)
     {
         Generators.Add(type, generator);
     }
 
-    static public void Initialize()
+    public static void Initialize()
     {
         Events.Clear();
     }
 
-    static public void OnMeeting()
+    public static void OnMeeting()
     {
         foreach (GlobalEvent globalEvent in Events)
         {

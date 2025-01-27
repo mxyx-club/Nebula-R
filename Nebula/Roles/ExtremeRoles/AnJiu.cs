@@ -55,7 +55,7 @@ public class AnJiu : Template.TImpostor
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;
-        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1145141919810f,true);
+        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1145141919810f, true);
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
     }
 

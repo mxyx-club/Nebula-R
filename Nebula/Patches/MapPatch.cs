@@ -1,9 +1,9 @@
 ﻿namespace Nebula.Patches;
 
 [HarmonyPatch]
-class MapBehaviorPatch
+internal class MapBehaviorPatch
 {
-    static public void UpdateMapSize(MapBehaviour __instance)
+    public static void UpdateMapSize(MapBehaviour __instance)
     {
         if (minimapFlag)
         {
@@ -22,9 +22,9 @@ class MapBehaviorPatch
     public static bool minimapFlag = false;
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Awake))]
-    class MapBehaviourAwakePatch
+    private class MapBehaviourAwakePatch
     {
-        static void Prefix(MapBehaviour __instance)
+        private static void Prefix(MapBehaviour __instance)
         {
             minimapFlag = false;
         }
@@ -32,9 +32,9 @@ class MapBehaviorPatch
     }
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Close))]
-    class MapBehaviourClosePatch
+    private class MapBehaviourClosePatch
     {
-        static void Postfix(MapBehaviour __instance)
+        private static void Postfix(MapBehaviour __instance)
         {
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
             {
@@ -46,12 +46,12 @@ class MapBehaviorPatch
 }
 
 [HarmonyPatch]
-class ForcelyShowSabotagePatch
+internal class ForcelyShowSabotagePatch
 {
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowNormalMap))]
-    class MapBehaviourShowNormalMapPatch
+    private class MapBehaviourShowNormalMapPatch
     {
-        static void Postfix(MapBehaviour __instance)
+        private static void Postfix(MapBehaviour __instance)
         {
             if (Game.GameData.data.myData.getGlobalData().role.CanInvokeSabotage && !MeetingHud.Instance)
             {
@@ -74,12 +74,12 @@ class ForcelyShowSabotagePatch
 }
 
 [HarmonyPatch]
-class DontShowSabotagePatch
+internal class DontShowSabotagePatch
 {
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowSabotageMap))]
-    class MapBehaviourShowNormalMapPatch
+    private class MapBehaviourShowNormalMapPatch
     {
-        static bool Prefix(MapBehaviour __instance)
+        private static bool Prefix(MapBehaviour __instance)
         {
             if (Game.GameData.data.myData.getGlobalData().role.CanInvokeSabotage)
                 return true;
@@ -108,12 +108,12 @@ class DontShowSabotagePatch
 }
 
 [HarmonyPatch]
-class MapUpdatePatch
+internal class MapUpdatePatch
 {
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.FixedUpdate))]
-    class MapBehaviourUpdatePatch
+    private class MapBehaviourUpdatePatch
     {
-        static void Postfix(MapBehaviour __instance)
+        private static void Postfix(MapBehaviour __instance)
         {
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
              {
@@ -125,12 +125,12 @@ class MapUpdatePatch
 }
 
 [HarmonyPatch]
-class MapTaskOverlayPatch
+internal class MapTaskOverlayPatch
 {
     [HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.SetIconLocation))]
-    class SetIconLocationPatch
+    private class SetIconLocationPatch
     {
-        static bool Prefix(MapTaskOverlay __instance)
+        private static bool Prefix(MapTaskOverlay __instance)
         {
             return !Game.GameData.data.myData.getGlobalData().role.BlocksShowTaskOverlay;
         }
@@ -138,10 +138,9 @@ class MapTaskOverlayPatch
     }
 
     [HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.Show))]
-    class ShowPatch
+    private class ShowPatch
     {
-
-        static void Postfix(MapTaskOverlay __instance)
+        private static void Postfix(MapTaskOverlay __instance)
         {
 
             void GenerateIcon(Vector2 pos, bool pulse)

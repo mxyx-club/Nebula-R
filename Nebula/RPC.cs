@@ -1,12 +1,9 @@
-﻿using Hazel;
-using Nebula.Agent;
+using Hazel;
 using Nebula.Events;
 using Nebula.Game;
 using Nebula.Module;
 using Nebula.Patches;
 using Nebula.Roles;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula;
 
@@ -26,8 +23,6 @@ public enum CustomRPC
     SetRandomMap,
     VersionHandshake,
     Synchronize,
-    SetMyColor,
-    ShareColor,
     SynchronizeTimer,
     UpdatePlayerControl,
     WinTrigger,
@@ -125,9 +120,9 @@ public enum CustomRPC
 
 //RPCを受け取ったときのイベント
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-class RPCHandlerPatch
+internal class RPCHandlerPatch
 {
-    static void Postfix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    private static void Postfix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         byte packetId = callId;
         int length;
@@ -161,12 +156,6 @@ class RPCHandlerPatch
                 }
                 int clientId = reader.ReadPackedInt32();
                 RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
-                break;
-            case (byte)CustomRPC.SetMyColor:
-                RPCEvents.SetMyColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f));
-                break;
-            case (byte)CustomRPC.ShareColor:
-                RPCEvents.ShareColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.Synchronize:
                 RPCEvents.Synchronize(reader.ReadByte(), reader.ReadInt32());
@@ -216,15 +205,15 @@ class RPCHandlerPatch
                 RPCEvents.SetGhostRole(reader.ReadByte(), Roles.GhostRole.GetRoleById(reader.ReadByte()));
                 break;
             case (byte)CustomRPC.PlayStaticSound:
-                RPCEvents.PlayStaticSound((Module.AudioAsset)reader.ReadByte());
+                RPCEvents.PlayStaticSound((AudioAsset)reader.ReadByte());
                 break;
             case (byte)CustomRPC.PlayDynamicSound:
-                RPCEvents.PlayDynamicSound(new Vector2(reader.ReadSingle(), reader.ReadSingle()), (Module.AudioAsset)reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle());
+                RPCEvents.PlayDynamicSound(new Vector2(reader.ReadSingle(), reader.ReadSingle()), (AudioAsset)reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.UncheckedMultiMurderPlayer:
                 var args = reader.ReadBytes(3);
                 var targets = reader.ReadBytes(args[2]);
-                RPCEvents.UncheckedMurderPlayer(args[0], args[1],  targets.ToArray());
+                RPCEvents.UncheckedMurderPlayer(args[0], args[1], targets.ToArray());
                 break;
             case (byte)CustomRPC.UncheckedMurderPlayer:
                 RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -260,11 +249,11 @@ class RPCHandlerPatch
                 byte playerId = reader.ReadByte();
                 byte roleId = reader.ReadByte();
                 int exRoles = reader.ReadInt32();
-                var exRoleTuples = new List<Tuple<Tuple<Roles.ExtraRole, ulong>, bool>>();
+                var exRoleTuples = new List<Tuple<Tuple<ExtraRole, ulong>, bool>>();
                 for (int i = 0; i < exRoles; i++)
                 {
-                    exRoleTuples.Add(new Tuple<Tuple<Roles.ExtraRole, ulong>, bool>(
-                        new Tuple<Roles.ExtraRole, ulong>(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64()), reader.ReadBoolean()
+                    exRoleTuples.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(
+                        new Tuple<ExtraRole, ulong>(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64()), reader.ReadBoolean()
                         ));
                 }
                 RPCEvents.ImmediatelyChangeRole(playerId, roleId, exRoleTuples.ToArray());
@@ -276,10 +265,10 @@ class RPCHandlerPatch
                 RPCEvents.RevivePlayer(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadBoolean(), reader.ReadBoolean());
                 break;
             case (byte)CustomRPC.EmitSpeedFactor:
-                RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
+                RPCEvents.EmitSpeedFactor(reader.ReadByte(), new SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
                 break;
             case (byte)CustomRPC.EmitPlayerAttributeFactor:
-                RPCEvents.EmitPlayerAttributeFactor(reader.ReadByte(), new Game.PlayerAttributeFactor(Game.PlayerAttribute.AllAttributes[reader.ReadByte()], reader.ReadBoolean(), reader.ReadSingle(), reader.ReadByte(), reader.ReadBoolean()));
+                RPCEvents.EmitPlayerAttributeFactor(reader.ReadByte(), new PlayerAttributeFactor(Game.PlayerAttribute.AllAttributes[reader.ReadByte()], reader.ReadBoolean(), reader.ReadSingle(), reader.ReadByte(), reader.ReadBoolean()));
                 break;
             case (byte)CustomRPC.FixLights:
                 RPCEvents.FixLights();
@@ -330,7 +319,7 @@ class RPCHandlerPatch
                 RPCEvents.DeathGuage(reader.ReadByte(), reader.ReadByte(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.EditCoolDown:
-                RPCEvents.EditCoolDown((Roles.CoolDownType)reader.ReadByte(), reader.ReadSingle());
+                RPCEvents.EditCoolDown((CoolDownType)reader.ReadByte(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.KillGuard:
                 RPCEvents.KillGuard(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -355,7 +344,7 @@ class RPCHandlerPatch
                 RPCEvents.RaiderThrow(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.Morph:
-                RPCEvents.Morph(reader.ReadByte(), new Game.PlayerData.PlayerOutfitData(reader),reader.ReadSingle());
+                RPCEvents.Morph(reader.ReadByte(), new PlayerData.PlayerOutfitData(reader), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.MorphCancel:
                 RPCEvents.MorphCancel(reader.ReadByte());
@@ -380,7 +369,7 @@ class RPCHandlerPatch
                 RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.GetObject(reader.ReadUInt64()), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.Paint:
-                RPCEvents.Paint(Helpers.playerById(reader.ReadByte()), new Game.PlayerData.PlayerOutfitData(reader));
+                RPCEvents.Paint(Helpers.playerById(reader.ReadByte()), new PlayerData.PlayerOutfitData(reader));
                 break;
             case (byte)CustomRPC.Poltergeist:
                 RPCEvents.Poltergeist(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()));
@@ -389,16 +378,16 @@ class RPCHandlerPatch
                 RPCEvents.InstantiateDeadBody(reader.ReadByte(), new Vector3(reader.ReadSingle(), reader.ReadSingle()));
                 break;
             case (byte)CustomRPC.EnterRemoteVent:
-                RPCEvents.EnterRemoteVent(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()),reader.ReadInt32());
+                RPCEvents.EnterRemoteVent(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadInt32());
                 break;
             case (byte)CustomRPC.Guess:
                 RPCEvents.Guess(reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.Dig:
-                RPCEvents.Dig(new Vector3(reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle()));
+                RPCEvents.Dig(new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
                 break;
             case (byte)CustomRPC.SetConsoleStatus:
-                RPCEvents.SetConsoleStatus(reader.ReadString(),reader.ReadBoolean(),new Vector3(reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle()),new Vector3(reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle()));
+                RPCEvents.SetConsoleStatus(reader.ReadString(), reader.ReadBoolean(), new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()), new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
                 break;
             case (byte)CustomRPC.SetMeetingTime:
                 RPCEvents.SetMeetingTime(reader.ReadSingle());
@@ -407,19 +396,19 @@ class RPCHandlerPatch
                 RPCEvents.AddMeetingTime(reader.ReadSingle());
                 break;
             case (byte)CustomRPC.SetRoleInfo:
-                RPCEvents.SetRoleInfo(reader.ReadByte(),reader.ReadString(),reader.ReadBoolean());
+                RPCEvents.SetRoleInfo(reader.ReadByte(), reader.ReadString(), reader.ReadBoolean());
                 break;
             case (byte)CustomRPC.AfterTeleportEvent:
                 RPCEvents.AfterTeleportEvent(reader.ReadSingle());
                 break;
             case (byte)CustomRPC.SetSwapTarget:
-                RPCEvents.SetSwapTarget(reader.ReadByte(),reader.ReadByte());
+                RPCEvents.SetSwapTarget(reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.Teleport:
                 RPCEvents.Teleport(reader.ReadByte());
                 break;
             case (byte)CustomRPC.SendInfo:
-                RPCEvents.SendInfo(reader.ReadByte(),reader.ReadString());
+                RPCEvents.SendInfo(reader.ReadByte(), reader.ReadString());
                 break;
             case (byte)CustomRPC.SetCascrubinterTarget:
                 RPCEvents.SetCascrubinterTarget(reader.ReadByte());
@@ -428,13 +417,13 @@ class RPCHandlerPatch
                 RPCEvents.LockKillButton(reader.ReadByte());
                 break;
             case (byte)CustomRPC.FakeKill:
-                RPCEvents.FakeKill(reader.ReadByte(),reader.ReadByte());
+                RPCEvents.FakeKill(reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.FixedRevive:
                 RPCEvents.FixedRevive(reader.ReadByte());
                 break;
             case (byte)CustomRPC.SetBombTarget:
-                RPCEvents.SetBombTarget(reader.ReadByte(),reader.ReadByte());
+                RPCEvents.SetBombTarget(reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.SetSmoke:
                 RPCEvents.SetSmoke(reader.ReadByte());
@@ -446,7 +435,7 @@ class RPCHandlerPatch
                 RPCEvents.UpdateFollowerData(reader.ReadByte());
                 break;
             case (byte)CustomRPC.SetFlash:
-                RPCEvents.SetFlash(reader.ReadByte(),reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle());
+                RPCEvents.SetFlash(reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.FixedCleanDeadBody:
                 RPCEvents.FixedCleanDeadBody(reader.ReadByte());
@@ -458,7 +447,7 @@ class RPCHandlerPatch
                 RPCEvents.SetTimeStatus(reader.ReadBoolean());
                 break;
             case (byte)CustomRPC.Extort:
-                RPCEvents.Extort(reader.ReadByte(),reader.ReadSingle());
+                RPCEvents.Extort(reader.ReadByte(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.CompeteGetPoint:
                 RPCEvents.CompeteGetPoint(reader.ReadByte());
@@ -467,7 +456,7 @@ class RPCHandlerPatch
     }
 }
 
-static class RPCEvents
+internal static class RPCEvents
 {
     public static void ResetVaribles()
     {
@@ -488,23 +477,13 @@ static class RPCEvents
         VentManager.CleanUp();
     }
 
-    public static void SetMyColor(byte playerId, byte hue,byte dis, byte posHue, byte posDis, Color mainColor,Color shadowColor)
-    {
-        DynamicColors.SetOthersColor(hue, dis, posHue, posDis, mainColor, shadowColor, playerId);
-    }
-
-    public static void ShareColor(byte shadowType, byte mainPosHue, byte mainPosDis, Color mainOriginalColor,float mainLum,byte mainHue,byte mainDis, Color shadowOriginalColor, float shadowLum, byte shadowHue, byte shadowDis)
-    {
-        DynamicColors.ReceiveSharedColor(shadowType, mainPosHue, mainPosDis,mainOriginalColor, mainLum,mainHue,mainDis,shadowOriginalColor,shadowLum,shadowHue,shadowDis);
-    }
-
     public static void SynchronizeTimer(float timer)
     {
         if (Game.GameData.data != null)
             Game.GameData.data.Timer = timer;
     }
 
-    public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
+    public static void SetPlayerStatus(byte playerId, PlayerData.PlayerStatus status)
     {
         Game.GameData.data.playersArray[playerId].Status = status;
     }
@@ -516,12 +495,12 @@ static class RPCEvents
 
     public static void VersionHandshake(byte[] version, Guid guid, int clientId)
     {
-        Patches.GameStartManagerPatch.playerVersions[clientId] = new Patches.GameStartManagerPatch.PlayerVersion(version, guid);
+        Patches.GameStartManagerPatch.playerVersions[clientId] = new GameStartManagerPatch.PlayerVersion(version, guid);
     }
 
     public static void WinTrigger(byte roleId, byte winnerId)
     {
-        Roles.Role role = Roles.Role.GetRoleById(roleId);
+        Role role = Roles.Role.GetRoleById(roleId);
         if (role is Roles.Template.HasWinTrigger)
         {
             ((Roles.Template.HasWinTrigger)role).WinTrigger = true;
@@ -539,7 +518,7 @@ static class RPCEvents
         Game.GameData.data.playersArray[playerId].preMeetingPosition = pos;
     }
 
-    public static void SetRole(byte playerId, Roles.Role role, int roleDataId, int roleData)
+    public static void SetRole(byte playerId, Role role, int roleDataId, int roleData)
     {
         if (role.category == Roles.RoleCategory.Impostor)
         {
@@ -579,9 +558,9 @@ static class RPCEvents
     /// <param name="role"></param>
     /// <param name="initializeValue"></param>
     /// <param name="playerId"></param>
-    public static void SetExtraRole(byte playerId, Roles.ExtraRole role, ulong initializeValue)
+    public static void SetExtraRole(byte playerId, ExtraRole role, ulong initializeValue)
     {
-        if(Game.GameData.data.playersArray[playerId] != null && Game.GameData.data.playersArray[playerId].HasExtraRole(role)) return;
+        if (Game.GameData.data.playersArray[playerId] != null && Game.GameData.data.playersArray[playerId].HasExtraRole(role)) return;
         Game.GameData.data.playersArray[playerId]?.extraRole.Add(role);
         Game.GameData.data.playersArray[playerId]?.SetExtraRoleData(role.id, initializeValue);
 
@@ -590,7 +569,7 @@ static class RPCEvents
         Game.GameData.data.playersArray[playerId]?.extraRole.Sort((a, b) => a.assignmentPriority - b.assignmentPriority);
     }
 
-    public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId, bool onMeetingEnd)
+    public static void UnsetExtraRole(ExtraRole role, byte playerId, bool onMeetingEnd)
     {
         if (onMeetingEnd)
         {
@@ -605,7 +584,7 @@ static class RPCEvents
         }
     }
 
-    public static void ImmediatelyUnsetExtraRole(Roles.ExtraRole role, byte playerId)
+    public static void ImmediatelyUnsetExtraRole(ExtraRole role, byte playerId)
     {
         if (playerId == PlayerControl.LocalPlayer.PlayerId)
         {
@@ -619,7 +598,7 @@ static class RPCEvents
         Game.GameData.data.playersArray[playerId].extraRole.Remove(role);
     }
 
-    public static void ChangeExtraRole(Roles.ExtraRole? removeRole, Roles.ExtraRole addRole, ulong initializeValue, byte playerId)
+    public static void ChangeExtraRole(ExtraRole? removeRole, ExtraRole addRole, ulong initializeValue, byte playerId)
     {
         if (removeRole != null && Helpers.GetModData(playerId).extraRole.Contains(removeRole))
         {
@@ -638,7 +617,7 @@ static class RPCEvents
         }
     }
 
-    public static void SwapExtraRole(PlayerControl player1, PlayerControl player2, Roles.ExtraRole role, bool onMeetingEnd)
+    public static void SwapExtraRole(PlayerControl player1, PlayerControl player2, ExtraRole role, bool onMeetingEnd)
     {
         if (!onMeetingEnd)
         {
@@ -653,7 +632,7 @@ static class RPCEvents
         }
     }
 
-    public static void ImmediatelySwapExtraRole(PlayerControl player1, PlayerControl player2, Roles.ExtraRole role)
+    public static void ImmediatelySwapExtraRole(PlayerControl player1, PlayerControl player2, ExtraRole role)
     {
         var modData1 = player1.GetModData();
         var modData2 = player2.GetModData();
@@ -666,12 +645,12 @@ static class RPCEvents
         if (hasRole1) ImmediatelyUnsetExtraRole(role, player1.PlayerId);
         if (hasRole2) ImmediatelyUnsetExtraRole(role, player2.PlayerId);
 
-        if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1); 
+        if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1);
         if (hasRole2) SetExtraRole(player1.PlayerId, role, extra2);
 
     }
 
-    public static void SetGhostRole(byte playerId, Roles.GhostRole? ghostRole)
+    public static void SetGhostRole(byte playerId, GhostRole? ghostRole)
     {
         var data = Game.GameData.data.playersArray[playerId];
         PlayerControl player = Helpers.playerById(playerId);
@@ -703,20 +682,20 @@ static class RPCEvents
         if (!data.IsAlive && data.role.CanHaveGhostRole) data.AddRoleHistory();
     }
 
-    public static void PlayStaticSound(Module.AudioAsset id)
+    public static void PlayStaticSound(AudioAsset id)
     {
         Objects.SoundPlayer.PlaySound(id);
     }
 
-    public static void PlayDynamicSound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
+    public static void PlayDynamicSound(Vector2 pos, AudioAsset id, float maxDistance, float minDistance)
     {
         Objects.SoundPlayer.PlaySound(pos, id, maxDistance, minDistance);
     }
 
-    public static void UncheckedMurderPlayer(byte murdererId, byte statusId,byte[] targetsId)
+    public static void UncheckedMurderPlayer(byte murdererId, byte statusId, byte[] targetsId)
     {
-        foreach(byte t in targetsId)
-            UncheckedMurderPlayer(murdererId,t,statusId,0);
+        foreach (byte t in targetsId)
+            UncheckedMurderPlayer(murdererId, t, statusId, 0);
     }
 
     public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation, bool cutOverlay = false)
@@ -875,7 +854,7 @@ static class RPCEvents
         if (!Roles.Roles.F_Guesser.secondoryRoleOption.getBool())
         {
             //Guesserを考慮に入れる
-            Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceGuesser, Roles.Roles.EvilGuesser });
+            Game.GameData.data.EstimationAI.DetermineMultiply(new Role[] { Roles.Roles.NiceGuesser, Roles.Roles.EvilGuesser });
         }
     }
 
@@ -897,7 +876,7 @@ static class RPCEvents
         //自身のロールデータ更新時に呼ぶメソッド群
         if (playerId == PlayerControl.LocalPlayer.PlayerId)
         {
-            foreach (Roles.ExtraRole role in Game.GameData.data.myData.getGlobalData().extraRole)
+            foreach (ExtraRole role in Game.GameData.data.myData.getGlobalData().extraRole)
             {
                 if (role.id == roleId) role.OnUpdateRoleData(newData);
             }
@@ -923,7 +902,7 @@ static class RPCEvents
         }
     }
 
-    private static void SetUpRole(Game.PlayerData data, PlayerControl player, Roles.Role role, Dictionary<int, int>? roleData = null)
+    private static void SetUpRole(PlayerData data, PlayerControl player, Role role, Dictionary<int, int>? roleData = null)
     {
         bool isMe = false;
         if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
@@ -969,18 +948,18 @@ static class RPCEvents
     {
         Events.Schedule.RegisterPostMeetingAction(() =>
         {
-            ImmediatelyChangeRole(playerId, roleId, new Tuple<Tuple<Roles.ExtraRole, ulong>, bool>[0]);
+            ImmediatelyChangeRole(playerId, roleId, new Tuple<Tuple<ExtraRole, ulong>, bool>[0]);
         }, 16);
     }
 
     public static void ImmediatelyChangeRole(byte playerId, byte roleId)
     {
-        ImmediatelyChangeRole(playerId, roleId, new Tuple<Tuple<Roles.ExtraRole, ulong>, bool>[0]);
+        ImmediatelyChangeRole(playerId, roleId, new Tuple<Tuple<ExtraRole, ulong>, bool>[0]);
     }
 
-    public static void ImmediatelyChangeRole(byte playerId, byte roleId, Tuple<Tuple<Roles.ExtraRole, ulong>, bool>[] extraRoles)
+    public static void ImmediatelyChangeRole(byte playerId, byte roleId, Tuple<Tuple<ExtraRole, ulong>, bool>[] extraRoles)
     {
-        Game.PlayerData data = Game.GameData.data.GetPlayerData(playerId);
+        PlayerData data = Game.GameData.data.GetPlayerData(playerId);
 
         if (playerId == PlayerControl.LocalPlayer.PlayerId)
         {
@@ -1011,8 +990,8 @@ static class RPCEvents
     {
         Events.Schedule.RegisterPostMeetingAction(() =>
         {
-            Game.PlayerData? data1 = Game.GameData.data.GetPlayerData(playerId_1);
-            Game.PlayerData? data2 = Game.GameData.data.GetPlayerData(playerId_2);
+            PlayerData? data1 = Game.GameData.data.GetPlayerData(playerId_1);
+            PlayerData? data2 = Game.GameData.data.GetPlayerData(playerId_2);
 
             if (data1 == null || data2 == null) return;
 
@@ -1029,15 +1008,19 @@ static class RPCEvents
             data2.role.GlobalFinalizeInGame(Helpers.playerById(playerId_2));
 
             Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
-            Roles.Role role1 = data1.role, role2 = data2.role;
+            Role role1 = data1.role, role2 = data2.role;
 
-                //ロールを変更
-            try{
+            //ロールを変更
+            try
+            {
                 SetUpRole(data1, Helpers.playerById(playerId_1), role2, roleData2);
-            }catch(Exception e){ Debug.LogError(e.StackTrace); }
-            try{
+            }
+            catch (Exception e) { Error(e.StackTrace); }
+            try
+            {
                 SetUpRole(data2, Helpers.playerById(playerId_2), role1, roleData1);
-            }catch(Exception e){ Debug.LogError(e.StackTrace); }
+            }
+            catch (Exception e) { Error(e.StackTrace); }
         }, 16);
     }
 
@@ -1047,17 +1030,17 @@ static class RPCEvents
         {
             //NecromancerやBuskerを確定させる
             if (Game.GameData.data.GameMode == CustomGameMode.Standard)
-                Game.GameData.data.EstimationAI.Determine(changeStatus ? (Roles.Role)Roles.Roles.Necromancer : (Roles.Role)Roles.Roles.Busker);
+                Game.GameData.data.EstimationAI.Determine(changeStatus ? Roles.Roles.Necromancer : Roles.Roles.Busker);
 
             foreach (DeadBody body in Helpers.AllDeadBodies())
             {
                 if (body.ParentId != playerId) continue;
-                
+
                 UnityEngine.Object.Destroy(body.gameObject);
                 //body.gameObject.active = false;
                 break;
             }
-            
+
             //Events.LocalEvent.Activate(new Events.DeadBodyFix(playerId));
 
             Game.GameData.data.playersArray[playerId]?.Revive(changeStatus);
@@ -1069,14 +1052,14 @@ static class RPCEvents
         }
         else
         {
-            
+
             foreach (DeadBody body in Helpers.AllDeadBodies())
             {
                 if (body.ParentId != playerId) continue;
                 UnityEngine.Object.Destroy(body.gameObject);
                 //body.gameObject.active = false;
             }
-            
+
             //Events.LocalEvent.Activate(new Events.DeadBodyFix(playerId));
 
             Game.GameData.data.playersArray[playerId]?.Revive();
@@ -1093,17 +1076,17 @@ static class RPCEvents
             data.Property.UnderTheFloor = false;
         }
 
-        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r)=>r.OnRevived(playerId));
+        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnRevived(playerId));
 
         if (HnSModificator.IsHnSGame) HudManager.Instance.CrewmatesKilled.OnCrewmateKilled();
     }
 
-    public static void EmitSpeedFactor(byte playerId, Game.SpeedFactor speedFactor)
+    public static void EmitSpeedFactor(byte playerId, SpeedFactor speedFactor)
     {
         Game.GameData.data.playersArray[playerId]?.Speed.Register(speedFactor);
     }
 
-    public static void EmitPlayerAttributeFactor(byte playerId, Game.PlayerAttributeFactor attributeFactor)
+    public static void EmitPlayerAttributeFactor(byte playerId, PlayerAttributeFactor attributeFactor)
     {
         Game.GameData.data.playersArray[playerId]?.Attribute.Register(attributeFactor);
     }
@@ -1131,7 +1114,7 @@ static class RPCEvents
         }
 
         //Cleaner,Vultureを考慮に入れる
-        Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.Vulture, Roles.Roles.Cleaner });
+        Game.GameData.data.EstimationAI.DetermineMultiply(new Role[] { Roles.Roles.Vulture, Roles.Roles.Cleaner });
     }
 
     public static void SnapToDeadBody(byte deadBodyId, Vector2 pos)
@@ -1166,7 +1149,7 @@ static class RPCEvents
         {
             Game.GameData.data.CountDownMessage =
                 Objects.CustomMessage.Create(text,
-                (float)count + 1f, 0f, 1f, Color.white);
+                count + 1f, 0f, 1f, Color.white);
         }
         else
         {
@@ -1181,7 +1164,7 @@ static class RPCEvents
             var p = Game.GameData.data.GetPlayerData(playerId);
             if (p != null)
             {
-                p.Tasks = new Game.TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
+                p.Tasks = new TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
                 break;
             }
             yield return null;
@@ -1197,7 +1180,7 @@ static class RPCEvents
         }
         else
         {
-            p.Tasks = new Game.TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
+            p.Tasks = new TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
         }
     }
 
@@ -1206,7 +1189,7 @@ static class RPCEvents
         var p = Game.GameData.data.playersArray[playerId];
         if (p == null) return;
 
-        p.Tasks = new Game.TaskData(allTasks, allTasks, allQuota, true, false);
+        p.Tasks = new TaskData(allTasks, allTasks, allQuota, true, false);
     }
 
     public static void AddTasks(byte playerId, int addTasks)
@@ -1231,7 +1214,7 @@ static class RPCEvents
         }
         else
         {
-            p.Tasks = new Game.TaskData(displayTasks, displayTasks, addQuota, false, false);
+            p.Tasks = new TaskData(displayTasks, displayTasks, addQuota, false, false);
         }
     }
 
@@ -1253,9 +1236,9 @@ static class RPCEvents
         switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
     }
 
-    public static Objects.CustomObject ObjectInstantiate(byte ownerId, byte objectTypeId, ulong objectId, float positionX, float positionY)
+    public static CustomObject ObjectInstantiate(byte ownerId, byte objectTypeId, ulong objectId, float positionX, float positionY)
     {
-        Objects.CustomObject obj = new Objects.CustomObject(ownerId, Objects.CustomObject.Type.AllTypes[objectTypeId], objectId, new Vector3(positionX, positionY));
+        CustomObject obj = new CustomObject(ownerId, Objects.CustomObject.Type.AllTypes[objectTypeId], objectId, new Vector3(positionX, positionY));
         obj.ObjectType.Update(obj);
         return obj;
     }
@@ -1282,7 +1265,7 @@ static class RPCEvents
         {
             yield return null;
         }
-        Game.GameData.data.SynchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
+        Game.GameData.data.SynchronizeData.Synchronize((SynchronizeTag)tag, playerId);
     }
 
     public static void Synchronize(byte playerId, int tag)
@@ -1323,8 +1306,8 @@ static class RPCEvents
             Roles.Roles.Navvy.SetSealedVentSprite(vent, 1f);
             vent.GetVentData().Sealed = true;
 
-                //Navvyを確定させる
-                Game.GameData.data.EstimationAI.Determine(Roles.Roles.Navvy);
+            //Navvyを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Navvy);
         }, 1);
 
         Game.GameData.data.playersArray[playerId]?.AddRoleData(Roles.Roles.Navvy.remainingScrewsDataId, -1);
@@ -1337,8 +1320,8 @@ static class RPCEvents
 
     public static void SniperSettleRifle(byte playerId)
     {
-        List<Objects.CustomObject> objList = new List<Objects.CustomObject>();
-        foreach (Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+        List<CustomObject> objList = new List<CustomObject>();
+        foreach (CustomObject obj in Objects.CustomObject.Objects.Values)
         {
             if (obj.OwnerId != playerId) continue;
             if (obj.ObjectType != Objects.ObjectTypes.SniperRifle.Rifle) continue;
@@ -1354,8 +1337,8 @@ static class RPCEvents
 
     public static void RaiderSettleAxe(byte playerId)
     {
-        List<Objects.CustomObject> objList = new List<Objects.CustomObject>();
-        foreach (Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+        List<CustomObject> objList = new List<CustomObject>();
+        foreach (CustomObject obj in Objects.CustomObject.Objects.Values)
         {
             if (obj.OwnerId != playerId) continue;
             if (obj.ObjectType != Objects.ObjectTypes.RaidAxe.Axe) continue;
@@ -1430,7 +1413,7 @@ static class RPCEvents
         if (Helpers.playerById(murderId).transform.position.Distance(PlayerControl.LocalPlayer.transform.position) > Roles.Roles.Sniper.noticeRangeOption.getFloat())
             return;
 
-        Objects.Arrow arrow = new Objects.Arrow(Color.white,false);
+        Arrow arrow = new Arrow(Color.white, false);
         arrow.image.sprite = Roles.Roles.Sniper.getSnipeArrowSprite();
 
         Vector3 pos = Helpers.playerById(murderId).transform.position;
@@ -1445,8 +1428,8 @@ static class RPCEvents
             }
             if (p == 1f)
             {
-                    //矢印を消す
-                    UnityEngine.Object.Destroy(arrow.arrow);
+                //矢印を消す
+                UnityEngine.Object.Destroy(arrow.arrow);
             }
         })));
     }
@@ -1457,7 +1440,7 @@ static class RPCEvents
         Game.GameData.data.EstimationAI.Determine(Roles.Roles.Raider);
 
         //Axeを投げ状態にする
-        foreach (Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+        foreach (CustomObject obj in Objects.CustomObject.Objects.Values)
         {
             if (obj.OwnerId != murderId) continue;
             if (obj.ObjectType != Objects.ObjectTypes.RaidAxe.Axe) continue;
@@ -1471,7 +1454,7 @@ static class RPCEvents
         }
     }
 
-    public static void Morph(byte playerId, Game.PlayerData.PlayerOutfitData outfit,float oper)
+    public static void Morph(byte playerId, PlayerData.PlayerOutfitData outfit, float oper)
     {
         //Morphingを確定させる
         Game.GameData.data.EstimationAI.Determine(Roles.Roles.Morphing);
@@ -1481,7 +1464,7 @@ static class RPCEvents
 
     public static void MorphCancel(byte playerId)
     {
-        Events.LocalEvent.Inactivate((Events.LocalEvent e) =>
+        Events.LocalEvent.Inactivate((LocalEvent e) =>
         {
             if (e is Roles.ImpostorRoles.Morphing.MorphEvent)
             {
@@ -1495,12 +1478,12 @@ static class RPCEvents
     {
         if (Roles.NeutralRoles.Sidekick.SidekickTakeOverOriginalRoleOption.getBool())
         {
-            RPCEvents.ImmediatelyChangeRole(playerId, Roles.Roles.Sidekick.id, new Tuple<Tuple<Roles.ExtraRole, ulong>, bool>[0]);
+            RPCEvents.ImmediatelyChangeRole(playerId, Roles.Roles.Sidekick.id, new Tuple<Tuple<ExtraRole, ulong>, bool>[0]);
             RPCEvents.UpdateRoleData(playerId, Roles.Roles.Jackal.jackalDataId, jackalId);
         }
         else
         {
-            RPCEvents.SetExtraRole(playerId, Roles.Roles.SecondarySidekick, (ulong)jackalId);
+            RPCEvents.SetExtraRole(playerId, Roles.Roles.SecondarySidekick, jackalId);
         }
     }
 
@@ -1513,7 +1496,7 @@ static class RPCEvents
         if (pos.Distance(PlayerControl.LocalPlayer.transform.position) < Roles.Roles.Banshee.minWeepNoticeRangeOption.getFloat())
             return;
 
-        Objects.Arrow arrow = new Objects.Arrow(Color.white, false);
+        Arrow arrow = new Arrow(Color.white, false);
         arrow.image.sprite = Roles.Roles.Banshee.bansheeArrowSprite.GetSprite();
 
         pos += (Vector2)((Vector3.one * Roles.Roles.Banshee.fuzzinessWeepNoticeOption.getFloat()).RotateZ((float)NebulaPlugin.rnd.NextDouble() * 360f));
@@ -1539,7 +1522,7 @@ static class RPCEvents
         Game.GameData.data.playersArray[player].isInvisiblePlayer = !flag;
     }
 
-    public static void EditCoolDown(Roles.CoolDownType coolDownType, float time)
+    public static void EditCoolDown(CoolDownType coolDownType, float time)
     {
         Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) =>
          {
@@ -1547,7 +1530,7 @@ static class RPCEvents
          });
     }
 
-    public static void DecoySwap(PlayerControl player, Objects.CustomObject? decoy, float playerX, float playerY, float decoyX, float decoyY)
+    public static void DecoySwap(PlayerControl player, CustomObject? decoy, float playerX, float playerY, float decoyX, float decoyY)
     {
         bool playerFlip = player.cosmetics.FlipX;
         bool decoyFlip = decoy.Renderer.flipX;
@@ -1562,7 +1545,7 @@ static class RPCEvents
     public static void UpdatePlayersIconInfo(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-        Roles.Role role = Roles.Role.GetRoleById(reader.ReadByte());
+        Role role = Roles.Role.GetRoleById(reader.ReadByte());
 
         var info = (Module.Information.PlayersIconInformation?)Module.Information.UpperInformationManager.GetInformation((i) =>
         {
@@ -1606,7 +1589,7 @@ static class RPCEvents
         }
     }
 
-    public static void Paint(PlayerControl player, Game.PlayerData.PlayerOutfitData outfit)
+    public static void Paint(PlayerControl player, PlayerData.PlayerOutfitData outfit)
     {
         if (player == PlayerControl.LocalPlayer) return;
 
@@ -1624,12 +1607,12 @@ static class RPCEvents
         }
     }
 
-    static public void Poltergeist(byte deadBodyId, Vector2 vector)
+    public static void Poltergeist(byte deadBodyId, Vector2 vector)
     {
         Events.LocalEvent.Activate(new Roles.GhostRoles.Poltergeist.PoltergeistEvent(deadBodyId, vector));
     }
 
-    static public void InstantiateDeadBody(byte targetId, Vector3 position)
+    public static void InstantiateDeadBody(byte targetId, Vector3 position)
     {
         var p = Helpers.playerById(targetId);
         DeadBody deadBody = GameObject.Instantiate<DeadBody>(GameManager.Instance.deadBodyPrefab);
@@ -1643,13 +1626,13 @@ static class RPCEvents
         deadBody.enabled = true;
     }
 
-    static public void EnterRemoteVent(byte playerId, Vector2 pos,int ventId)
+    public static void EnterRemoteVent(byte playerId, Vector2 pos, int ventId)
     {
         Vent v = ShipStatus.Instance.AllVents.FirstOrDefault((v) => v.Id == ventId);
         if (v == null) return;
         var p = Helpers.playerById(playerId);
 
-        HudManager.Instance.StartCoroutine(NebulaEffects.CoDisappearEffect(HudManager.Instance,LayerExpansion.GetDefaultLayer(),null,new Vector3(pos.x,pos.y,-1)).WrapToIl2Cpp());
+        HudManager.Instance.StartCoroutine(NebulaEffects.CoDisappearEffect(HudManager.Instance, LayerExpansion.GetDefaultLayer(), null, new Vector3(pos.x, pos.y, -1)).WrapToIl2Cpp());
         HudManager.Instance.StartCoroutine(NebulaEffects.CoGroupOfLeavesEffect(HudManager.Instance, LayerExpansion.GetDefaultLayer(), null, v.transform.position + v.Offset + new Vector3(0, 0, -2)).WrapToIl2Cpp());
 
 
@@ -1682,121 +1665,146 @@ static class RPCEvents
             v.SetButtons(true);
     }
 
-    static public void Guess(byte murderer,byte target)
+    public static void Guess(byte murderer, byte target)
     {
-        CloseUpKill(murderer,target,(murderer == target ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed).Id,true);
-        if (MeetingHud.Instance)MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();   
+        CloseUpKill(murderer, target, (murderer == target ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed).Id, true);
+        if (MeetingHud.Instance) MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();
     }
 
-    static public void SpectrReform(int id)
+    public static void SpectrReform(int id)
     {
         var obj = Roles.Roles.Spectre.CustomConsoles[id];
         obj.GetComponent<SpriteRenderer>().sprite = Roles.Roles.Spectre.GetConsoleUsedSprite().GetSprite();
         obj.name = "NoS-Used";
     }
 
-    static public void Dig(Vector3 pos){
+    public static void Dig(Vector3 pos)
+    {
         VentManager.newVent(pos);
         //Debug.Log("Plumber created new vent");
     }
 
-    static public void SetConsoleStatus(string consoleId,bool status,Vector3 pos,Vector3 fixPos){
-        Console target =  ShipStatus.Instance.AllConsoles.FirstOrDefault(x => x.gameObject.name == consoleId && Vector2.Distance(x.transform.position,fixPos) <= 0.01f);
-        if(target == null) return;
+    public static void SetConsoleStatus(string consoleId, bool status, Vector3 pos, Vector3 fixPos)
+    {
+        Console target = ShipStatus.Instance.AllConsoles.FirstOrDefault(x => x.gameObject.name == consoleId && Vector2.Distance(x.transform.position, fixPos) <= 0.01f);
+        if (target == null) return;
         //Debug.LogWarning(target.ConsoleId.ToString());
-        if(target.GetComponent<Collider2D>() != null){
+        if (target.GetComponent<Collider2D>() != null)
+        {
             target.GetComponent<Collider2D>().enabled = status;
             target.GetComponent<Collider2D>().isTrigger = true;
         }
-        if(target.GetComponent<PolygonCollider2D>() != null){
+        if (target.GetComponent<PolygonCollider2D>() != null)
+        {
             target.GetComponent<PolygonCollider2D>().enabled = status;
             target.GetComponent<PolygonCollider2D>().isTrigger = true;
         }
-        if(target.GetComponent<BoxCollider2D>() != null){
+        if (target.GetComponent<BoxCollider2D>() != null)
+        {
             target.GetComponent<BoxCollider2D>().enabled = status;
             target.GetComponent<BoxCollider2D>().isTrigger = true;
         }
-        if(target.GetComponent<CircleCollider2D>() != null){
+        if (target.GetComponent<CircleCollider2D>() != null)
+        {
             target.GetComponent<CircleCollider2D>().enabled = status;
             target.GetComponent<CircleCollider2D>().isTrigger = true;
         }
-        if(target.GetComponent<HoverAnimBehaviour>() != null){
+        if (target.GetComponent<HoverAnimBehaviour>() != null)
+        {
             target.GetComponent<HoverAnimBehaviour>().enabled = false;
         }
         target.gameObject.SetActive(status);
-        target.transform.position = new Vector3(pos.x,pos.y,pos.z + 0.1f);
+        target.transform.position = new Vector3(pos.x, pos.y, pos.z + 0.1f);
     }
 
-    public static void SetMeetingTime(float time){
-        if(MeetingHud.Instance != null) MeetingHud.Instance.discussionTimer = time;
+    public static void SetMeetingTime(float time)
+    {
+        if (MeetingHud.Instance != null) MeetingHud.Instance.discussionTimer = time;
     }
 
-    public static void AddMeetingTime(float time){
-        if(MeetingHud.Instance != null) MeetingHud.Instance.discussionTimer -= time;
+    public static void AddMeetingTime(float time)
+    {
+        if (MeetingHud.Instance != null) MeetingHud.Instance.discussionTimer -= time;
     }
 
-    public static void SetRoleInfo(byte playerId,string info,bool onlyImp){
-        if(Helpers.playerById(playerId).GetModData() == null || (onlyImp && PlayerControl.LocalPlayer.GetModData().role.category != RoleCategory.Impostor)) return;
+    public static void SetRoleInfo(byte playerId, string info, bool onlyImp)
+    {
+        if (Helpers.playerById(playerId).GetModData() == null || (onlyImp && PlayerControl.LocalPlayer.GetModData().role.category != RoleCategory.Impostor)) return;
         Helpers.playerById(playerId).GetModData().RoleInfo = info;
     }
 
-    public static void AfterTeleportEvent(float time){
+    public static void AfterTeleportEvent(float time)
+    {
         PlayerControl.LocalPlayer.GetModData().role.AfterTeleport(time);
     }
 
-    public static void SetSwapTarget(byte playerId1,byte playerId2){
+    public static void SetSwapTarget(byte playerId1, byte playerId2)
+    {
         Roles.ComplexRoles.SwapSystem.swapTargetf = playerId1;
         Roles.ComplexRoles.SwapSystem.swapTargets = playerId2;
-        if(playerId1 != Byte.MaxValue && playerId2 != Byte.MaxValue) Roles.ComplexRoles.SwapSystem.isSwapped = true;
+        if (playerId1 != Byte.MaxValue && playerId2 != Byte.MaxValue) Roles.ComplexRoles.SwapSystem.isSwapped = true;
         else Roles.ComplexRoles.SwapSystem.isSwapped = false;
-        Debug.Log(playerId1.ToString()+playerId2.ToString()+Roles.ComplexRoles.SwapSystem.isSwapped.ToString());
+        Info(playerId1.ToString() + playerId2.ToString() + Roles.ComplexRoles.SwapSystem.isSwapped.ToString());
     }
 
-    public static void Teleport(byte targetId){
+    public static void Teleport(byte targetId)
+    {
         PlayerControl.LocalPlayer.transform.position = Helpers.playerById(targetId).transform.position;
     }
 
-    public static void SendInfo(byte targetId,string info){
-        if(PlayerControl.LocalPlayer.GetModData().role != Roles.Roles.Marker/* && PlayerControl.LocalPlayer.GetModData().role != Roles.Roles.HighRoller*/) return;
-        if(Helpers.playerById(targetId).GetModData().RoleInfo == "") Helpers.playerById(targetId).GetModData().RoleInfo = info;
+    public static void SendInfo(byte targetId, string info)
+    {
+        if (PlayerControl.LocalPlayer.GetModData().role != Roles.Roles.Marker/* && PlayerControl.LocalPlayer.GetModData().role != Roles.Roles.HighRoller*/) return;
+        if (Helpers.playerById(targetId).GetModData().RoleInfo == "") Helpers.playerById(targetId).GetModData().RoleInfo = info;
     }
 
-    public static void SetCascrubinterTarget(byte targetId){
+    public static void SetCascrubinterTarget(byte targetId)
+    {
         Roles.Roles.Cascrubinter.target = Helpers.playerById(targetId);
     }
 
-    public static void LockKillButton(byte targetId){
-        if(PlayerControl.LocalPlayer.PlayerId == targetId){
+    public static void LockKillButton(byte targetId)
+    {
+        if (PlayerControl.LocalPlayer.PlayerId == targetId)
+        {
             Game.GameData.data.IsLockedKill = true;
         }
     }
 
-    public static void FakeKill(byte murderId,byte targetId){
+    public static void FakeKill(byte murderId, byte targetId)
+    {
         Helpers.playerById(murderId).transform.position = Helpers.playerById(targetId).transform.position;
     }
 
-    public static void FixedRevive(byte playerId){
+    public static void FixedRevive(byte playerId)
+    {
         PlayerControl player = Helpers.playerById(playerId);
         player.Revive();
-        try{
+        try
+        {
             DeadBody[] array = UnityEngine.Object.FindObjectsOfType<DeadBody>();
-            foreach(var DeadBody in array){
-                if(DeadBody.ParentId == playerId){
+            foreach (var DeadBody in array)
+            {
+                if (DeadBody.ParentId == playerId)
+                {
                     DeadBody.gameObject.active = false;
                 }
             }
-        }catch(Exception e) { Debug.LogError(e.StackTrace); }
+        }
+        catch (Exception e) { Error(e.StackTrace); }
         Game.GameData.data.playersArray[playerId]?.Revive();
         player.Data.IsDead = false;
     }
 
-    public static void SetBombTarget(byte mode,byte data){
-        if(mode == 1) Roles.Roles.BomberA.target = data;
-        else if(mode == 2) Roles.Roles.BomberB.target = data;
-        else Debug.LogError("[RPC]Error: Set Bomb Target Failed.");
+    public static void SetBombTarget(byte mode, byte data)
+    {
+        if (mode == 1) Roles.Roles.BomberA.target = data;
+        else if (mode == 2) Roles.Roles.BomberB.target = data;
+        else Error("[RPC]Error: Set Bomb Target Failed.");
     }
 
-    public static void SetSmoke(byte playerId){
+    public static void SetSmoke(byte playerId)
+    {
         /*
         for (int i = 0; i < 7; i++)
         /*
@@ -1810,56 +1818,71 @@ static class RPCEvents
             new Vector3((float)NebulaPlugin.rnd.NextDouble() * 0.4f + 0.1f, 0f).RotateZ((float)NebulaPlugin.rnd.NextDouble() * 360f),
             (float)NebulaPlugin.rnd.NextDouble() * 40, 0.35f + (float)NebulaPlugin.rnd.NextDouble() * 0.1f).WrapToIl2Cpp());
         */
-        RPCEventInvoker.ObjectInstantiate(new Objects.ObjectTypes.Bomb(),Helpers.playerById(playerId).transform.position);
+        RPCEventInvoker.ObjectInstantiate(new Objects.ObjectTypes.Bomb(), Helpers.playerById(playerId).transform.position);
     }
 
-    public static void SetInfectLives(byte lives){
+    public static void SetInfectLives(byte lives)
+    {
         Roles.Roles.Infected.TotalLives = lives;
     }
 
-    public static void UpdateFollowerData(byte data){
+    public static void UpdateFollowerData(byte data)
+    {
         Roles.Roles.Follower.targetId = data;
     }
 
-    public static void SetFlash(byte playerId,float duration,float visiably,float r,float g,float b){
-        Color FlashColor = new(r,g,b);
-        if(playerId == PlayerControl.LocalPlayer.PlayerId){
-            Helpers.PlayCustomFlash(FlashColor,0.1f,0.4f,visiably,duration);
+    public static void SetFlash(byte playerId, float duration, float visiably, float r, float g, float b)
+    {
+        Color FlashColor = new(r, g, b);
+        if (playerId == PlayerControl.LocalPlayer.PlayerId)
+        {
+            Helpers.PlayCustomFlash(FlashColor, 0.1f, 0.4f, visiably, duration);
         }
-        if(Roles.Roles.Grenadier.flashedId.Count <= 0){
+        if (Roles.Roles.Grenadier.flashedId.Count <= 0)
+        {
             LocalEvent.Activate(new Roles.ImpostorRoles.FlashEndEvent(duration));
-            Schedule.RegisterPreMeetingAction(() => {
+            Schedule.RegisterPreMeetingAction(() =>
+            {
                 Roles.Roles.Grenadier.flashedId.Clear();
                 Roles.Roles.Grenadier.isFlashing = false;
-            },16);
+            }, 16);
         }
         Roles.Roles.Grenadier.flashedId.Add(playerId);
         Roles.Roles.Grenadier.isFlashing = true;
     }
 
-    public static void FixedCleanDeadBody(byte playerId){
-        try{
+    public static void FixedCleanDeadBody(byte playerId)
+    {
+        try
+        {
             DeadBody[] array = UnityEngine.Object.FindObjectsOfType<DeadBody>();
-            foreach(var DeadBody in array){
-                if(DeadBody.ParentId == playerId){
+            foreach (var DeadBody in array)
+            {
+                if (DeadBody.ParentId == playerId)
+                {
                     DeadBody.gameObject.active = false;
                 }
             }
-        }catch(Exception e) { Debug.LogError(e.StackTrace); }
+        }
+        catch (Exception e) { Error(e.StackTrace); }
     }
 
-    public static void ResetTeleportField(int idx){
+    public static void ResetTeleportField(int idx)
+    {
         Objects.ObjectTypes.TeleportField.ResetTime(idx);
     }
 
-    public static void SetTimeStatus(bool status){
+    public static void SetTimeStatus(bool status)
+    {
         Game.GameData.data.IsTimeStopped = status;
     }
 
-    public static void Extort(byte playerId,float time){
-        if(playerId == PlayerControl.LocalPlayer.PlayerId){
+    public static void Extort(byte playerId, float time)
+    {
+        if (playerId == PlayerControl.LocalPlayer.PlayerId)
+        {
             Game.GameData.data.IsLocked = true;
-            Events.StandardEvent.SetEvent(() => { Game.GameData.data.IsLocked = false; },time);
+            Events.StandardEvent.SetEvent(() => { Game.GameData.data.IsLocked = false; }, time);
         }
     }
 
@@ -1880,9 +1903,9 @@ static class RPCEvents
                 break;
         }
 
-        Debug.Log($"Red: {Roles.Roles.RedTeam.Point}");
-        Debug.Log($"Blue: {Roles.Roles.BlueTeam.Point}");
-        Debug.Log($"KM: {Roles.Roles.KillingMachine.Point}");
+        Info($"Red: {Roles.Roles.RedTeam.Point}");
+        Info($"Blue: {Roles.Roles.BlueTeam.Point}");
+        Info($"KM: {Roles.Roles.KillingMachine.Point}");
     }
 }
 
@@ -1904,7 +1927,7 @@ public class RPCEventInvoker
                         foreach (var loc in task.Locations)
                             locList.Add(new Tuple<Vector2, bool>(loc, task.TaskStep > 0));
                 }
-                writer.Write((int)locList.Count);
+                writer.Write(locList.Count);
                 foreach (var tuple in locList)
                 {
                     writer.Write(tuple.Item1.x);
@@ -1924,7 +1947,7 @@ public class RPCEventInvoker
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
+    public static void SetPlayerStatus(byte playerId, PlayerData.PlayerStatus status)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPlayerStatus, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -1961,7 +1984,7 @@ public class RPCEventInvoker
     }
 
 
-    private static void WriteRolesData(MessageWriter writer, Patches.AssignMap assignMap)
+    private static void WriteRolesData(MessageWriter writer, AssignMap assignMap)
     {
         writer.Write(assignMap.RoleMap.Count);
         foreach (var entry in assignMap.RoleMap)
@@ -1982,7 +2005,7 @@ public class RPCEventInvoker
         }
     }
 
-    public static void SetRoles(Patches.AssignMap assignMap)
+    public static void SetRoles(AssignMap assignMap)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoles, Hazel.SendOption.Reliable, -1);
 
@@ -1995,51 +2018,7 @@ public class RPCEventInvoker
         RPCEvents.AfterSetRole();
     }
 
-    public static void SetMyColor()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMyColor, Hazel.SendOption.Reliable, -1);
-        writer.Write(PlayerControl.LocalPlayer.PlayerId);
-        writer.Write(DynamicColors.MyColor.GetMainHue());
-        writer.Write(DynamicColors.MyColor.GetMainDistance());
-        writer.Write(DynamicColors.MyColor.GetMainPosHue());
-        writer.Write(DynamicColors.MyColor.GetMainPosDistance());
-        var color = DynamicColors.MyColor.GetMainColor();
-        writer.Write(color.r);
-        writer.Write(color.g);
-        writer.Write(color.b);
-        color = DynamicColors.MyColor.GetShadowColor();
-        writer.Write(color.r);
-        writer.Write(color.g);
-        writer.Write(color.b);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId,DynamicColors.MyColor.GetMainHue(), DynamicColors.MyColor.GetMainDistance(), DynamicColors.MyColor.GetMainPosHue(), DynamicColors.MyColor.GetMainPosDistance(), DynamicColors.MyColor.GetMainColor(), DynamicColors.MyColor.GetShadowColor());
-    }
-
-    public static void ShareColor(DynamicColors.CustomColor customColor) 
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareColor, Hazel.SendOption.Reliable, -1);
-        writer.Write(customColor.GetShadowType());
-        writer.Write(customColor.GetMainPosHue());
-        writer.Write(customColor.GetMainPosDistance());
-        var color = customColor.GetMainOriginalColor();
-        writer.Write(color.r);
-        writer.Write(color.g);
-        writer.Write(color.b);
-        writer.Write(customColor.GetMainLuminosity());
-        writer.Write(customColor.GetMainHue());
-        writer.Write(customColor.GetMainDistance());
-        color = customColor.GetShadowOriginalColor();
-        writer.Write(color.r);
-        writer.Write(color.g);
-        writer.Write(color.b);
-        writer.Write(customColor.GetShadowLuminosity());
-        writer.Write(customColor.GetShadowHue());
-        writer.Write(customColor.GetShadowDistance());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.ShareColor(customColor.GetShadowType(), customColor.GetMainPosHue(), customColor.GetMainPosDistance(),customColor.GetMainOriginalColor(), customColor.GetMainLuminosity(), customColor.GetMainHue(), customColor.GetMainDistance(), customColor.GetShadowColor(),customColor.GetShadowLuminosity(),customColor.GetShadowHue(),customColor.GetShadowDistance());
-    }
-
-    public static void WinTrigger(Roles.Role role)
+    public static void WinTrigger(Role role)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WinTrigger, Hazel.SendOption.Reliable, -1);
         writer.Write(role.id);
@@ -2048,7 +2027,7 @@ public class RPCEventInvoker
         RPCEvents.WinTrigger(role.id, PlayerControl.LocalPlayer.PlayerId);
     }
 
-    public static void PlayStaticSound(Module.AudioAsset id)
+    public static void PlayStaticSound(AudioAsset id)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayStaticSound, Hazel.SendOption.Reliable, -1);
         writer.Write((byte)id);
@@ -2056,7 +2035,7 @@ public class RPCEventInvoker
         RPCEvents.PlayStaticSound(id);
     }
 
-    public static void PlayDynamicSound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
+    public static void PlayDynamicSound(Vector2 pos, AudioAsset id, float maxDistance, float minDistance)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayDynamicSound, Hazel.SendOption.Reliable, -1);
         writer.Write(pos.x);
@@ -2094,7 +2073,7 @@ public class RPCEventInvoker
         writer.Write(murdererId);
         writer.Write(statusId);
         writer.Write((byte)targets.Length);
-        foreach(byte t in targets)writer.Write(t);
+        foreach (byte t in targets) writer.Write(t);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.UncheckedMurderPlayer(murdererId, statusId, targets);
     }
@@ -2116,7 +2095,7 @@ public class RPCEventInvoker
         writer.Write(statusId);
         writer.Write((byte)0);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, statusId, (byte)0, true);
+        RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, statusId, 0, true);
     }
 
     public static void UncheckedExilePlayer(byte playerId, byte statusId)
@@ -2157,7 +2136,7 @@ public class RPCEventInvoker
         RPCEvents.UpdateExtraRoleData(playerId, roleId, newData);
     }
 
-    public static void CloseUpKill(PlayerControl murder, PlayerControl target, Game.PlayerData.PlayerStatus status, bool playSoundForEveryone = true)
+    public static void CloseUpKill(PlayerControl murder, PlayerControl target, PlayerData.PlayerStatus status, bool playSoundForEveryone = true)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
         writer.Write(murder.PlayerId);
@@ -2174,7 +2153,7 @@ public class RPCEventInvoker
         UpdateRoleData(playerId, dataId, newData);
     }
 
-    public static void ChangeRole(PlayerControl player, Roles.Role role)
+    public static void ChangeRole(PlayerControl player, Role role)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeRole, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2183,7 +2162,7 @@ public class RPCEventInvoker
         RPCEvents.ChangeRole(player.PlayerId, role.id);
     }
 
-    public static void ImmediatelyChangeRole(PlayerControl player, Roles.Role role, params Tuple<Tuple<Roles.ExtraRole, ulong>, bool>[] extraRoles)
+    public static void ImmediatelyChangeRole(PlayerControl player, Role role, params Tuple<Tuple<ExtraRole, ulong>, bool>[] extraRoles)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ImmediatelyChangeRole, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2208,7 +2187,7 @@ public class RPCEventInvoker
         RPCEvents.SwapRole(player1.PlayerId, player2.PlayerId);
     }
 
-    public static void SetExtraRole(PlayerControl player, Roles.ExtraRole role, ulong initializeValue)
+    public static void SetExtraRole(PlayerControl player, ExtraRole role, ulong initializeValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExtraRole, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2218,12 +2197,12 @@ public class RPCEventInvoker
         RPCEvents.SetExtraRole(player.PlayerId, role, initializeValue);
     }
 
-    public static void ImmediatelyUnsetExtraRole(PlayerControl player, Roles.ExtraRole role)
+    public static void ImmediatelyUnsetExtraRole(PlayerControl player, ExtraRole role)
     {
         UnsetExtraRole(player, role, false);
     }
 
-    public static void UnsetExtraRole(PlayerControl player, Roles.ExtraRole role, bool onMeetingEnd)
+    public static void UnsetExtraRole(PlayerControl player, ExtraRole role, bool onMeetingEnd)
     {
         if (!player.GetModData().extraRole.Contains(role)) return;
 
@@ -2235,7 +2214,7 @@ public class RPCEventInvoker
         RPCEvents.UnsetExtraRole(role, player.PlayerId, onMeetingEnd);
     }
 
-    public static void ChangeExtraRole(PlayerControl player, Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue)
+    public static void ChangeExtraRole(PlayerControl player, ExtraRole removeRole, ExtraRole addRole, ulong initializeValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeExtraRole, Hazel.SendOption.Reliable, -1);
         writer.Write(removeRole.id);
@@ -2246,7 +2225,7 @@ public class RPCEventInvoker
         RPCEvents.ChangeExtraRole(removeRole, addRole, initializeValue, player.PlayerId);
     }
 
-    public static void SwapExtraRole(PlayerControl player1, PlayerControl player2, Roles.ExtraRole role, bool onMeetingEnd)
+    public static void SwapExtraRole(PlayerControl player1, PlayerControl player2, ExtraRole role, bool onMeetingEnd)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapExtraRole, Hazel.SendOption.Reliable, -1);
         writer.Write(player1.PlayerId);
@@ -2258,7 +2237,7 @@ public class RPCEventInvoker
     }
 
 
-    public static void AddExtraRole(PlayerControl player, Roles.ExtraRole addRole, ulong initializeValue)
+    public static void AddExtraRole(PlayerControl player, ExtraRole addRole, ulong initializeValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeExtraRole, Hazel.SendOption.Reliable, -1);
         writer.Write(byte.MaxValue);
@@ -2269,7 +2248,7 @@ public class RPCEventInvoker
         RPCEvents.ChangeExtraRole(null, addRole, initializeValue, player.PlayerId);
     }
 
-    public static void SetGhostRole(PlayerControl player, Roles.GhostRole? ghostRole)
+    public static void SetGhostRole(PlayerControl player, GhostRole? ghostRole)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGhostRole, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2304,7 +2283,7 @@ public class RPCEventInvoker
         RPCEvents.RevivePlayer(player.PlayerId, pos, changeStatusToRevive, gushOnRevive);
     }
 
-    public static void EmitSpeedFactor(PlayerControl player, Game.SpeedFactor speedFactor)
+    public static void EmitSpeedFactor(PlayerControl player, SpeedFactor speedFactor)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitSpeedFactor, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2317,7 +2296,7 @@ public class RPCEventInvoker
         RPCEvents.EmitSpeedFactor(player.PlayerId, speedFactor);
     }
 
-    public static void EmitAttributeFactor(PlayerControl player, Game.PlayerAttributeFactor attributeFactor)
+    public static void EmitAttributeFactor(PlayerControl player, PlayerAttributeFactor attributeFactor)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitPlayerAttributeFactor, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2381,7 +2360,7 @@ public class RPCEventInvoker
         if (resetTasks) PlayerControl.LocalPlayer.Data.SetLocalTask(tasks);
     }
 
-    public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance,bool excludeUploadingData=false)
+    public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance, bool excludeUploadingData = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RefreshTasks, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -2412,7 +2391,7 @@ public class RPCEventInvoker
             if (excludeUploadingData && t.TaskType == TaskTypes.UploadData) continue;
             unused.Add(t);
         }
-        Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+        Extensions.Shuffle(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
         ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
 
         unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
@@ -2422,7 +2401,7 @@ public class RPCEventInvoker
             if (excludeUploadingData && t.TaskType == TaskTypes.UploadData) continue;
             unused.Add(t);
         }
-        Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+        Extensions.Shuffle(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
         ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
 
         GameData.PlayerInfo p = PlayerControl.LocalPlayer.Data;
@@ -2437,7 +2416,7 @@ public class RPCEventInvoker
             n++;
         }
         p.Object.SetTasks(p.Tasks);
-        GameData.Instance.SetDirtyBit(1U << (int)PlayerControl.LocalPlayer.PlayerId);
+        GameData.Instance.SetDirtyBit(1U << PlayerControl.LocalPlayer.PlayerId);
     }
 
     public static void CompleteTask(byte playerId)
@@ -2456,15 +2435,15 @@ public class RPCEventInvoker
         RPCEvents.ExemptAllTask(playerId);
     }
 
-    public static Objects.CustomObject ObjectInstantiate(Objects.CustomObject.Type objectType, Vector3 position)
+    public static CustomObject ObjectInstantiate(CustomObject.Type objectType, Vector3 position)
     {
         ulong id;
         while (true)
         {
-            id = (ulong)NebulaPlugin.rnd.Next((int)Objects.CustomObject.MAX_PLAYER_OBJECTS);
+            id = (ulong)NebulaPlugin.rnd.Next(CustomObject.MAX_PLAYER_OBJECTS);
             if (!Objects.CustomObject.Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * Objects.CustomObject.MAX_PLAYER_OBJECTS))) break;
         }
-        id = id + (ulong)PlayerControl.LocalPlayer.PlayerId;
+        id = id + PlayerControl.LocalPlayer.PlayerId;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectInstantiate, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(objectType.Id);
@@ -2475,7 +2454,7 @@ public class RPCEventInvoker
         return RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId, objectType.Id, id, position.x, position.y);
     }
 
-    public static void ObjectUpdate(Objects.CustomObject customObject, int command)
+    public static void ObjectUpdate(CustomObject customObject, int command)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectUpdate, Hazel.SendOption.Reliable, -1);
         writer.Write(customObject.Id);
@@ -2484,7 +2463,7 @@ public class RPCEventInvoker
         RPCEvents.ObjectUpdate(customObject.Id, command);
     }
 
-    public static void ObjectDestroy(Objects.CustomObject customObject)
+    public static void ObjectDestroy(CustomObject customObject)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectDestroy, Hazel.SendOption.Reliable, -1);
         writer.Write(customObject.Id);
@@ -2492,7 +2471,7 @@ public class RPCEventInvoker
         RPCEvents.ObjectDestroy(customObject.Id);
     }
 
-    public static void Synchronize(Game.SynchronizeTag tag, byte playerId)
+    public static void Synchronize(SynchronizeTag tag, byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Synchronize, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -2598,14 +2577,14 @@ public class RPCEventInvoker
         RPCEvents.BansheeWeep(pos);
     }
 
-    public static void Morph(Game.PlayerData.PlayerOutfitData outfit,float oper = 0f)
+    public static void Morph(PlayerData.PlayerOutfitData outfit, float oper = 0f)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Morph, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         outfit.Serialize(writer);
         writer.Write(oper);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, outfit,oper);
+        RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, outfit, oper);
     }
 
     public static void MorphCancel()
@@ -2625,7 +2604,7 @@ public class RPCEventInvoker
         RPCEvents.CreateSidekick(targetId, jackalId);
     }
 
-    public static void GlobalEvent(Events.GlobalEvent.Type type, float duration, ulong option = 0)
+    public static void GlobalEvent(GlobalEvent.Type type, float duration, ulong option = 0)
     {
         MessageWriter camouflageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
         camouflageWriter.Write(type.Id);
@@ -2662,7 +2641,7 @@ public class RPCEventInvoker
         RPCEvents.UpdatePlayerVisibility(playerId, visibility);
     }
 
-    public static void EditCoolDown(Roles.CoolDownType coolDownType, float time)
+    public static void EditCoolDown(CoolDownType coolDownType, float time)
     {
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EditCoolDown, Hazel.SendOption.Reliable, -1);
         messageWriter.Write((byte)coolDownType);
@@ -2671,7 +2650,7 @@ public class RPCEventInvoker
         RPCEvents.EditCoolDown(coolDownType, time);
     }
 
-    public static void DecoySwap(Objects.CustomObject decoy)
+    public static void DecoySwap(CustomObject decoy)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DecoySwap, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
@@ -2739,7 +2718,7 @@ public class RPCEventInvoker
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayersIconInfo, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(role.id);
-        writer.Write((int)PlayerControl.AllPlayerControls.Count);
+        writer.Write(PlayerControl.AllPlayerControls.Count);
 
         foreach (var p in PlayerControl.AllPlayerControls)
         {
@@ -2752,7 +2731,7 @@ public class RPCEventInvoker
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void Paint(PlayerControl player, Game.PlayerData.PlayerOutfitData outfit)
+    public static void Paint(PlayerControl player, PlayerData.PlayerOutfitData outfit)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Paint, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
@@ -2781,7 +2760,7 @@ public class RPCEventInvoker
         RPCEvents.InstantiateDeadBody(targetId, position);
     }
 
-    static public void EnterRemoteVent(Vector2 pos, Vent vent)
+    public static void EnterRemoteVent(Vector2 pos, Vent vent)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EnterRemoteVent, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
@@ -2789,19 +2768,19 @@ public class RPCEventInvoker
         writer.Write(pos.y);
         writer.Write(vent.Id);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.EnterRemoteVent(PlayerControl.LocalPlayer.PlayerId,pos,vent.Id);
+        RPCEvents.EnterRemoteVent(PlayerControl.LocalPlayer.PlayerId, pos, vent.Id);
     }
 
-    static public void Guess(byte target)
+    public static void Guess(byte target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guess, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(target);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.Guess(PlayerControl.LocalPlayer.PlayerId,target);
+        RPCEvents.Guess(PlayerControl.LocalPlayer.PlayerId, target);
     }
 
-    static public void SpectreReform(int id)
+    public static void SpectreReform(int id)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpectreEat, Hazel.SendOption.Reliable, -1);
         writer.Write(id);
@@ -2809,8 +2788,9 @@ public class RPCEventInvoker
         RPCEvents.SpectrReform(id);
     }
 
-    static public void Dig(Vector3 pos){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.Dig,Hazel.SendOption.Reliable,-1);
+    public static void Dig(Vector3 pos)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Dig, Hazel.SendOption.Reliable, -1);
         writer.Write(pos.x);
         writer.Write(pos.y);
         writer.Write(pos.z);
@@ -2818,9 +2798,10 @@ public class RPCEventInvoker
         RPCEvents.Dig(pos);
     }
 
-    static public void SetConsoleStatus(Console target,bool status,Vector3 pos){
+    public static void SetConsoleStatus(Console target, bool status, Vector3 pos)
+    {
         Vector3 fixPos = target.transform.position;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetConsoleStatus,Hazel.SendOption.Reliable,-1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetConsoleStatus, Hazel.SendOption.Reliable, -1);
         writer.Write(target.gameObject.name);
         writer.Write(status);
         writer.Write(pos.x);
@@ -2830,122 +2811,138 @@ public class RPCEventInvoker
         writer.Write(fixPos.y);
         writer.Write(fixPos.z);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetConsoleStatus(target.gameObject.name,status,pos,fixPos);
+        RPCEvents.SetConsoleStatus(target.gameObject.name, status, pos, fixPos);
     }
 
-    public static void SetMeetingTime(float time){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetMeetingTime,Hazel.SendOption.Reliable,-1);
+    public static void SetMeetingTime(float time)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMeetingTime, Hazel.SendOption.Reliable, -1);
         writer.Write(time);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.SetMeetingTime(time);
     }
 
-    public static void AddMeetingTime(float time){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.AddMeetingTime,Hazel.SendOption.Reliable,-1);
+    public static void AddMeetingTime(float time)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AddMeetingTime, Hazel.SendOption.Reliable, -1);
         writer.Write(time);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.AddMeetingTime(time);
     }
 
-    public static void SetRoleInfo(PlayerControl player,string info,bool onlyImpostor = true){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetRoleInfo,Hazel.SendOption.Reliable,-1);
+    public static void SetRoleInfo(PlayerControl player, string info, bool onlyImpostor = true)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoleInfo, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(info);
         writer.Write(onlyImpostor);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetRoleInfo(player.PlayerId,info,onlyImpostor);
+        RPCEvents.SetRoleInfo(player.PlayerId, info, onlyImpostor);
     }
 
-    public static void AfterTeleportEvent(float time){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.AfterTeleportEvent,Hazel.SendOption.Reliable,-1);
+    public static void AfterTeleportEvent(float time)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AfterTeleportEvent, Hazel.SendOption.Reliable, -1);
         writer.Write(time);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.AfterTeleportEvent(time);
     }
 
-    public static void SetSwapTarget(byte id1,byte id2){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetSwapTarget,Hazel.SendOption.Reliable,-1);
+    public static void SetSwapTarget(byte id1, byte id2)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSwapTarget, Hazel.SendOption.Reliable, -1);
         writer.Write(id1);
         writer.Write(id2);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetSwapTarget(id1,id2);
+        RPCEvents.SetSwapTarget(id1, id2);
     }
 
-    public static void Teleport(PlayerControl target){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.Teleport,Hazel.SendOption.Reliable,-1);
+    public static void Teleport(PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Teleport, Hazel.SendOption.Reliable, -1);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.Teleport(target.PlayerId);
     }
 
-    public static void SendInfo(byte targetId,string info){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SendInfo,Hazel.SendOption.Reliable,-1);
+    public static void SendInfo(byte targetId, string info)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendInfo, Hazel.SendOption.Reliable, -1);
         writer.Write(targetId);
         writer.Write(info);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SendInfo(targetId,info);
+        RPCEvents.SendInfo(targetId, info);
     }
 
-    public static void SetCascrubinterTarget(PlayerControl target){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetCascrubinterTarget,Hazel.SendOption.Reliable,-1);
+    public static void SetCascrubinterTarget(PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCascrubinterTarget, Hazel.SendOption.Reliable, -1);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.SetCascrubinterTarget(target.PlayerId);
     }
 
-    public static void LockKillButton(PlayerControl target){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.LockKillButton,Hazel.SendOption.Reliable,-1);
+    public static void LockKillButton(PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LockKillButton, Hazel.SendOption.Reliable, -1);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.LockKillButton(target.PlayerId);
     }
 
-    public static void FakeKill(PlayerControl murder,PlayerControl target){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.FakeKill,Hazel.SendOption.Reliable,-1);
+    public static void FakeKill(PlayerControl murder, PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FakeKill, Hazel.SendOption.Reliable, -1);
         writer.Write(murder.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.FakeKill(murder.PlayerId,target.PlayerId);
+        RPCEvents.FakeKill(murder.PlayerId, target.PlayerId);
     }
 
-    public static void FixedRevive(PlayerControl player){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.FixedRevive,Hazel.SendOption.Reliable,-1);
+    public static void FixedRevive(PlayerControl player)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixedRevive, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.FixedRevive(player.PlayerId);
     }
 
-    public static void SetBombTarget(byte mode,byte data){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetBombTarget,Hazel.SendOption.Reliable,-1);
+    public static void SetBombTarget(byte mode, byte data)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBombTarget, Hazel.SendOption.Reliable, -1);
         writer.Write(mode);
         writer.Write(data);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetBombTarget(mode,data);
+        RPCEvents.SetBombTarget(mode, data);
     }
 
-    public static void SetSmoke(PlayerControl player){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetSmoke,Hazel.SendOption.Reliable,-1);
+    public static void SetSmoke(PlayerControl player)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSmoke, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.SetSmoke(player.PlayerId);
     }
 
-    public static void SetInfectLives(byte lives){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetInfectLives,Hazel.SendOption.Reliable,-1);
+    public static void SetInfectLives(byte lives)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInfectLives, Hazel.SendOption.Reliable, -1);
         writer.Write(lives);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.SetInfectLives(lives);
     }
 
-    public static void UpdateFollowerData(byte data){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.UpdateFollowerData,Hazel.SendOption.Reliable,-1);
+    public static void UpdateFollowerData(byte data)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdateFollowerData, Hazel.SendOption.Reliable, -1);
         writer.Write(data);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.UpdateFollowerData(data);
     }
 
-    public static void SetFlash(PlayerControl p,float duration,float visiably,Color c){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetFlash,Hazel.SendOption.Reliable,-1);
+    public static void SetFlash(PlayerControl p, float duration, float visiably, Color c)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFlash, Hazel.SendOption.Reliable, -1);
         writer.Write(p.PlayerId);
         writer.Write(duration);
         writer.Write(visiably);
@@ -2953,36 +2950,40 @@ public class RPCEventInvoker
         writer.Write(c.g);
         writer.Write(c.b);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetFlash(p.PlayerId,duration,visiably,c.r,c.g,c.b);
+        RPCEvents.SetFlash(p.PlayerId, duration, visiably, c.r, c.g, c.b);
     }
 
-    public static void FixedCleanDeadBody(PlayerControl player){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.FixedCleanDeadBody,Hazel.SendOption.Reliable,-1);
+    public static void FixedCleanDeadBody(PlayerControl player)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixedCleanDeadBody, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.FixedCleanDeadBody(player.PlayerId);
     }
 
-    public static void ResetTeleportField(int idx){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.ResetTeleportField,Hazel.SendOption.Reliable,-1);
+    public static void ResetTeleportField(int idx)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetTeleportField, Hazel.SendOption.Reliable, -1);
         writer.Write(idx);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.ResetTeleportField(idx);
     }
 
-    public static void SetTimeStatus(bool status){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.SetTimeStatus,Hazel.SendOption.Reliable,-1);
+    public static void SetTimeStatus(bool status)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTimeStatus, Hazel.SendOption.Reliable, -1);
         writer.Write(status);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.SetTimeStatus(status);
     }
 
-    public static void Extort(PlayerControl p,float time){
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,(byte)CustomRPC.Extort,Hazel.SendOption.Reliable,-1);
+    public static void Extort(PlayerControl p, float time)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Extort, Hazel.SendOption.Reliable, -1);
         writer.Write(p.PlayerId);
         writer.Write(time);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.Extort(p.PlayerId,time);
+        RPCEvents.Extort(p.PlayerId, time);
     }
 
     public static void CompeteGetPoint(byte team)
@@ -2992,4 +2993,4 @@ public class RPCEventInvoker
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.CompeteGetPoint(team);
     }
-}   
+}

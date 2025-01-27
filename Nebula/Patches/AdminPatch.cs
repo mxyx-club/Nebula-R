@@ -1,15 +1,14 @@
 ﻿using Nebula.Map;
-using Sentry;
 
 namespace Nebula.Patches;
 
 [Harmony]
 public class AdminPatch
 {
-    static float adminTimer = 0f;
-    static public TMPro.TextMeshPro OutOfTime;
-    static public TMPro.TextMeshPro TimeRemaining;
-    static bool clearedIcons = false;
+    private static float adminTimer = 0f;
+    public static TMPro.TextMeshPro OutOfTime;
+    public static TMPro.TextMeshPro TimeRemaining;
+    private static bool clearedIcons = false;
 
     public enum AdminMode
     {
@@ -45,7 +44,7 @@ public class AdminPatch
         }
     }
 
-    static void UseAdminTime()
+    private static void UseAdminTime()
     {
         if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
         {
@@ -95,8 +94,8 @@ public class AdminPatch
         }
     }
 
-    static Dictionary<CounterArea, int> impostorsMap = new Dictionary<CounterArea, int>();
-    static Dictionary<CounterArea, int> deadBodiesMap = new Dictionary<CounterArea, int>();
+    private static Dictionary<CounterArea, int> impostorsMap = new Dictionary<CounterArea, int>();
+    private static Dictionary<CounterArea, int> deadBodiesMap = new Dictionary<CounterArea, int>();
 
     public static Int32 divMaskByConsole = Int32.MaxValue;
     public static Int32 divMaskFinally = Int32.MaxValue;
@@ -104,7 +103,7 @@ public class AdminPatch
     [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
     public static class MapCountOverlayOnEnablePatch
     {
-        static bool Prefix(MapCountOverlay __instance)
+        private static bool Prefix(MapCountOverlay __instance)
         {
             adminTimer = 0f;
             impostorsMap.Clear();
@@ -115,7 +114,7 @@ public class AdminPatch
 
             if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.useClassicAdmin.getBool())
                 divMaskByConsole &= ~Map.MapData.GetCurrentMapData().ClassicAdminMask;
-            
+
 
             divMaskFinally = divMaskByConsole;
             MapBehaviourExpansion.EnmaskMap(divMaskFinally);
@@ -134,7 +133,7 @@ public class AdminPatch
     [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnDisable))]
     public static class MapCountOverlayOnDisablePatch
     {
-        static void Prefix(MapCountOverlay __instance)
+        private static void Prefix(MapCountOverlay __instance)
         {
             UseAdminTime();
         }
@@ -143,14 +142,14 @@ public class AdminPatch
     [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
     public static class MapCountOverlayUpdatePatch
     {
-        static ContactFilter2D filter = new ContactFilter2D()
+        private static ContactFilter2D filter = new ContactFilter2D()
         {
             useTriggers = true,
             layerMask = LayerMask.GetMask(new string[] { "Players" }),
             useLayerMask = true
         };
 
-        static void updateImpostors(CounterArea counterArea, int impostors, int deadBodies)
+        private static void updateImpostors(CounterArea counterArea, int impostors, int deadBodies)
         {
             foreach (var icon in counterArea.myIcons.GetFastEnumerator())
             {
@@ -171,7 +170,7 @@ public class AdminPatch
             }
         }
 
-        static void update(MapCountOverlay __instance)
+        private static void update(MapCountOverlay __instance)
         {
             __instance.timer += Time.deltaTime;
             if (__instance.timer < 0.1f) return;
@@ -193,7 +192,7 @@ public class AdminPatch
 
             //重複防止
             HashSet<byte> detectedPlayers = new HashSet<byte>();
-            Map.MapData? currentMapData = (divMaskFinally != Int32.MaxValue) ? Map.MapData.GetCurrentMapData() : null;
+            MapData? currentMapData = (divMaskFinally != Int32.MaxValue) ? Map.MapData.GetCurrentMapData() : null;
 
             for (int i = 0; i < __instance.CountAreas.Length; i++)
             {
@@ -302,7 +301,7 @@ public class AdminPatch
             }
         }
 
-        static bool Prefix(MapCountOverlay __instance)
+        private static bool Prefix(MapCountOverlay __instance)
         {
             if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool())
             {

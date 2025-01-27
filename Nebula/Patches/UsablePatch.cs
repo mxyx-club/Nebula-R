@@ -1,7 +1,7 @@
 ﻿namespace Nebula.Patches;
 
 [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]
-class KillButtonDoClickPatch
+internal class KillButtonDoClickPatch
 {
     public static bool Prefix(KillButton __instance)
     {
@@ -19,9 +19,9 @@ class KillButtonDoClickPatch
 }
 
 [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
-class TaskCompletePatch
+internal class TaskCompletePatch
 {
-    static void Prefix(NormalPlayerTask __instance)
+    private static void Prefix(NormalPlayerTask __instance)
     {
         if (__instance.MaxStep - 1 == __instance.TaskStep)
             if (__instance.Owner.PlayerId == PlayerControl.LocalPlayer.PlayerId)
@@ -30,9 +30,9 @@ class TaskCompletePatch
 }
 
 [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.Refresh))]
-class SabotageButtonRefreshPatch
+internal class SabotageButtonRefreshPatch
 {
-    static void Postfix(SabotageButton __instance)
+    private static void Postfix(SabotageButton __instance)
     {
         if (!HudManager.InstanceExists) return;
         if (Game.GameData.data == null) return;
@@ -46,9 +46,9 @@ class SabotageButtonRefreshPatch
 }
 
 [HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.Refresh))]
-class AbilityButtonRefreshPatch
+internal class AbilityButtonRefreshPatch
 {
-    static bool Prefix(AbilityButton __instance)
+    private static bool Prefix(AbilityButton __instance)
     {
         __instance.gameObject.SetActive(false);
         return false;
@@ -56,9 +56,9 @@ class AbilityButtonRefreshPatch
 }
 
 [HarmonyPatch(typeof(RoleBehaviour), nameof(RoleBehaviour.InitializeAbilityButton))]
-class BlockInitializeAbilityButtonPatch
+internal class BlockInitializeAbilityButtonPatch
 {
-    static bool Prefix(RoleBehaviour __instance)
+    private static bool Prefix(RoleBehaviour __instance)
     {
         HudManager.Instance.AbilityButton.gameObject.SetActive(false);
         return false;
@@ -85,9 +85,9 @@ public static class SabotageButtonDoClickPatch
 
 //コミュを直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(TuneRadioMinigame), nameof(TuneRadioMinigame.Begin))]
-class CommsMinigameBeginPatch
+internal class CommsMinigameBeginPatch
 {
-    static void Postfix(TuneRadioMinigame __instance)
+    private static void Postfix(TuneRadioMinigame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
@@ -97,9 +97,9 @@ class CommsMinigameBeginPatch
 
 //コミュを直せない役職からミニゲームをブロックする(MIRA)
 [HarmonyPatch(typeof(AuthGame), nameof(AuthGame.Begin))]
-class AuthGameBeginPatch
+internal class AuthGameBeginPatch
 {
-    static void Postfix(AuthGame __instance)
+    private static void Postfix(AuthGame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
@@ -109,9 +109,9 @@ class AuthGameBeginPatch
 
 //停電を直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(SwitchMinigame), nameof(SwitchMinigame.Begin))]
-class LightsMinigameBeginPatch
+internal class LightsMinigameBeginPatch
 {
-    static void Postfix(SwitchMinigame __instance)
+    private static void Postfix(SwitchMinigame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
@@ -121,9 +121,9 @@ class LightsMinigameBeginPatch
 
 //リアクターを直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(ReactorMinigame), nameof(ReactorMinigame.Begin))]
-class ReactorMinigameBeginPatch
+internal class ReactorMinigameBeginPatch
 {
-    static void Postfix(ReactorMinigame __instance)
+    private static void Postfix(ReactorMinigame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
@@ -133,9 +133,9 @@ class ReactorMinigameBeginPatch
 
 //ヘリサボを直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(AirshipAuthGame), nameof(AirshipAuthGame.Begin))]
-class AirshipAuthGameBeginPatch
+internal class AirshipAuthGameBeginPatch
 {
-    static void Postfix(AirshipAuthGame __instance)
+    private static void Postfix(AirshipAuthGame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
@@ -145,9 +145,9 @@ class AirshipAuthGameBeginPatch
 
 //O2を直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(KeypadGame), nameof(KeypadGame.Begin))]
-class KeypadGameBeginPatch
+internal class KeypadGameBeginPatch
 {
-    static void Postfix(KeypadGame __instance)
+    private static void Postfix(KeypadGame __instance)
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
@@ -157,18 +157,18 @@ class KeypadGameBeginPatch
 
 //ぬ～ん使用不可能
 [HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.MeetingCalled))]
-class MovingPlatformBehaviourMeetingCalledPatch
+internal class MovingPlatformBehaviourMeetingCalledPatch
 {
-    static bool Prefix(MovingPlatformBehaviour __instance)
+    private static bool Prefix(MovingPlatformBehaviour __instance)
     {
         return !(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool());
     }
 }
 
-[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.InUse),MethodType.Getter)]
-class CanUseMovingPlayformPatch
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.InUse), MethodType.Getter)]
+internal class CanUseMovingPlayformPatch
 {
-    static bool Prefix(MovingPlatformBehaviour __instance,bool __result)
+    private static bool Prefix(MovingPlatformBehaviour __instance, bool __result)
     {
         if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool())
         {
@@ -180,9 +180,9 @@ class CanUseMovingPlayformPatch
 }
 
 [HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.SetSide))]
-class MovingPlatformBehaviourSetSidePatch
+internal class MovingPlatformBehaviourSetSidePatch
 {
-    static bool Prefix(MovingPlatformBehaviour __instance)
+    private static bool Prefix(MovingPlatformBehaviour __instance)
     {
         if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek) return true;
 
@@ -193,13 +193,13 @@ class MovingPlatformBehaviourSetSidePatch
 
 
 [HarmonyPatch(typeof(SystemConsole), nameof(SystemConsole.Start))]
-class SystemConsoleStartPatch
+internal class SystemConsoleStartPatch
 {
-    static bool Prefix(SystemConsole __instance)
+    private static bool Prefix(SystemConsole __instance)
     {
-        if (__instance.FreeplayOnly && Game.GameData.data.GameMode!=Module.CustomGameMode.FreePlay)
+        if (__instance.FreeplayOnly && Game.GameData.data.GameMode != Module.CustomGameMode.FreePlay)
             UnityEngine.Object.Destroy(__instance.gameObject);
-        
+
         return false;
     }
 }

@@ -22,7 +22,7 @@ public class UsableCustomObjectBehaviour : MonoBehaviour
     {
         ClassInjector.RegisterTypeInIl2Cpp<UsableCustomObjectBehaviour>(new RegisterTypeOptions()
         {
-            Interfaces= new[] { typeof(IUsable) }
+            Interfaces = new[] { typeof(IUsable) }
         });
     }
 
@@ -36,7 +36,7 @@ public class UsableCustomObjectBehaviour : MonoBehaviour
     {
         if (this.CustomObject.Renderer && hasOutLine)
         {
-            CustomObject.Renderer.material.SetFloat("_Outline", (float)(on ? 1 : 0));
+            CustomObject.Renderer.material.SetFloat("_Outline", on ? 1 : 0);
             CustomObject.Renderer.material.SetColor("_OutlineColor", Color.white);
             CustomObject.Renderer.material.SetColor("_AddColor", mainTarget ? Color.white : Color.clear);
         }
@@ -104,9 +104,9 @@ public class CustomObject
             else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
         }
 
-        static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
+        public static Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
-        public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", new SpriteLoader("Nebula.Resources.AccelTrap.png",150f));
+        public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", new SpriteLoader("Nebula.Resources.AccelTrap.png", 150f));
         public static ObjectTypes.VisibleTrap DecelTrap = new ObjectTypes.VisibleTrap(1, "DecelTrap", new SpriteLoader("Nebula.Resources.DecelTrap.png", 150f));
         public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", new SpriteLoader("Nebula.Resources.KillTrap.png", 150f));
         public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", new SpriteLoader("Nebula.Resources.CommTrap.png", 150f));
@@ -156,7 +156,7 @@ public class CustomObject
         public virtual Color UsableColor { get => Color.white; }
         public virtual bool CanUse(CustomObject obj, PlayerControl player) { return true; }
         public virtual void Use(CustomObject obj) { }
-        
+
 
         public Type(byte id, string objectName)
         {
@@ -170,7 +170,7 @@ public class CustomObject
     }
 
     public static Dictionary<ulong, CustomObject> Objects = new Dictionary<ulong, CustomObject>();
-    public static HashSet<System.Action<PlayerControl>> ObjectUpdateFunctions = new HashSet<Action<PlayerControl>>();
+    public static HashSet<Action<PlayerControl>> ObjectUpdateFunctions = new HashSet<Action<PlayerControl>>();
     public static Dictionary<Type, Func<CustomObject>> Constructors = new Dictionary<Type, Func<CustomObject>>();
     public GameObject? GameObject { get; private set; }
     public SpriteRenderer Renderer { get; private set; }
@@ -180,18 +180,18 @@ public class CustomObject
     public int PassedMeetings { get; set; }
     public int[] Data { get; set; }
 
-    static public implicit operator bool(CustomObject obj) { return obj.GameObject == null || obj.GameObject; }
+    public static implicit operator bool(CustomObject obj) { return obj.GameObject == null || obj.GameObject; }
 
     public CustomObjectBehaviour? Behaviour { get; private set; }
     public UsableCustomObjectBehaviour? UsableBehaviour { get; private set; }
 
-    static public void RegisterUpdater(Action<PlayerControl> action)
+    public static void RegisterUpdater(Action<PlayerControl> action)
     {
         ObjectUpdateFunctions.Add(action);
 
     }
 
-    static public void OnMeetingEnd()
+    public static void OnMeetingEnd()
     {
         foreach (CustomObject obj in Objects.Values)
         {
@@ -258,7 +258,7 @@ public class CustomObject
         ulong id;
         while (true)
         {
-            id = (ulong)NebulaPlugin.rnd.Next((int)MAX_PLAYER_OBJECTS);
+            id = (ulong)NebulaPlugin.rnd.Next(MAX_PLAYER_OBJECTS);
             if (!Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * MAX_PLAYER_OBJECTS))) break;
         }
         return new CustomObject(PlayerControl.LocalPlayer.PlayerId, type, id, position);
@@ -287,7 +287,7 @@ public class CustomObject
         float num;
         foreach (CustomObject obj in Objects.Values)
         {
-            if (!targetType.Contains<Type>(obj.ObjectType)) continue;
+            if (!targetType.Contains(obj.ObjectType)) continue;
             if (!condition.Invoke(obj)) continue;
             num = player.transform.position.Distance(obj.GameObject.transform.position);
             if (num < distance)
@@ -305,7 +305,7 @@ public class CustomObject
         float num;
         foreach (CustomObject obj in Objects.Values)
         {
-            if (!targetType.Contains<Type>(obj.ObjectType)) continue;
+            if (!targetType.Contains(obj.ObjectType)) continue;
             num = player.transform.position.Distance(obj.GameObject.transform.position);
             if (num < distance)
             {
@@ -335,7 +335,7 @@ public class CustomObject
         ObjectType.Update(this, command);
     }
 
-    static public void Initialize()
+    public static void Initialize()
     {
         foreach (CustomObject co in Objects.Values)
         {
@@ -344,12 +344,12 @@ public class CustomObject
         Objects.Clear();
     }
 
-    static public void Load()
+    public static void Load()
     {
 
     }
 
-    static public CustomObject? GetObject(ulong id)
+    public static CustomObject? GetObject(ulong id)
     {
         if (Objects.ContainsKey(id))
         {

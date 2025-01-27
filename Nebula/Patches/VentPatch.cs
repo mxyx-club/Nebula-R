@@ -5,8 +5,8 @@ public static class VentEnterPatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
     {
-        Module.VentManager.checkBomb(__instance,pc);
-        Roles.Roles.Programmer.check(__instance,pc);
+        Module.VentManager.checkBomb(__instance, pc);
+        Roles.Roles.Programmer.check(__instance, pc);
         if (pc != PlayerControl.LocalPlayer) return;
         Game.GameData.data.myData.VentDurationTimer = pc.GetModData().role.VentDurationMaxTimer;
         Helpers.RoleAction(pc, (role) => role.OnEnterVent(__instance));
@@ -19,8 +19,8 @@ public static class VentExitPatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
     {
-        Module.VentManager.checkBomb(__instance,pc);
-        Roles.Roles.Programmer.check(__instance,pc);
+        Module.VentManager.checkBomb(__instance, pc);
+        Roles.Roles.Programmer.check(__instance, pc);
         if (pc != PlayerControl.LocalPlayer) return;
         Game.GameData.data.myData.VentCoolDownTimer = pc.GetModData().role.VentCoolDownMaxTimer;
         Helpers.RoleAction(pc, (role) => role.OnExitVent(__instance));
@@ -69,9 +69,9 @@ public static class VentCanUsePatch
 }
 
 [HarmonyPatch(typeof(VentButton), nameof(VentButton.DoClick))]
-class VentButtonDoClickPatch
+internal class VentButtonDoClickPatch
 {
-    static bool Prefix(VentButton __instance)
+    private static bool Prefix(VentButton __instance)
     {
         // Manually modifying the VentButton to use Vent.Use again in order to trigger the Vent.Use prefix patch
         if (__instance.currentTarget != null) __instance.currentTarget.Use();
@@ -115,9 +115,9 @@ public static class VentUsePatch
 
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
-class VentButtonVisibilityPatch
+internal class VentButtonVisibilityPatch
 {
-    static void Postfix(PlayerControl? __instance)
+    private static void Postfix(PlayerControl? __instance)
     {
         if (__instance == null)
         {
@@ -194,9 +194,9 @@ class VentButtonVisibilityPatch
 
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
-class CoEnterVentPatch
+internal class CoEnterVentPatch
 {
-    static void Postfix(PlayerPhysics __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+    private static void Postfix(PlayerPhysics __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
         List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
         sequence.Add(Effects.Action((Il2CppSystem.Action)(() =>
@@ -215,18 +215,18 @@ class CoEnterVentPatch
 //上のパッチが正常に最後まで動かないときがあるようなので保険のため。
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
-class CoExitVentPatch
+internal class CoExitVentPatch
 {
-    static void Postfix(PlayerPhysics __instance)
+    private static void Postfix(PlayerPhysics __instance)
     {
         __instance.myPlayer.Collider.enabled = true;
     }
 }
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ResetMoveState))]
-class ResetMoveStatePatch
+internal class ResetMoveStatePatch
 {
-    static void Postfix(PlayerPhysics __instance)
+    private static void Postfix(PlayerPhysics __instance)
     {
         __instance.myPlayer.Collider.enabled = true;
     }

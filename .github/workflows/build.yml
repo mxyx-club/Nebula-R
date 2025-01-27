@@ -1,0 +1,112 @@
+name: AutoBuild .NET
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.cache/bepinex
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install dependencies
+        run: |
+          dotnet --info
+          sudo apt update
+          sudo apt install wget unzip -y
+
+      - name: Download and Unzip BepInEx
+        run: |
+          wget https://builds.bepinex.dev/projects/bepinex_be/667/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.667%2B6b500b3.zip -O BepInEx.zip
+          unzip BepInEx.zip -d ./Release/
+          sudo chmod -R 777 ./Release
+
+      - name: Download and Unzip ExtraData
+        run: |
+          wget https://raw.githubusercontent.com/mxyx-club/ExtraData/main/ExtraData.zip -O ExtraData.zip
+          unzip ExtraData.zip -d ./Release/
+
+      - name: Download Reactor
+        run: wget https://github.com/NuclearPowered/Reactor/releases/download/2.1.0/Reactor.dll -P ./Release/BepInEx/plugins
+        
+      - name: Set Build Configuration
+        id: set-config
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "config=Release" >> $GITHUB_ENV
+          else
+            echo "config=Beta" >> $GITHUB_ENV
+          fi
+
+      - name: Build
+        run: dotnet build Nebula/NebulaPlugin.csproj --configuration ${{ env.config }} --output ./build/plugins
+
+      - name: Copy Nebula.dll
+        run: mv ./build/plugins/Nebula.dll ./Release/BepInEx/plugins/Nebula.dll
+          
+      - name: Upload Nebula.dll
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: Nebula.dll
+          path: ./Release/BepInEx/plugins/Nebula.dll
+          
+      - name: Upload Nebula
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: Nebula
+          path: ./Release/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Nebula
+      - name: Compress subdirectories
+        run: |
+          ls -R
+          zip -q -r Nebula.zip *
+          mv ./BepInEx/plugins/Nebula.dll ./
+        
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Clone Changes Log
+        run: |
+          wget https://raw.githubusercontent.com/mxyx-club/Nebula-R/v${{ env.VERSION }}/CHANGELOG.md -O CHANGELOG.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: "Nebula-mxyx Edition v${{ env.VERSION }}"
+          body_path: CHANGELOG.md
+          files: |
+            Nebula.dll
+            ./Nebula.zip
+          draft: false
+          prerelease: false

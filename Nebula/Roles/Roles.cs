@@ -2,7 +2,7 @@
 
 namespace Nebula.Roles;
 
-static public class Roles
+public static class Roles
 {
     public class SideCommonRoles
     {
@@ -130,7 +130,7 @@ static public class Roles
     public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
     public static ExtraRoles.TeamSanta TeamSanta = new ExtraRoles.TeamSanta();
     public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
-    public static PerkHolder PerkHolder = new Perk.PerkHolder();
+    public static PerkHolder PerkHolder = new PerkHolder();
 
     public static GhostRoles.Poltergeist Poltergeist = new GhostRoles.Poltergeist();
 
@@ -171,8 +171,8 @@ static public class Roles
     public static NeutralRoles.Amnesiac Amnesiac = new NeutralRoles.Amnesiac();
     //public static CrewmateRoles.Bartender Bartender = new CrewmateRoles.Bartender();
     public static ComplexRoles.FSwapper F_Swapper = new ComplexRoles.FSwapper();
-    public static ComplexRoles.Swapper EvilSwapper = new ComplexRoles.Swapper("EvilSwapper","evilSwapper",true);
-    public static ComplexRoles.Swapper NiceSwapper = new ComplexRoles.Swapper("NiceSwapper","niceSwapper",false);
+    public static ComplexRoles.Swapper EvilSwapper = new ComplexRoles.Swapper("EvilSwapper", "evilSwapper", true);
+    public static ComplexRoles.Swapper NiceSwapper = new ComplexRoles.Swapper("NiceSwapper", "niceSwapper", false);
     public static ExtraRoles.SecondaryJackal SecondaryJackal = new ExtraRoles.SecondaryJackal();
     public static CrewmateRoles.LuckyMan LuckyMan = new CrewmateRoles.LuckyMan();
     public static ImpostorRoles.Moda Moda = new ImpostorRoles.Moda();
@@ -191,11 +191,11 @@ static public class Roles
     public static ExtraRoles.FakeLover FakeLover = new ExtraRoles.FakeLover();
     public static ExtraRoles.Cheater Cheater = new ExtraRoles.Cheater();
     public static ComplexRoles.FMover F_Mover = new ComplexRoles.FMover();
-    public static ComplexRoles.Mover EvilMover = new ComplexRoles.Mover("EvilMover","evilMover",true);
-    public static ComplexRoles.Mover NiceMover = new ComplexRoles.Mover("NiceMover","niceMover",false);
+    public static ComplexRoles.Mover EvilMover = new ComplexRoles.Mover("EvilMover", "evilMover", true);
+    public static ComplexRoles.Mover NiceMover = new ComplexRoles.Mover("NiceMover", "niceMover", false);
     public static ComplexRoles.FTransporter F_Transporter = new ComplexRoles.FTransporter();
-    public static ComplexRoles.Transporter EvilTransporter = new ComplexRoles.Transporter("EvilTransporter","evilTransporter",true);
-    public static ComplexRoles.Transporter NiceTransporter = new ComplexRoles.Transporter("NiceTransporter","niceTransporter",false);
+    public static ComplexRoles.Transporter EvilTransporter = new ComplexRoles.Transporter("EvilTransporter", "evilTransporter", true);
+    public static ComplexRoles.Transporter NiceTransporter = new ComplexRoles.Transporter("NiceTransporter", "niceTransporter", false);
     public static ImpostorRoles.Retarder Retarder = new ImpostorRoles.Retarder();
     public static NeutralRoles.Yandere Yandere = new NeutralRoles.Yandere();
     public static ExtraRoles.SecretCrush SecretCrush = new ExtraRoles.SecretCrush();

@@ -1,4 +1,3 @@
-﻿using BepInEx.Configuration;
 using System.Diagnostics;
 
 namespace Nebula.Patches;
@@ -21,24 +20,24 @@ public enum ProcessorAffinity
 
 public class NebulaOption
 {
-    static public Module.DataSaver configSaver = new Module.DataSaver("config.dat");
-    static public Module.IntegerDataEntry configPictureDest;
-    static public Module.IntegerDataEntry configProcessorAffinity;
-    static public Module.BooleanDataEntry configPrioritizeAmongUs;
-    static public Module.IntegerDataEntry configTimeoutExtension;
-    static public Module.BooleanDataEntry configDontCareMismatchedNoS;
-    static public Module.BooleanDataEntry configSnapshot;
-    static public Module.BooleanDataEntry configOutputHash;
-    static public Module.BooleanDataEntry configGameControl;
-    static public Module.IntegerDataEntry configGameControlArgument;
-    static public Module.BooleanDataEntry configPreventSpoiler;
+    public static Module.DataSaver configSaver = new Module.DataSaver("config.dat");
+    public static Module.IntegerDataEntry configPictureDest;
+    public static Module.IntegerDataEntry configProcessorAffinity;
+    public static Module.BooleanDataEntry configPrioritizeAmongUs;
+    public static Module.IntegerDataEntry configTimeoutExtension;
+    public static Module.BooleanDataEntry configDontCareMismatchedNoS;
+    public static Module.BooleanDataEntry configSnapshot;
+    public static Module.BooleanDataEntry configOutputHash;
+    public static Module.BooleanDataEntry configGameControl;
+    public static Module.IntegerDataEntry configGameControlArgument;
+    public static Module.BooleanDataEntry configPreventSpoiler;
 
-    static public bool GetGameControlArgument(int index)
+    public static bool GetGameControlArgument(int index)
     {
         return (NebulaOption.configGameControlArgument.Value & (1 << index)) != 0;
     }
 
-    static public string GetPicturePath(NebulaPictureDest dest)
+    public static string GetPicturePath(NebulaPictureDest dest)
     {
         switch (dest)
         {
@@ -55,7 +54,7 @@ public class NebulaOption
         return "";
     }
 
-    static public string GetPictureDisplayPath(NebulaPictureDest dest)
+    public static string GetPictureDisplayPath(NebulaPictureDest dest)
     {
         switch (dest)
         {
@@ -72,12 +71,12 @@ public class NebulaOption
         return "";
     }
 
-    static private string GetCurrentTimeString()
+    private static string GetCurrentTimeString()
     {
         return DateTime.Now.ToString("yyyyMMddHHmmss");
     }
 
-    static public string CreateDirAndGetPictureFilePath(out string displayPath)
+    public static string CreateDirAndGetPictureFilePath(out string displayPath)
     {
         string dir = GetPicturePath((NebulaPictureDest)configPictureDest.Value);
         displayPath = GetPictureDisplayPath((NebulaPictureDest)configPictureDest.Value);
@@ -87,7 +86,7 @@ public class NebulaOption
         return dir + "\\" + currentTime + ".png";
     }
 
-    static public string GetPictureDestMode()
+    public static string GetPictureDestMode()
     {
         switch ((NebulaPictureDest)configPictureDest.Value)
         {
@@ -103,7 +102,7 @@ public class NebulaOption
         return "";
     }
 
-    static public string GetProcessorAffinityMode()
+    public static string GetProcessorAffinityMode()
     {
         switch ((ProcessorAffinity)configProcessorAffinity.Value)
         {
@@ -119,11 +118,11 @@ public class NebulaOption
         return "";
     }
 
-    static public string GetTimeoutExtension()
+    public static string GetTimeoutExtension()
     {
         string value = "";
         string postfix = Language.Language.GetString("option.suffix.cross");
-        switch ((int)configTimeoutExtension.Value)
+        switch (configTimeoutExtension.Value)
         {
             case 0:
                 value = "1";
@@ -142,7 +141,7 @@ public class NebulaOption
         return value + postfix;
     }
 
-    static public void ReflectProcessorPriority()
+    public static void ReflectProcessorPriority()
     {
         try
         {
@@ -161,7 +160,7 @@ public class NebulaOption
         }
     }
 
-    static public void ReflectProcessorAffinity()
+    public static void ReflectProcessorAffinity()
     {
         try
         {
@@ -194,9 +193,9 @@ public class NebulaOption
             processStartInfo.UseShellExecute = false;
             Process.Start(processStartInfo);
         }
-        catch
+        catch (Exception e)
         {
-            NebulaPlugin.Instance.Logger.Print("Error");
+            Error(e, "CPUAffinityEditor");
         }
     }
 }
@@ -214,9 +213,9 @@ public static class ResetTextPatch
 public static class StartOptionMenuPatch
 {
 
-    static public void LoadOption()
+    public static void LoadOption()
     {
-        NebulaOption.configPictureDest = new Module.IntegerDataEntry("picutureDest",NebulaOption.configSaver, 0);
+        NebulaOption.configPictureDest = new Module.IntegerDataEntry("picutureDest", NebulaOption.configSaver, 0);
         NebulaOption.configProcessorAffinity = new Module.IntegerDataEntry("processorAffinity", NebulaOption.configSaver, 0);
         NebulaOption.configPrioritizeAmongUs = new Module.BooleanDataEntry("prioritizeAmongUs", NebulaOption.configSaver, false);
         NebulaOption.configTimeoutExtension = new Module.IntegerDataEntry("timeoutExtension", NebulaOption.configSaver, 0);
@@ -230,7 +229,7 @@ public static class StartOptionMenuPatch
         NebulaOption.ReflectProcessorPriority();
     }
 
-    static public void UpdateCustomText(this ToggleButtonBehaviour button, Color color, string? text)
+    public static void UpdateCustomText(this ToggleButtonBehaviour button, Color color, string? text)
     {
         button.onState = false;
         button.Background.color = color;
@@ -241,7 +240,7 @@ public static class StartOptionMenuPatch
         }
     }
 
-    static public void UpdateToggleText(this ToggleButtonBehaviour button, bool on, string text)
+    public static void UpdateToggleText(this ToggleButtonBehaviour button, bool on, string text)
     {
         button.onState = on;
         Color color = on ? new Color(0f, 1f, 0.16470589f, 1f) : Color.white;
@@ -253,7 +252,7 @@ public static class StartOptionMenuPatch
         }
     }
 
-    static public void UpdateButtonText(this ToggleButtonBehaviour button, string text, string state)
+    public static void UpdateButtonText(this ToggleButtonBehaviour button, string text, string state)
     {
         button.onState = false;
         Color color = Color.white;
@@ -265,17 +264,16 @@ public static class StartOptionMenuPatch
         }
     }
 
-    static ToggleButtonBehaviour debugSnapshot;
-    static ToggleButtonBehaviour debugOutputHash;
+    private static ToggleButtonBehaviour debugSnapshot;
+    private static ToggleButtonBehaviour debugOutputHash;
+    private static ToggleButtonBehaviour processorAffinity;
+    private static ToggleButtonBehaviour prioritizeAmongUs;
+    private static ToggleButtonBehaviour pictureDest;
+    private static ToggleButtonBehaviour timeoutExtension;
+    private static ToggleButtonBehaviour dontCareMismatchedNoS;
+    private static ToggleButtonBehaviour preventSpoiler;
 
-    static ToggleButtonBehaviour processorAffinity;
-    static ToggleButtonBehaviour prioritizeAmongUs;
-    static ToggleButtonBehaviour pictureDest;
-    static ToggleButtonBehaviour timeoutExtension;
-    static ToggleButtonBehaviour dontCareMismatchedNoS;
-    static ToggleButtonBehaviour preventSpoiler;
-
-    private static GameObject ShowConfirmDialogue(Transform parent, GameObject buttonTemplate, string text, System.Action yesAction)
+    private static GameObject ShowConfirmDialogue(Transform parent, GameObject buttonTemplate, string text, Action yesAction)
     {
         GameObject result;
         TMPro.TMP_Text tmpText;
@@ -359,7 +357,7 @@ public static class StartOptionMenuPatch
         return result;
     }
 
-    private static ToggleButtonBehaviour AddButton(Vector2 pos,string name, Action onClicked, GameObject nebulaTab,GameObject toggleButtonTemplate)
+    private static ToggleButtonBehaviour AddButton(Vector2 pos, string name, Action onClicked, GameObject nebulaTab, GameObject toggleButtonTemplate)
     {
         var button = GameObject.Instantiate(toggleButtonTemplate, null);
         button.transform.SetParent(nebulaTab.transform);
@@ -396,11 +394,11 @@ public static class StartOptionMenuPatch
         GameObject toggleButtonTemplate = tabs[0].Content.transform.FindChild("MiscGroup").FindChild("StreamerModeButton").gameObject;
 
         //Snapshot
-        debugSnapshot = AddButton(new Vector2(0,0),"SnapshotButton", () =>
+        debugSnapshot = AddButton(new Vector2(0, 0), "SnapshotButton", () =>
         {
             debugSnapshot.UpdateToggleText(!debugSnapshot.onState, Language.Language.GetString("config.debug.snapshot"));
             NebulaOption.configSnapshot.Value = debugSnapshot.onState;
-        },nebulaTab,toggleButtonTemplate);
+        }, nebulaTab, toggleButtonTemplate);
 
         //OutputHash
         debugOutputHash = AddButton(new Vector2(1, 0), "OutputHashButton", () =>
@@ -507,7 +505,7 @@ public static class StartOptionMenuPatch
             var inputButton = GameObject.Instantiate(toggleButtonTemplate, null);
             inputButton.transform.SetParent(keyBindingTab.transform);
             inputButton.transform.localScale = new Vector3(1f, 1f, 1f);
-            inputButton.transform.localPosition = new Vector3(1.3f * (float)((index % 2) * 2 - 1), 1.5f - 0.5f * (float)(index / 2), 0f);
+            inputButton.transform.localPosition = new Vector3(1.3f * ((index % 2) * 2 - 1), 1.5f - 0.5f * (index / 2), 0f);
             inputButton.name = input.identifier;
             var inputToggleButton = inputButton.GetComponent<ToggleButtonBehaviour>();
             inputToggleButton.BaseText = 0;
@@ -626,9 +624,9 @@ public static class StartOptionMenuPatch
 
         float y = tabs[0].transform.localPosition.y, z = tabs[0].transform.localPosition.z;
         if (tabs.Count == 4)
-            for (int i = 0; i < 3; i++) tabs[i].transform.localPosition = new Vector3(1.7f * (float)(i - 1), y, z);
+            for (int i = 0; i < 3; i++) tabs[i].transform.localPosition = new Vector3(1.7f * (i - 1), y, z);
         else if (tabs.Count == 5)
-            for (int i = 0; i < 4; i++) tabs[i].transform.localPosition = new Vector3(1.62f * ((float)i - 1.5f), y, z);
+            for (int i = 0; i < 4; i++) tabs[i].transform.localPosition = new Vector3(1.62f * (i - 1.5f), y, z);
 
         __instance.Tabs = new Il2CppReferenceArray<TabGroup>(tabs.ToArray());
 

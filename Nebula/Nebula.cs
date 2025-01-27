@@ -1,29 +1,24 @@
-﻿global using UnityEngine;
 global using System.Collections;
 global using System.Collections.Generic;
 global using System.Linq;
+global using AmongUs.GameOptions;
+global using BepInEx.Unity.IL2CPP.Utils.Collections;
 global using HarmonyLib;
+global using Il2CppInterop.Runtime;
+global using Il2CppInterop.Runtime.Injection;
+global using Il2CppInterop.Runtime.InteropTypes;
+global using Il2CppInterop.Runtime.InteropTypes.Arrays;
+global using Il2CppInterop.Runtime.InteropTypes.Fields;
+global using Nebula.Components;
 global using Nebula.Objects;
 global using Nebula.Utilities;
-global using AmongUs.GameOptions;
-global using Nebula.Components;
-global using Il2CppInterop.Runtime.Injection;
-global using BepInEx.Unity.IL2CPP.Utils.Collections;
-
-global using Il2CppInterop.Runtime;
-global using Il2CppInterop.Runtime.InteropTypes;
-global using Il2CppInterop.Runtime.InteropTypes.Fields;
-global using Il2CppInterop.Runtime.InteropTypes.Arrays;
-
-using BepInEx;
-using System.Text;
+global using UnityEngine;
+global using static Nebula.Logger.Logger;
 using System.Reflection;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
-using Nebula.Patches;
-using UnityEngine.SceneManagement;
-using Il2CppSystem.Xml;
-using Nebula.Module;
 using Reactor;
+using UnityEngine.SceneManagement;
 
 namespace Nebula;
 
@@ -42,23 +37,21 @@ public class NebulaPlugin : BasePlugin
 
     public const string AmongUsVersion = "2023.3.28";
     public const string PluginGuid = "cn.zsfabtest.amongus.nebular";
-    public const string PluginName = "TheNebula-R-LTS";
-    public const string PluginVersion = "1.1.0.2";
+    public const string PluginName = "Nebula-R";
+    public const string PluginVersion = "1.1.0.5";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = (IsSnapshot ? ("24.02.17b" + " - ") : "") + PluginVersion;
+    public static string PluginVisualVersion = (IsSnapshot ? ("25.01.27a" + " - ") : "") + PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
-    
-    public const string PluginVersionForFetch = "1.1.0.2";
-    public byte[] PluginVersionData = new byte[] { 1, 1, 0, 2 };
+
+    public const string PluginVersionForFetch = "1.1.0.5";
+    public byte[] PluginVersionData = new byte[] { 1, 1, 0, 5 };
 
     public static NebulaPlugin Instance;
 
     public Harmony Harmony = new Harmony(PluginGuid);
 
     //public static Sprite ModStamp;
-
-    public Logger.Logger Logger;
 
     public static bool isFoolDay = false;
 
@@ -89,10 +82,10 @@ public class NebulaPlugin : BasePlugin
         Physics.IgnoreLayerCollision(LayerExpansion.GetShadowObjectsLayer(), LayerMask.NameToLayer("Ghost"), true);
         */
     }
-    override public void Load()
+    public override void Load()
     {
 
-        Logger = new Logger.Logger(true);
+        SetLogSource(Log);
 
         Instance = this;
 
@@ -108,14 +101,13 @@ public class NebulaPlugin : BasePlugin
         //キー入力情報を読み込む
         Module.NebulaInputManager.Load();
 
+        Module.CrowdedPlayer.Start();
+
         //サーバー情報を読み込む
         //Patches.RegionMenuOpenPatch.Initialize();
-
+        CustomCosmetics.CustomColors.Load();
         //クライアントオプションを読み込む
         Patches.StartOptionMenuPatch.LoadOption();
-
-        //色データを読み込む
-        Module.DynamicColors.Load();
 
         //ゲームモードデータを読み込む
         Game.GameModeProperty.Load();
@@ -144,7 +136,7 @@ public class NebulaPlugin : BasePlugin
         RemoteProcessBase.Load();
 
 
-        SceneManager.sceneLoaded += (Action<Scene,LoadSceneMode>)((scene,loadMode) =>
+        SceneManager.sceneLoaded += (Action<Scene, LoadSceneMode>)((scene, loadMode) =>
         {
             new GameObject("NebulaManager").AddComponent<NebulaManager>();
         });

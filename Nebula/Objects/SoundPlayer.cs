@@ -1,20 +1,22 @@
-﻿namespace Nebula.Objects;
+namespace Nebula.Objects;
 
-class SoundPlayer
+internal class SoundPlayer
 {
-    static HashSet<SoundPlayer> players = new HashSet<SoundPlayer>();
-
-    AudioSource audioSource;
-    float sec;
+    private static HashSet<SoundPlayer> players = new HashSet<SoundPlayer>();
+    private AudioSource audioSource;
+    private float sec;
 
     public static void Initialize()
     {
         foreach (var p in players)
         {
-            try{
+            try
+            {
                 GameObject.Destroy(p.audioSource.gameObject);
-            }catch(Exception e){
-                Debug.LogError(e.StackTrace);
+            }
+            catch (Exception e)
+            {
+                Error(e);
             }
         }
         players.Clear();
@@ -43,7 +45,7 @@ class SoundPlayer
         sec = audioSource.clip.length + 0.1f;
     }
 
-    static public void PlaySound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
+    public static void PlaySound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
     {
         if (Constants.ShouldPlaySfx())
         {
@@ -52,7 +54,7 @@ class SoundPlayer
         }
     }
 
-    static public AudioSource? PlaySound(Module.AudioAsset id,float volume=0.8f)
+    public static AudioSource? PlaySound(Module.AudioAsset id, float volume = 0.8f)
     {
         if (Constants.ShouldPlaySfx())
         {
@@ -63,7 +65,7 @@ class SoundPlayer
         return null;
     }
 
-    static public void Update()
+    public static void Update()
     {
         foreach (var p in players)
         {

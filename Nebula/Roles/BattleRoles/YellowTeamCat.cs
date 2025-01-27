@@ -2,7 +2,7 @@ namespace Nebula.Roles.BattleRoles;
 
 public class YellowTeamCat : Role
 {
-    public static Color RoleColor = new(1f,242f / 255f,0f);
+    public static Color RoleColor = new(1f, 242f / 255f, 0f);
 
     private bool equipRifleFlag;
 
@@ -38,8 +38,8 @@ public class YellowTeamCat : Role
     }
 
     /* ボタン */
-    static private CustomButton sniperButton;
-    static private CustomButton killButton;
+    private static CustomButton sniperButton;
+    private static CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {
         if (sniperButton != null)
@@ -132,9 +132,9 @@ public class YellowTeamCat : Role
 
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
     {
-        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,CustomOptionHolder.BattleShotEffectiveRangeOption.getFloat(), 16f); }),
-        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, CustomOptionHolder.BattleNoticeRangeOption.getFloat(),16f); }),
-        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, CustomOptionHolder.BattleShotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,CustomOptionHolder.BattleShotEffectiveRangeOption.getFloat(), 16f); }),
+        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, CustomOptionHolder.BattleNoticeRangeOption.getFloat(),16f); }),
+        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, CustomOptionHolder.BattleShotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
     };
 
     private Sprite snipeArrowSprite = null;
@@ -199,8 +199,9 @@ public class YellowTeamCat : Role
         }
     }
 
-    public override void EditOthersDisplayNameColor(byte playerId,ref Color displayColor){
-        if(Helpers.playerById(playerId).GetModData().role.side == Side.YellowTeam) displayColor = RoleColor;
+    public override void EditOthersDisplayNameColor(byte playerId, ref Color displayColor)
+    {
+        if (Helpers.playerById(playerId).GetModData().role.side == Side.YellowTeam) displayColor = RoleColor;
     }
 
     public override void OnMurdered(byte murderId) => Roles.SchrodingersCat.OnMurdered(murderId);

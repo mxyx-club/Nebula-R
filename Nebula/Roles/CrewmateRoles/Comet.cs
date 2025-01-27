@@ -2,7 +2,7 @@
 
 public class Comet : Role
 {
-    static public Color RoleColor = new Color(121f / 255f, 175f / 255f, 206f / 255f);
+    public static Color RoleColor = new Color(121f / 255f, 175f / 255f, 206f / 255f);
 
     private CustomButton boostButton;
 

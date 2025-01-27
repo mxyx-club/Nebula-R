@@ -1,5 +1,5 @@
-﻿using Nebula.Patches;
-using Nebula.Game;
+﻿using Nebula.Game;
+using Nebula.Patches;
 
 namespace Nebula.Roles.NeutralRoles;
 
@@ -16,7 +16,7 @@ public class SantaClaus : Role
     }
 
 
-    static public Color RoleColor = new Color(255f / 255f, 102f / 255f, 102f / 255f);
+    public static Color RoleColor = new Color(255f / 255f, 102f / 255f, 102f / 255f);
 
     private Module.CustomOption isGuessableOption;
     public Module.CustomOption killCoolDownOption;
@@ -104,7 +104,7 @@ public class SantaClaus : Role
 
     public override void MyPlayerControlUpdate()
     {
-        Game.MyPlayerData data = Game.GameData.data.myData;
+        MyPlayerData data = Game.GameData.data.myData;
         data.currentTarget = Patches.PlayerControlPatch.SetMyTarget((p) =>
         {
             var data = p.GetModData();
@@ -137,7 +137,7 @@ public class SantaClaus : Role
     public SantaClaus()
         : base("SantaClaus", "santaClaus", RoleColor, RoleCategory.Neutral, Side.SantaClaus, Side.SantaClaus,
              new HashSet<Side>() { Side.SantaClaus }, new HashSet<Side>() { Side.SantaClaus },
-             new HashSet<Patches.EndCondition>() { EndCondition.SantaWin },
+             new HashSet<EndCondition>() { EndCondition.SantaWin },
              true, VentPermission.CanNotUse, false, false, false)
     {
         FixedRoleCount = true;
@@ -148,7 +148,7 @@ public class SantaClaus : Role
 
 public class BlackSanta : Role
 {
-    static public Color RoleColor = new Color(80f / 255f, 93f / 255f, 100f / 255f);
+    public static Color RoleColor = new Color(80f / 255f, 93f / 255f, 100f / 255f);
 
     public override bool IsGuessableRole => Roles.SantaClaus.IsGuessableRole;
 
@@ -273,7 +273,7 @@ public class BlackSanta : Role
 
     public override void MyPlayerControlUpdate()
     {
-        Game.MyPlayerData data = Game.GameData.data.myData;
+        MyPlayerData data = Game.GameData.data.myData;
         data.currentTarget = Patches.PlayerControlPatch.SetMyTarget((p) =>
         {
             var data = p.GetModData();
@@ -314,7 +314,7 @@ public class BlackSanta : Role
     public BlackSanta()
        : base("BlackSanta", "blackSanta", RoleColor, RoleCategory.Neutral, Side.SantaClaus, Side.SantaClaus,
              new HashSet<Side>() { Side.SantaClaus }, new HashSet<Side>() { Side.SantaClaus },
-             new HashSet<Patches.EndCondition>() { EndCondition.SantaWin },
+             new HashSet<EndCondition>() { EndCondition.SantaWin },
              true, VentPermission.CanUseUnlimittedVent, true, false, true)
     {
         IsHideRole = true;

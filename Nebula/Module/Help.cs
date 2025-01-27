@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Nebula.Module;
 
 public class HelpContent
 {
-    static public HelpContent rootContent;
-
-    List<HelpContent>? subContents;
+    public static HelpContent rootContent;
+    private List<HelpContent>? subContents;
     public HelpContent? Parent { get; private set; }
     public float occupancy { get; private set; }
 
@@ -136,7 +135,7 @@ public class HelpContent
                 ContentGenerator = (designer) =>
                 {
                     designer.CustomUse(0.15f);
-                    Utilities.SpriteLoader sprite = new Utilities.SpriteLoader(pic, 100f);
+                    SpriteLoader sprite = new SpriteLoader(pic, 100f);
                     designer.AddTopic(new MSSprite(sprite, 0.1f, size));
                 };
             }
@@ -173,14 +172,11 @@ public class HelpContent
     public static void Load()
     {
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Help.dat");
-        using (StreamReader sr = new StreamReader(
-                stream, Encoding.GetEncoding("utf-8")))
-        {
-            string text = sr.ReadToEnd();
-            JToken jobj = JObject.Parse(text);
+        using StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("utf-8"));
+        string text = sr.ReadToEnd();
+        JToken jobj = JObject.Parse(text);
 
-            rootContent = new HelpContent(null);
-            rootContent.Load(jobj);
-        }
+        rootContent = new HelpContent(null);
+        rootContent.Load(jobj);
     }
 }

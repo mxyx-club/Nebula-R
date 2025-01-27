@@ -1,6 +1,6 @@
 ﻿namespace Nebula.Ghost.Ghosts;
 
-class TestGhost : Ghost
+internal class TestGhost : Ghost
 {
     public TestGhost()
     {

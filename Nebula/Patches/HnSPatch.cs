@@ -2,21 +2,10 @@
 using Nebula.Game;
 using Nebula.Map;
 using Nebula.Module;
-using Nebula.Roles;
 using Nebula.Roles.Perk;
-using Nebula.Utilities;
-using PowerTools;
-using Steamworks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine.Events;
-using UnityEngine.Purchasing;
 using static Nebula.Roles.Perk.PerkHolder;
-using static Rewired.Data.Mapping.CustomCalculation_Accelerometer;
 
 namespace Nebula.Patches;
 
@@ -25,13 +14,13 @@ public static class HnsPatch
 {
     //Mod独自のカウントプロセサを使用
     [HarmonyPatch(typeof(HideAndSeekManager), nameof(HideAndSeekManager.FinishTask)), HarmonyPrefix]
-    static bool FinishTaskBlocker()
+    private static bool FinishTaskBlocker()
     {
         return false;
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcCompleteTask)), HarmonyPrefix]
-    static void HnSTaskCountProcessor(PlayerControl __instance, [HarmonyArgument(0)] uint idx)
+    private static void HnSTaskCountProcessor(PlayerControl __instance, [HarmonyArgument(0)] uint idx)
     {
         if (!HnSModificator.IsHnSGame) return;
 
@@ -68,7 +57,7 @@ public static class HnsPatch
     }
 
     [HarmonyPatch(typeof(LogicOptionsHnS), nameof(LogicOptionsHnS.GetPlayerSpeedMod)), HarmonyPrefix]
-    static bool GetHnSPlayerSpeedMod(LogicOptionsHnS __instance, ref float __result, [HarmonyArgument(0)] PlayerControl pc)
+    private static bool GetHnSPlayerSpeedMod(LogicOptionsHnS __instance, ref float __result, [HarmonyArgument(0)] PlayerControl pc)
     {
         if (pc == null || pc.Data == null || pc.Data.Role == null)
         {
@@ -95,7 +84,7 @@ public static class HnsPatch
         return false;
     }
 
-   static IEnumerator GetAlignEnumerator(IntroCutscene __instance)
+    private static IEnumerator GetAlignEnumerator(IntroCutscene __instance)
     {
         int[] perkIdAry = new int[5];
         for (int i = 0; i < 5; i++) perkIdAry[i] = PerkSaver.GetEquipedAbilityPerk(i, !PlayerControl.LocalPlayer.Data.Role.IsImpostor)?.Id ?? -1;
@@ -105,18 +94,18 @@ public static class HnsPatch
             var ary = Perks.AllRolePerks.Values.Where((p) => p.IsAvailable).ToArray();
             seekerRole = ary[NebulaPlugin.rnd.Next(ary.Length)].RelatedRole;
         }
-        Roles.Perk.PerkHolder.SharePerks.Invoke(new PerkHolder.SharePerkMessage()
+        Roles.Perk.PerkHolder.SharePerks.Invoke(new SharePerkMessage()
         {
             playerId = PlayerControl.LocalPlayer.PlayerId,
             perks = perkIdAry,
-            choicedSeekerRole= seekerRole.id
+            choicedSeekerRole = seekerRole.id
         });
-        
+
         bool sync = false;
 
-        foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator()) if(p.isDummy) PerkHolder.PerkData.AllPerkData[p.PlayerId] = new PerkData(p.PlayerId, new int[0]);
+        foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator()) if (p.isDummy) PerkHolder.PerkData.AllPerkData[p.PlayerId] = new PerkData(p.PlayerId, new int[0]);
 
-        while (!Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.HnSInitialize, true,true,false))
+        while (!Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.HnSInitialize, true, true, false))
         {
             if (!sync && PerkHolder.PerkData.AllPerkData.Count == PlayerControl.AllPlayerControls.Count)
             {
@@ -125,7 +114,7 @@ public static class HnsPatch
             }
             yield return null;
         }
-        __instance.ImpostorTitle.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("role." + HnSModificator.Seeker.GetModData().role.LocalizeName + ".name");
+        __instance.ImpostorTitle.GetComponent<TextMeshPro>().text = Language.Language.GetString("role." + HnSModificator.Seeker.GetModData().role.LocalizeName + ".name");
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin)), HarmonyPostfix]
@@ -138,7 +127,7 @@ public static class HnsPatch
             void ReassignRole(bool playImpostor)
             {
                 byte impostorId = playImpostor ? PlayerControl.LocalPlayer.PlayerId : PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)((p) => p.PlayerId != PlayerControl.LocalPlayer.PlayerId)).PlayerId;
-                foreach(var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     var isImpostor = p.PlayerId == impostorId;
                     Game.GameData.data.GetPlayerData(p.PlayerId).role =
@@ -152,7 +141,7 @@ public static class HnsPatch
                 var crewPanel = GameObject.Instantiate(RuntimePrefabs.PlayerDisplayPrefab, __instance.transform);
                 var seekPanel = GameObject.Instantiate(RuntimePrefabs.PlayerDisplayPrefab, __instance.transform);
                 var panels = new[] { crewPanel, seekPanel };
-                crewPanel.transform.localPosition = new Vector3(-1.5f,0.2f,-50f);
+                crewPanel.transform.localPosition = new Vector3(-1.5f, 0.2f, -50f);
                 seekPanel.transform.localPosition = new Vector3(1.5f, 0.2f, -50f);
 
                 bool breakFlag = false;
@@ -171,19 +160,19 @@ public static class HnsPatch
                 foreach (var p in panels)
                 {
                     p.gameObject.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-                    var text = GameObject.Instantiate(textPrefab,p.transform);
+                    var text = GameObject.Instantiate(textPrefab, p.transform);
                     text.transform.localPosition = new Vector3(0f, -0.8f, -10f);
                     text.transform.localScale = new Vector3(1f / 1.2f, 1f / 1.2f, 1f);
                     text.text = Language.Language.GetString(p.Cosmetics.bodyType == PlayerBodyTypes.Normal ? "role.hider.name" : "role.seeker.name");
 
 
-                    p.UpdateFromPlayerOutfit(PlayerControl.LocalPlayer,false,false);
+                    p.UpdateFromPlayerOutfit(PlayerControl.LocalPlayer, false, false);
 
                     var group = p.Animations.animationGroups.Find((Il2CppSystem.Predicate<PlayerAnimationGroup>)((group) => group.BodyType == p.Cosmetics.bodyType));
 
                     group.SpriteAnimator.Play(group.IdleAnim, 1f);
 
-                    p.gameObject.AddComponent<BoxCollider2D>().size=new Vector2(1f,1f);
+                    p.gameObject.AddComponent<BoxCollider2D>().size = new Vector2(1f, 1f);
                     var myPanel = p;
                     var button = p.gameObject.SetUpButton(() =>
                     {
@@ -192,14 +181,16 @@ public static class HnsPatch
                         breakFlag = true;
                     });
 
-                    button.OnMouseOver.AddListener((UnityAction)(() => {
+                    button.OnMouseOver.AddListener((UnityAction)(() =>
+                    {
                         group.SpriteAnimator.Play(group.RunAnim, 1f);
-                        
+
                         myPanel.Cosmetics.AnimateSkinRun();
                         text.color = Palette.AcceptedGreen;
                         SoundManager.Instance.PlaySound(MetaDialog.getHoverClip(), false, 0.8f);
                     }));
-                    button.OnMouseOut.AddListener((UnityAction)(() => {
+                    button.OnMouseOut.AddListener((UnityAction)(() =>
+                    {
                         group.SpriteAnimator.Play(group.IdleAnim, 1f);
                         myPanel.Cosmetics.AnimateSkinIdle();
                         text.color = Color.white;
@@ -233,8 +224,8 @@ public static class HnsPatch
         }
     }
 
-    static float OrigDangerDistance1;
-    static float OrigDangerDistance2;
+    private static float OrigDangerDistance1;
+    private static float OrigDangerDistance2;
 
     [HarmonyPatch(typeof(LogicHnSDangerLevel), nameof(LogicHnSDangerLevel.OnGameStart)), HarmonyPostfix]
     public static void HnSDangerLevelStartPatch(LogicHnSDangerLevel __instance)
@@ -273,7 +264,7 @@ public static class HnsPatch
     }
 
     [HarmonyPatch(typeof(LogicOptionsHnS), nameof(LogicOptionsHnS.GetMaxPingTime)), HarmonyPostfix]
-    public static void HnSGetMaxPingTimePatch(LogicOptionsHnS __instance,float __result)
+    public static void HnSGetMaxPingTimePatch(LogicOptionsHnS __instance, float __result)
     {
         float additional = 0f, ratio = 1f;
         PerkHolder.PerkData.GeneralPerkAction((p, id) => p.Perk.EditPingInterval(id, ref additional, ref ratio));
@@ -282,7 +273,7 @@ public static class HnsPatch
     }
 
     [HarmonyPatch(typeof(LogicPingsHnS), nameof(LogicPingsHnS.SeekerPing)), HarmonyPrefix]
-    public static bool ModSeekerPing(LogicPingsHnS __instance,ref Il2CppSystem.Collections.IEnumerator __result)
+    public static bool ModSeekerPing(LogicPingsHnS __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
         IEnumerator SeekerPing()
         {
@@ -292,7 +283,7 @@ public static class HnsPatch
                 {
                     if (p.Data.Role.TeamType == RoleTeamTypes.Crewmate && !p.Data.IsDead && (PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Impostor || p == PlayerControl.LocalPlayer))
                     {
-                        
+
                         bool canPing = true;
                         PerkHolder.PerkData.AllPerkData[p.PlayerId].PerkAction(perk => canPing &= perk.Perk.CanPing(perk, p.PlayerId));
                         if (!canPing) continue;

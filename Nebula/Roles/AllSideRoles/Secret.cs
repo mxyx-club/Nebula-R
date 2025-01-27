@@ -79,12 +79,12 @@ public class Secret : AllSideRole, ExtraAssignable
         if (category == RoleCategory.Crewmate)
         {
             max = CustomOptionHolder.NumOfSecretCrewmateOption.getSelection();
-            chance = (float)CustomOptionHolder.ChanceOfSecretCrewmateOption.getSelection();
+            chance = CustomOptionHolder.ChanceOfSecretCrewmateOption.getSelection();
         }
         if (category == RoleCategory.Impostor)
         {
             max = CustomOptionHolder.NumOfSecretImpostorOption.getSelection();
-            chance = (float)CustomOptionHolder.ChanceOfSecretImpostorOption.getSelection();
+            chance = CustomOptionHolder.ChanceOfSecretImpostorOption.getSelection();
         }
 
         for (int i = 0; i < max; i++)
@@ -116,7 +116,7 @@ public class Secret : AllSideRole, ExtraAssignable
         ParseActualRole(PlayerControl.LocalPlayer.GetModData(), out Role role, out bool hasGuesser, out bool hasMadmate);
         List<Tuple<Tuple<ExtraRole, ulong>, bool>> exRoles = new List<Tuple<Tuple<ExtraRole, ulong>, bool>>();
         if (hasGuesser) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryGuesser, (ulong)Roles.F_Guesser.guesserShots.getFloat()), true));
-        if (hasMadmate) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryMadmate, (ulong)0), true));
+        if (hasMadmate) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryMadmate, 0), true));
 
         RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, role, exRoles.ToArray());
     }

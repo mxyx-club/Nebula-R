@@ -1,14 +1,12 @@
 ﻿using Nebula.Module;
 using Nebula.Module.Information;
-using Nebula.Tasks;
-using UnityEngine;
 
 namespace Nebula.Roles.MetaRoles;
 
 public class MetaObjectPreviewBehaviour : MonoBehaviour
 {
-    Controller MetaController = new Controller();
-    Collider2D Collider;
+    private Controller MetaController = new Controller();
+    private Collider2D Collider;
 
     static MetaObjectPreviewBehaviour()
     {
@@ -33,7 +31,7 @@ public class MetaObjectPreviewBehaviour : MonoBehaviour
             gameObject.transform.position += new Vector3(0, 0, Input.mouseScrollDelta.y / 100f);
         }
 
-        if (MetaController.CheckDrag(Collider)==DragState.Dragging)
+        if (MetaController.CheckDrag(Collider) == DragState.Dragging)
         {
             Vector3 pos = MetaController.DragPosition;
             pos.z = gameObject.transform.position.z;
@@ -41,7 +39,7 @@ public class MetaObjectPreviewBehaviour : MonoBehaviour
         }
 
         var text = Roles.MetaRole.MetaObjectManager.MetaInfoText;
-        if (text!=null)
+        if (text != null)
         {
             var pos = gameObject.transform.position;
 
@@ -57,10 +55,10 @@ public class MetaObjectPreviewBehaviour : MonoBehaviour
 
 public class MetaObjectManager
 {
-    GameObject? MetaObject;
-    SpriteRenderer? MetaRenderer;
-    CustomTextureAsset? MetaTextureAsset;
-    MetaScreen? MetaScreen = null;
+    private GameObject? MetaObject;
+    private SpriteRenderer? MetaRenderer;
+    private CustomTextureAsset? MetaTextureAsset;
+    private MetaScreen? MetaScreen = null;
     public TMPro.TextMeshPro[]? MetaInfoText = null;
     public TextInputField? TextInputField = null;
 
@@ -81,15 +79,15 @@ public class MetaObjectManager
 
     public void EraseMetaObject()
     {
-        if(MetaObject)GameObject.Destroy(MetaObject);
+        if (MetaObject) GameObject.Destroy(MetaObject);
         MetaObject = null;
         MetaRenderer = null;
     }
 
     public GameObject? SpawnMetaObject(string textureId)
     {
-        TexturePack.LoadAsset(textureId,ref MetaTextureAsset);
-        
+        TexturePack.LoadAsset(textureId, ref MetaTextureAsset);
+
 
         Sprite? sprite = null;
         if (MetaTextureAsset != null)
@@ -99,7 +97,7 @@ public class MetaObjectManager
         }
         else
         {
-            sprite = Helpers.loadSpriteFromResources("Nebula.Resources.PuzzlePiece.png",100f);
+            sprite = Helpers.loadSpriteFromResources("Nebula.Resources.PuzzlePiece.png", 100f);
         }
         if (sprite == null) return MetaObject;
 
@@ -124,20 +122,20 @@ public class MetaObjectManager
         collider.size = size;
         MetaRenderer.sprite = sprite;
 
-        
+
         return MetaObject;
     }
 
     public void ShowObjectDetail()
     {
         if (MetaScreenIsShown) return;
-        var size = new Vector2(3f,1f);
+        var size = new Vector2(3f, 1f);
         var designer = MetaScreen.OpenScreen(HudManager.Instance.gameObject, size, new Vector3(0f, -2.2f));
         MetaScreen = designer.screen;
 
         MetaScreen.screen.layer = LayerExpansion.GetUILayer();
         MetaScreen.screen.transform.localPosition -= new Vector3(0, 0, 200f);
-        var renderer = MetaScreen.screen.AddComponent<SpriteRenderer>(); 
+        var renderer = MetaScreen.screen.AddComponent<SpriteRenderer>();
         renderer.sprite = Module.MetaScreen.GetButtonBackSprite();
         renderer.drawMode = SpriteDrawMode.Tiled;
         renderer.size = size + new Vector2(0.4f, 0.4f);
@@ -147,7 +145,7 @@ public class MetaObjectManager
 
         var multiString = new MSMultiString[3];
         for (int i = 0; i < 3; i++) multiString[i] = new MSMultiString(1f, 1.8f, "", TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Normal);
-            
+
 
         var textInput = new MSTextInput(2.5f, 0.3f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Normal);
         var canSeeInShadow = new MSRadioButton(true, 1f, Language.Language.GetString("metaObject.canSeeInShadow"), 1.4f, 1.4f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
@@ -158,16 +156,18 @@ public class MetaObjectManager
         designer.CustomUse(-0.1f);
         designer.AddTopic(new MetaScreenContent[] { textInput });
 
-        canSeeInShadow.FlagUpdateAction = (flag) => {
+        canSeeInShadow.FlagUpdateAction = (flag) =>
+        {
             if (flag && canSeeOnlyInShadow.Flag) canSeeOnlyInShadow.Flag = false;
             if (flag)
                 MetaRenderer.gameObject.layer = LayerExpansion.GetObjectsLayer();
             else
                 MetaRenderer.gameObject.layer = LayerExpansion.GetDefaultLayer();
         };
-        canSeeOnlyInShadow.FlagUpdateAction = (flag) => {
+        canSeeOnlyInShadow.FlagUpdateAction = (flag) =>
+        {
             if (flag && canSeeInShadow.Flag) canSeeInShadow.Flag = false;
-            if(flag)
+            if (flag)
                 MetaRenderer.gameObject.layer = LayerExpansion.GetShadowLayer();
             else
                 MetaRenderer.gameObject.layer = LayerExpansion.GetDefaultLayer();
@@ -179,15 +179,15 @@ public class MetaObjectManager
         TextInputField.HintText = "freePlay.metaObject";
         textInput.TextInputField.LoseFocusAction = (id) => SpawnMetaObject(id);
 
-        SpawnMetaObject("freePlay.metaObject");   
+        SpawnMetaObject("freePlay.metaObject");
     }
 
     public void CloseObjectDetail()
     {
         IEnumerator GetEnumerator(Transform screen)
         {
-            
-            while(screen.localScale.x > 0.01f)
+
+            while (screen.localScale.x > 0.01f)
             {
                 yield return null;
                 screen.localScale -= Vector3.one * (7f * Time.deltaTime);
@@ -211,11 +211,11 @@ public class MetaObjectManager
     }
 }
 
-public class MetaButtons : Module.Information.UpperInformation
+public class MetaButtons : UpperInformation
 {
-    PassiveButton[] buttons;
-    SpriteRenderer LifeAndDeathButtonRenderer;
-    static DividedSpriteLoader buttonSprites = new DividedSpriteLoader("Nebula.Resources.MetaButton.png", 100f, 4, 1);
+    private PassiveButton[] buttons;
+    private SpriteRenderer LifeAndDeathButtonRenderer;
+    private static DividedSpriteLoader buttonSprites = new DividedSpriteLoader("Nebula.Resources.MetaButton.png", 100f, 4, 1);
     public MetaButtons() : base("MetaButtons")
     {
         height = 0.4f;
@@ -250,7 +250,7 @@ public class MetaButtons : Module.Information.UpperInformation
                     {
                         if (Module.MetaDialog.AnyDialogShown) return;
 
-                        Module.MetaDialog.MSDesigner? dialog = null;
+                        MetaScreen.MSDesigner? dialog = null;
                         dialog = Module.MetaDialog.OpenRolesDialog((r) =>
                             r.category != RoleCategory.Complex &&
                             r != Roles.DamnedCrew &&
@@ -288,7 +288,7 @@ public class MetaButtons : Module.Information.UpperInformation
 
 public class MetaRole : ExtraRole
 {
-    static public Color Color = new Color(255 / 255f, 255 / 255f, 255 / 255f);
+    public static Color Color = new Color(255 / 255f, 255 / 255f, 255 / 255f);
     public MetaObjectManager MetaObjectManager;
 
     public override void Assignment(Patches.AssignMap assignMap)

@@ -2,12 +2,12 @@
 
 public class TimeLimit : UpperInformation
 {
-    SpriteRenderer[]? Renderers;
-    static Sprite[] Sprites = null;
-    static Texture2D Texture = null;
-    int Timer;
-    float Rate;
-    Color Color;
+    private SpriteRenderer[]? Renderers;
+    private static Sprite[] Sprites = null;
+    private static Texture2D Texture = null;
+    private int Timer;
+    private float Rate;
+    private Color Color;
 
     private void SetPos(SpriteRenderer[] renderers)
     {
@@ -38,7 +38,7 @@ public class TimeLimit : UpperInformation
         Renderers = new SpriteRenderer[6];
         for (int i = 0; i < Renderers.Length; i++)
         {
-            Renderers[i] = new UnityEngine.GameObject("Timer" + i).AddComponent<SpriteRenderer>();
+            Renderers[i] = new GameObject("Timer" + i).AddComponent<SpriteRenderer>();
             Renderers[i].transform.SetParent(gameObject.transform);
             Renderers[i].gameObject.layer = UnityEngine.LayerMask.NameToLayer("UI");
 
@@ -110,8 +110,8 @@ public class TimeLimit : UpperInformation
         }
         else if (Timer < 180)
         {
-            Color = new Color(0.7f + 0.3f * (float)(Timer - 60) / 120f,
-                (float)(Timer - 60) / 120f, (float)(Timer - 60) / 120f);
+            Color = new Color(0.7f + 0.3f * (Timer - 60) / 120f,
+                (Timer - 60) / 120f, (Timer - 60) / 120f);
         }
         else
         {

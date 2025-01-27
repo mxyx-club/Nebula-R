@@ -1,8 +1,8 @@
 ﻿namespace Nebula.Events.Variation;
 
-class Camouflage : GlobalEvent
+internal class Camouflage : GlobalEvent
 {
-    Game.PlayerData.PlayerOutfitData outfit;
+    private Game.PlayerData.PlayerOutfitData outfit;
 
     public Camouflage(float duration, ulong option) : base(GlobalEvent.Type.Camouflage, duration - 1f, option)
     {

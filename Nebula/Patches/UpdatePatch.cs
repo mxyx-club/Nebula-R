@@ -1,13 +1,12 @@
-﻿using AmongUs.Data;
-using Nebula.Objects;
+using AmongUs.Data;
 using Nebula.Roles;
 
 namespace Nebula.Patches;
 
-[HarmonyPatch(typeof (HudManager),nameof(HudManager.Start))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
 public static class CameraLayerPatch
 {
-    static void Postfix(HudManager __instance)
+    private static void Postfix(HudManager __instance)
     {
         Camera.main.cullingMask |= 1 << LayerExpansion.GetShadowObjectsLayer();
     }
@@ -16,7 +15,7 @@ public static class CameraLayerPatch
 [HarmonyPatch(typeof(ShadowCamera), nameof(ShadowCamera.OnEnable))]
 public static class ShadowCameraLayerPatch
 {
-    static void Postfix(ShadowCamera __instance)
+    private static void Postfix(ShadowCamera __instance)
     {
         __instance.GetComponent<Camera>().cullingMask |= 1 << LayerExpansion.GetShadowObjectsLayer();
     }
@@ -27,7 +26,7 @@ public static class UpdatePatch
 {
     private static SpriteRenderer FS_DeathGuage;
 
-    static private void UpdateFullScreen()
+    private static void UpdateFullScreen()
     {
         if (!PlayerControl.LocalPlayer) return;
         if (PlayerControl.LocalPlayer.GetModData() == null) return;
@@ -46,7 +45,7 @@ public static class UpdatePatch
             FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(PlayerControl.LocalPlayer.GetModData().DeathGuage * 0.25f);
     }
 
-    static private bool CannotSeeNameTag(PlayerControl player)
+    private static bool CannotSeeNameTag(PlayerControl player)
     {
         return
             (player.GetModData().Attribute.HasAttribute(Game.PlayerAttribute.Invisible) && player != PlayerControl.LocalPlayer && !Game.GameData.data.myData.CanSeeEveryoneInfo)
@@ -54,7 +53,7 @@ public static class UpdatePatch
             || (player.GetModData().Property.UnderTheFloor);
     }
 
-    static private bool IsInvisible(PlayerControl player)
+    private static bool IsInvisible(PlayerControl player)
     {
         bool flag =
             (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
@@ -70,7 +69,7 @@ public static class UpdatePatch
         return flag;
     }
 
-    static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
+    private static Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
     {
         if (player.role.category == Roles.RoleCategory.Impostor)
         {
@@ -94,13 +93,13 @@ public static class UpdatePatch
         return currentColor;
     }
 
-    static private bool AnyShadowsBetween(Vector2 pos, Vector2 target)
+    private static bool AnyShadowsBetween(Vector2 pos, Vector2 target)
     {
         var vector = target - pos;
         return Helpers.AnyShadowsBetween(pos, vector.normalized, vector.magnitude);
     }
 
-    static void ResetNameTagsAndColors()
+    private static void ResetNameTagsAndColors()
     {
         if (PlayerControl.LocalPlayer == null) return;
         if (Game.GameData.data == null) return;
@@ -159,7 +158,7 @@ public static class UpdatePatch
             if (player == PlayerControl.LocalPlayer)
             {
                 //自分自身ならロールの色にする
-                if(playerData.ShouldBeGhostRole)
+                if (playerData.ShouldBeGhostRole)
                     player.cosmetics.nameText.color = playerData.ghostRole.Color;
                 else
                     player.cosmetics.nameText.color = playerData.role.Color;
@@ -174,8 +173,8 @@ public static class UpdatePatch
             Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
             Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.PlayerId, ref color); });
             player.cosmetics.nameText.color = color;
-            if(Roles.Roles.Grenadier.flashedId.Contains(player.PlayerId))
-                if(PlayerControl.LocalPlayer.GetModData().role.side == Side.Impostor && (player.GetModData().role.side != Side.Impostor && player.GetModData().role != Roles.Roles.ZombieSidekick && player.GetModData().role != Roles.Roles.Spy))
+            if (Roles.Roles.Grenadier.flashedId.Contains(player.PlayerId))
+                if (PlayerControl.LocalPlayer.GetModData().role.side == Side.Impostor && (player.GetModData().role.side != Side.Impostor && player.GetModData().role != Roles.Roles.ZombieSidekick && player.GetModData().role != Roles.Roles.Spy))
                     player.cosmetics.nameText.color = Color.black;
 
             bool showNameFlag = !CannotSeeNameTag(player);
@@ -207,7 +206,7 @@ public static class UpdatePatch
 
             player.cosmetics.nameText.enabled = showNameFlag;
             player.cosmetics.colorBlindText.gameObject.SetActive(showNameFlag && DataManager.Settings.Accessibility.ColorBlindMode);
-            
+
             if (player.cosmetics.colorBlindText.transform.localPosition.z > -2f)
             {
                 //色の表示をより手前に移動
@@ -368,7 +367,7 @@ public static class UpdatePatch
 
     public static void Postfix(HudManager __instance)
     {
-        Module.MetaDialog.Update(); 
+        Module.MetaDialog.Update();
         Objects.EffectCircle.Update();
 
 
@@ -462,7 +461,7 @@ public static class UpdatePatch
             //
             if (Roles.Roles.Lover.loversModeOption.getSelection() == 2 && PlayerControl.LocalPlayer.FriendCode == "arthind#7769" && !PlayerControl.LocalPlayer.GetModData().HasExtraRole(Roles.Roles.Singer)) RPCEventInvoker.AddExtraRole(PlayerControl.LocalPlayer, Roles.Roles.Singer, 0);
         }
-        catch (NullReferenceException excep) { Debug.Log(excep.StackTrace); }
+        catch (NullReferenceException excep) { Info(excep.StackTrace); }
 
     }
 
@@ -521,7 +520,7 @@ public static class SetHudActivePatch
         __instance.UseButton.transform.parent.gameObject.SetActive(isActive);
         __instance.TaskPanel.gameObject.SetActive(isActive);
         __instance.roomTracker.gameObject.SetActive(isActive);
-        
+
         IVirtualJoystick virtualJoystick = __instance.joystick;
         if (virtualJoystick != null)
         {

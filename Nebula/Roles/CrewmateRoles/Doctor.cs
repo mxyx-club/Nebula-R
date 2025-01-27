@@ -2,7 +2,7 @@
 
 public class Doctor : Role
 {
-    static public Color RoleColor = new Color(128f / 255f, 255f / 255f, 221f / 255f);
+    public static Color RoleColor = new Color(128f / 255f, 255f / 255f, 221f / 255f);
 
     private List<Tuple<byte, TMPro.TextMeshPro>> StatusTexts = new List<Tuple<byte, TMPro.TextMeshPro>>();
 

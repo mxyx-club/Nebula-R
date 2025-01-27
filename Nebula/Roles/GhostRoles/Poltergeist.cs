@@ -4,9 +4,9 @@ public class Poltergeist : GhostRole
 {
     public class PoltergeistEvent : Events.LocalEvent
     {
-        DeadBody? deadBody = null;
-        Vector2 vector;
-        float mag;
+        private DeadBody? deadBody = null;
+        private Vector2 vector;
+        private float mag;
 
         public PoltergeistEvent(byte deadBodyId, Vector2 vector) : base(1f)
         {
@@ -34,7 +34,7 @@ public class Poltergeist : GhostRole
         }
     }
 
-    static public Color RoleColor = new Color(210f / 255f, 220f / 255f, 234f / 255f);
+    public static Color RoleColor = new Color(210f / 255f, 220f / 255f, 234f / 255f);
 
     private Module.CustomOption poltergeistCoolDownOption;
     private Module.CustomOption hasCrewmateTaskOption;
@@ -51,8 +51,8 @@ public class Poltergeist : GhostRole
         return player.role.side == Side.Crewmate;
     }
 
-    CustomButton poltergeistButton;
-    SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.PoltergeistButton.png", 115f, "ui.button.poltergeist.poltergeist");
+    private CustomButton poltergeistButton;
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.PoltergeistButton.png", 115f, "ui.button.poltergeist.poltergeist");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
      {

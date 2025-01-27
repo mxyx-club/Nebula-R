@@ -6,8 +6,8 @@ namespace Nebula.Roles.Template;
 
 public class HasBilateralness : Role
 {
-    public Module.CustomOption numOfSecondarySide;
-    public Module.CustomOption chanceToSpawnAsSecondarySide;
+    public CustomOption numOfSecondarySide;
+    public CustomOption chanceToSpawnAsSecondarySide;
     public bool AssignedDefinitively => numOfSecondarySide.selection != 0;
 
     protected Role FirstRole = null, SecondaryRole = null;
@@ -53,10 +53,11 @@ public class HasBilateralness : Role
         numOfSecondarySide = CreateOption(Color.white, "numOfSecondarySide", CustomOptionHolder.GetStringMixedSelections("option.display.random", 0, 15, 1, 15, 1).ToArray(), "option.display.random").HiddenOnDisplay(true).HiddenOnMetaScreen(true);
         chanceToSpawnAsSecondarySide = CreateOption(Color.white, "chanceToSpawnAsSecondarySide", CustomOptionHolder.ratesWithoutTerminal).AddInvPrerequisite(numOfSecondarySide).HiddenOnDisplay(true).HiddenOnMetaScreen(true);
 
-        RoleCountOption.DisplayValueDecorator = (orig, option) => {
+        RoleCountOption.DisplayValueDecorator = (orig, option) =>
+        {
             if (numOfSecondarySide.selection == 0)
             {
-                int seconProb=((int)chanceToSpawnAsSecondarySide.getSelection() + 1) * 10;
+                int seconProb = (chanceToSpawnAsSecondarySide.getSelection() + 1) * 10;
                 string persentStr = Language.Language.GetString("option.suffix.percent");
                 return orig + " (" + Language.Language.GetString("role." + LocalizeName + ".prefix.primary") + ": " + (100 - seconProb).ToString() + persentStr + ", " + Language.Language.GetString("role." + LocalizeName + ".prefix.secondary") + ": " + seconProb.ToString() + persentStr + ")";
             }
@@ -72,26 +73,28 @@ public class HasBilateralness : Role
             var origOption = GetStandardTopOption(refresher);
             var countOption = origOption.SubArray(1, 5).ToList();
             var chanceOption = origOption.SubArray(7, origOption.Length - 7).ToList();
-            chanceOption.Insert(0, new Module.MSMargin(0.2f));
-            chanceOption.Insert(1, 
+            chanceOption.Insert(0, new MSMargin(0.2f));
+            chanceOption.Insert(1,
                 new MSOptionString(RoleChanceOption, 2f, RoleChanceOption.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold)
             );
 
-            countOption.Insert(0, new Module.MSMargin(0.6f));
-            countOption.Add(new Module.MSString(0.2f, "(", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
-            countOption.Add(new Module.MSString(1.3f, numOfSecondarySide.getName(), 2f, 1f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold, true,true));
+            countOption.Insert(0, new MSMargin(0.6f));
+            countOption.Add(new MSString(0.2f, "(", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
+            countOption.Add(new MSString(1.3f, numOfSecondarySide.getName(), 2f, 1f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold, true, true));
             countOption.Add(new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
             countOption.Add(
-                  new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                  new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                  {
                       if (numOfSecondarySide.selection == 0)
                           numOfSecondarySide.addSelection(RoleCountOption!.selection + 1);
                       else
                           numOfSecondarySide.addSelection(-1);
                       refresher();
                   }));
-            countOption.Add(new Module.MSString(0.65f, numOfSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true));
+            countOption.Add(new MSString(0.65f, numOfSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true));
             countOption.Add(
-                  new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                  new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                  {
                       if (numOfSecondarySide.selection > RoleCountOption!.selection + 1)
                           numOfSecondarySide.updateSelection(0);
                       else
@@ -99,19 +102,19 @@ public class HasBilateralness : Role
                       refresher();
                   })
                   );
-            countOption.Add(new Module.MSString(0.2f, ")", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
+            countOption.Add(new MSString(0.2f, ")", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
 
             if (!AssignedDefinitively)
             {
                 countOption.InsertRange(countOption.Count - 1,
-                    new Module.MetaScreenContent[] {
-                        new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    new MetaScreenContent[] {
+                        new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                             {
                                 chanceToSpawnAsSecondarySide.addSelection(-1);
                                 refresher();
                             }),
-                        new Module.MSString(0.6f, chanceToSpawnAsSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true),
-                        new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                        new MSString(0.6f, chanceToSpawnAsSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true),
+                        new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
                             {
                                 chanceToSpawnAsSecondarySide.addSelection(1);
                                 refresher();
@@ -119,11 +122,12 @@ public class HasBilateralness : Role
                     }
                 );
             }
-            else {
-                countOption.Add(new Module.MSMargin(0.66f + 0.5f + 0.5f));
+            else
+            {
+                countOption.Add(new MSMargin(0.66f + 0.5f + 0.5f));
             }
 
-            return new Module.MetaScreenContent[][] { countOption.ToArray(), chanceOption.ToArray() };
+            return new MetaScreenContent[][] { countOption.ToArray(), chanceOption.ToArray() };
         };
     }
 
@@ -174,8 +178,8 @@ public class HasBilateralness : Role
 public class BilateralnessRole : Role
 {
     private bool IsSecondaryRole;
-    HasBilateralness FRole;
-    Func<HasBilateralness> GetFRoleFunc;
+    private HasBilateralness FRole;
+    private Func<HasBilateralness> GetFRoleFunc;
 
     protected BilateralnessRole(string name, string localizeName, Color color, RoleCategory category,
         Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,

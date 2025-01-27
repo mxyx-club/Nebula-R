@@ -50,7 +50,7 @@ public class Draggable : Role
                 }
                 else
                 {
-                    target = (byte)deadBodyId;
+                    target = deadBodyId;
                     OnDragPlayer(target);
                 }
 

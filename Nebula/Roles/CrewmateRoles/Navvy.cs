@@ -4,7 +4,7 @@ namespace Nebula.Roles.CrewmateRoles;
 
 public class Navvy : Role
 {
-    static public Color RoleColor = new Color(71f / 255f, 93f / 255f, 206f / 255f);
+    public static Color RoleColor = new Color(71f / 255f, 93f / 255f, 206f / 255f);
 
     private CustomButton repairButton;
     private CustomButton sealButton;
@@ -47,10 +47,11 @@ public class Navvy : Role
         return chooseSprite(caveSealedSprite);
     }
 
-    private Sprite chooseSprite(Sprite s){
-        int r = Nebula.NebulaPlugin.rnd.Next(1,11);
-        if(r <= 5) return s;
-        return Helpers.loadSpriteFromResources("Nebula.Resources.BothSealed.png",85f);;
+    private Sprite chooseSprite(Sprite s)
+    {
+        int r = Nebula.NebulaPlugin.rnd.Next(1, 11);
+        if (r <= 5) return s;
+        return Helpers.loadSpriteFromResources("Nebula.Resources.BothSealed.png", 85f); ;
     }
 
     public override void MyPlayerControlUpdate()
@@ -137,7 +138,7 @@ public class Navvy : Role
             {
                 if (ventTarget != null)
                 { // Seal vent
-                        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SealVent, Hazel.SendOption.Reliable);
+                    MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SealVent, Hazel.SendOption.Reliable);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
                     writer.Write(ventTarget.Id);
                     writer.EndMessage();

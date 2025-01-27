@@ -1,11 +1,11 @@
 ﻿namespace Nebula.Ghost;
 
-static public class InvestigatorMeetingUI
+public static class InvestigatorMeetingUI
 {
     private static GameObject MainUI;
     private static List<Transform> buttons = new List<Transform>();
 
-    static public void EndMeeting()
+    public static void EndMeeting()
     {
         foreach (var button in buttons)
         {
@@ -14,7 +14,7 @@ static public class InvestigatorMeetingUI
         buttons.Clear();
     }
 
-    static public void UpdateMeetingUI(MeetingHud __instance)
+    public static void UpdateMeetingUI(MeetingHud __instance)
     {
         __instance.TitleText.text = Language.Language.GetString("investigators.ui.title");
 
@@ -28,7 +28,7 @@ static public class InvestigatorMeetingUI
         }
     }
 
-    static public void FormMeetingUI(MeetingHud __instance)
+    public static void FormMeetingUI(MeetingHud __instance)
     {
         Transform container = __instance.transform.FindChild("PhoneUI");
         MainUI = container.gameObject;
@@ -64,7 +64,7 @@ static public class InvestigatorMeetingUI
             int copiedIndex = i;
 
             button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+            button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 if (selectedButton != button)
                 {
@@ -75,14 +75,14 @@ static public class InvestigatorMeetingUI
                 {
                     button.GetComponent<SpriteRenderer>().color = Color.white;
 
-                        //
-                    }
+                    //
+                }
             }));
 
             i++;
         }
 
-        __instance.SkipVoteButton.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+        __instance.SkipVoteButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             selectedButton = null;
             buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = Color.white);
@@ -102,8 +102,8 @@ static public class InvestigatorMeetingUI
         if (alive == 1) intercept = 0;
         else
         {
-            float rate = (float)(alive + 5) / 20f;
-            width *= rate * 14f / (float)(alive - 1);
+            float rate = (alive + 5) / 20f;
+            width *= rate * 14f / (alive - 1);
             intercept *= rate;
         }
 
@@ -113,7 +113,7 @@ static public class InvestigatorMeetingUI
                 player.gameObject.active = false;
             else
             {
-                player.transform.localPosition = new Vector3(-intercept - 0.04f * (float)(alive - 10) + width * (float)index, -1.4f, -5);
+                player.transform.localPosition = new Vector3(-intercept - 0.04f * (alive - 10) + width * index, -1.4f, -5);
                 player.Background.enabled = false;
                 player.PlayerButton.enabled = false;
                 player.NameText.enabled = false;

@@ -1,5 +1,4 @@
 ﻿using Nebula.Events;
-using Nebula.Roles.ImpostorRoles;
 
 namespace Nebula.Roles.CrewmateRoles;
 
@@ -7,17 +6,17 @@ public class Necromancer : Template.Draggable
 {
     public class NecromancerEvent : LocalEvent
     {
-        PlayerControl target;
-        int mode;
-        public NecromancerEvent(PlayerControl target,int mode = 1) : base(0.1f) { this.target = target; this.mode = mode; }
+        private PlayerControl target;
+        private int mode;
+        public NecromancerEvent(PlayerControl target, int mode = 1) : base(0.1f) { this.target = target; this.mode = mode; }
         public override void OnActivate()
         {
-            if(mode == 1) RPCEventInvoker.SetExtraRole(target, Roles.SecondaryMadmate, 0);
+            if (mode == 1) RPCEventInvoker.SetExtraRole(target, Roles.SecondaryMadmate, 0);
             else RPCEventInvoker.SetExtraRole(target, Roles.SecondaryJackal, 0);
         }
     }
 
-    static public Color RoleColor = new Color(110f / 255f, 51f / 255f, 163f / 255f);
+    public static Color RoleColor = new Color(110f / 255f, 51f / 255f, 163f / 255f);
 
     private CustomButton reviveButton;
 
@@ -36,8 +35,8 @@ public class Necromancer : Template.Draggable
     public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
    {
         new Tuple<string, Action>("role.necromancer.help.notificationRange",()=>{
-            new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,maxNotificationDistanceOption.getFloat(), 16f);
-            new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,2f, 16f,true);
+            new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,maxNotificationDistanceOption.getFloat(), 16f);
+            new EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,2f, 16f,true);
         }),
    };
 
@@ -182,7 +181,7 @@ public class Necromancer : Template.Draggable
                 reviveButton.isEffectActive = false;
             },
             reviveButtonSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.None, 
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
             true,
@@ -197,9 +196,9 @@ public class Necromancer : Template.Draggable
                 {
                     LocalEvent.Activate(new NecromancerEvent(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId)));
                 }
-                if(PlayerControl.LocalPlayer.GetModData().extraRole.Contains(Roles.SecondaryJackal) && Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId).GetModData().role.side != Side.Jackal)
+                if (PlayerControl.LocalPlayer.GetModData().extraRole.Contains(Roles.SecondaryJackal) && Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId).GetModData().role.side != Side.Jackal)
                 {
-                    LocalEvent.Activate(new NecromancerEvent(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId),0));
+                    LocalEvent.Activate(new NecromancerEvent(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId), 0));
                 }
             },
             "button.label.revive",

@@ -1,5 +1,4 @@
-﻿using Il2CppSystem.Threading.Tasks;
-using Nebula.Game;
+﻿using Nebula.Game;
 using Nebula.Roles.ComplexRoles;
 
 namespace Nebula.Roles.Perk.CrewmatePerks;
@@ -20,7 +19,7 @@ public class Tempest : Perk
             {
                 RPCEventInvoker.ObjectInstantiate(CustomObject.Type.AccelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset + new Vector3(0f, 0.05f, 0f));
 
-                RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2, IP(0, PerkPropertyType.Second), 0f, false));
+                RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new SpeedFactor(2, IP(0, PerkPropertyType.Second), 0f, false));
                 button.Timer = IP(0, PerkPropertyType.Second);
                 Objects.SoundPlayer.PlaySound(Module.AudioAsset.PlaceTrap2s);
             },
@@ -42,7 +41,7 @@ public class Tempest : Perk
         ).SetTimer(10f);
         button.UsesText.text = "1";
         button.MaxTimer = 10f;
-        button.EffectDuration = IP(0,PerkPropertyType.Second);
+        button.EffectDuration = IP(0, PerkPropertyType.Second);
         button.SetUsesIcon(0);
 
         buttonRegister.Invoke(button);
@@ -62,7 +61,7 @@ public class Tempest : Perk
             if (trap.ObjectType == Objects.ObjectTypes.VisibleTrap.AccelTrap)
             {
                 RPCEventInvoker.EmitSpeedFactor(player,
-                    new Game.SpeedFactor(1, IP(1, PerkPropertyType.Second), 1f + IP(2, PerkPropertyType.Percentage), false));
+                    new SpeedFactor(1, IP(1, PerkPropertyType.Second), 1f + IP(2, PerkPropertyType.Percentage), false));
             }
         });
     }

@@ -1,8 +1,8 @@
-﻿namespace Nebula.Objects.ObjectTypes;
+namespace Nebula.Objects.ObjectTypes;
 
 public class SniperRifle : TypeWithImage
 {
-    public SniperRifle() : base(4, "SniperRifle", new SpriteLoader("Nebula.Resources.SniperRifle.png",150f))
+    public SniperRifle() : base(4, "SniperRifle", new SpriteLoader("Nebula.Resources.SniperRifle.png", 150f))
     {
 
     }
@@ -16,7 +16,8 @@ public class SniperRifle : TypeWithImage
     {
         try
         {
-            var player = Game.GameData.data.playersArray[obj.OwnerId];
+            if (obj.GameObject == null) return;
+            var player = Game.GameData.data?.playersArray[obj.OwnerId];
             var targetPosition = Helpers.playerById(obj.OwnerId).transform.position + new Vector3(0.8f * (float)Math.Cos(player.MouseAngle), 0.8f * (float)Math.Sin(player.MouseAngle));
             obj.GameObject.transform.position += (targetPosition - obj.GameObject.transform.position) * 0.4f;
             FixZPosition(obj);
@@ -37,10 +38,10 @@ public class SniperRifle : TypeWithImage
             else
                 obj.GameObject.active = true;
         }
-        catch(Exception e) 
+        catch (Exception e)
         {
-            Debug.LogError(e.Message);
-            Debug.LogError(e.StackTrace);
+            Error(e.Message);
+            Error(e.StackTrace);
         }
 
     }

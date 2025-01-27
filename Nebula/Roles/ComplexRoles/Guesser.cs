@@ -3,22 +3,22 @@ using Nebula.Patches;
 
 namespace Nebula.Roles.ComplexRoles;
 
-public class FGuesser : Template.HasBilateralness,Template.HasWinTrigger
+public class FGuesser : Template.HasBilateralness, Template.HasWinTrigger
 {
-    public Module.CustomOption secondoryRoleOption;
-    public Module.CustomOption guesserShots;
-    public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
-    public Module.CustomOption additionalVotingTime;
-    public Module.CustomOption spawnableRoleFilter;
+    public CustomOption secondoryRoleOption;
+    public CustomOption guesserShots;
+    public CustomOption canShotSeveralTimesInTheSameMeeting;
+    public CustomOption additionalVotingTime;
+    public CustomOption spawnableRoleFilter;
 
 
-    public Module.CustomOption crewmateRoleCountOption;
-    public Module.CustomOption impostorRoleCountOption;
-    public Module.CustomOption neutralRoleCountOption;
-    public Module.CustomOption canWinAloneOption;
-    public Module.CustomOption guessCountToWinOption;
+    public CustomOption crewmateRoleCountOption;
+    public CustomOption impostorRoleCountOption;
+    public CustomOption neutralRoleCountOption;
+    public CustomOption canWinAloneOption;
+    public CustomOption guessCountToWinOption;
 
-    static public Color RoleColor = new Color(255f / 255f, 255f / 255f, 0f / 255f);
+    public static Color RoleColor = new Color(255f / 255f, 255f / 255f, 0f / 255f);
 
     public bool WinTrigger { get; set; } = false;
     public byte Winner { get; set; } = Byte.MaxValue;
@@ -27,7 +27,7 @@ public class FGuesser : Template.HasBilateralness,Template.HasWinTrigger
             new HelpSprite(FGuesser.targetSprite,"role.guesser.help.guess",0.7f)
         };
 
-    public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
+    public override AssignRoles.RoleAllocation[] GetComplexAllocations()
     {
         if (!secondoryRoleOption.getBool())
         {
@@ -64,8 +64,8 @@ public class FGuesser : Template.HasBilateralness,Template.HasWinTrigger
         {
             if (secondoryRoleOption.getBool())
             {
-                return new Module.MetaScreenContent[][]{
-                                new Module.MetaScreenContent[]{
+                return new MetaScreenContent[][]{
+                                new MetaScreenContent[]{
                                     new MSString(3f, RoleChanceOption.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
@@ -133,7 +133,7 @@ public class FGuesser : Template.HasBilateralness,Template.HasWinTrigger
     public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilGuesser, Roles.NiceGuesser }; }
 }
 
-static public class GuesserSystem
+public static class GuesserSystem
 {
     public static Assignable.RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new Assignable.RelatedExtraRoleData[] { new Assignable.RelatedExtraRoleData("Guesser Shot", Roles.SecondaryGuesser, 0, 20) }; }
 
@@ -142,15 +142,16 @@ static public class GuesserSystem
     public static void GlobalInitialize(PlayerControl __instance)
     {
         __instance.GetModData().SetExtraRoleData(Roles.SecondaryGuesser.id, (ulong)Roles.F_Guesser.guesserShots.getFloat());
-        __instance.GetModData().SetRoleData(guessId,0);
+        __instance.GetModData().SetRoleData(guessId, 0);
     }
 
     private static GameObject guesserUI;
-    static void guesserOnClick(int buttonTarget, MeetingHud __instance)
+
+    private static void guesserOnClick(int buttonTarget, MeetingHud __instance)
     {
         if (__instance.CurrentState == MeetingHud.VoteStates.Discussion) return;
 
-        PlayerControl target = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
+        PlayerControl target = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
         if (target == null || target.Data.IsDead) return;
 
         if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
@@ -189,7 +190,7 @@ static public class GuesserSystem
             if (!role.IsGuessableRole || role.category == RoleCategory.Complex) continue;
             if ((Roles.F_Guesser.spawnableRoleFilter.getBool() && !role.IsSpawnable()) &&
                 !(role == Roles.Sidekick && Roles.Jackal.IsSpawnable() && NeutralRoles.Sidekick.SidekickTakeOverOriginalRoleOption.getBool()) &&
-                !(role == Roles.Immoralist && Roles.Spectre.IsSpawnable()) && 
+                !(role == Roles.Immoralist && Roles.Spectre.IsSpawnable()) &&
                 !(role == Roles.Dog && Roles.Pavlov.IsSpawnable()) &&
                 !(role == Roles.Moran && Roles.Moriarty.IsSpawnable())) continue;
             if (role == Roles.Player) break;
@@ -211,7 +212,7 @@ static public class GuesserSystem
             int copiedIndex = i;
 
             button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+            if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 if (selectedButton != button)
                 {
@@ -227,7 +228,7 @@ static public class GuesserSystem
                         return;
                     }
 
-                    PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
+                    PlayerControl focusedTarget = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
                     if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                     if (target.Data.IsDead) return;
                     var focusedTargetData = focusedTarget.GetModData();
@@ -244,7 +245,7 @@ static public class GuesserSystem
                     UnityEngine.Object.Destroy(container.gameObject);
 
                     ulong data = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.SecondaryGuesser.id);
-                    if(PlayerControl.LocalPlayer.GetModData().role != Roles.HighRoller) data--;
+                    if (PlayerControl.LocalPlayer.GetModData().role != Roles.HighRoller) data--;
                     RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.SecondaryGuesser.id, data);
 
                     if ((Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() || PlayerControl.LocalPlayer.GetModData().role == Roles.HighRoller) &&
@@ -254,17 +255,21 @@ static public class GuesserSystem
                         __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                     // Shoot player and send chat info if activated
-                    if(dyingTarget.PlayerId != PlayerControl.LocalPlayer.PlayerId){
-                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,guessId,1);
-                    }else{
+                    if (dyingTarget.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, guessId, 1);
+                    }
+                    else
+                    {
                         ulong pa = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.ProfessionalAssassin.id);
-                        if(pa > 0){
+                        if (pa > 0)
+                        {
                             pa--;
                             RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.ProfessionalAssassin.id, pa);
                             Helpers.PlayQuickFlash(FGuesser.RoleColor);
                             return;
                         }
-                    } 
+                    }
                     RPCEventInvoker.Guess(dyingTarget.PlayerId);
                 }
             }));
@@ -300,10 +305,11 @@ static public class GuesserSystem
             Teamlabel.autoSizeTextContainer = true;
             int copiedIndex = index;
             Teambutton.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            if (!PlayerControl.LocalPlayer.Data.IsDead) Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() => {
+            if (!PlayerControl.LocalPlayer.Data.IsDead) Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+            {
                 i = 0;
                 selectedButton = null;
-                foreach(Transform button in buttons) UnityEngine.Object.Destroy(button.gameObject);
+                foreach (Transform button in buttons) UnityEngine.Object.Destroy(button.gameObject);
                 buttons = new List<Transform>();
                 foreach (Role role in Roles.AllRoles)
                 {
@@ -311,7 +317,7 @@ static public class GuesserSystem
                     if (!role.IsGuessableRole || role.category == RoleCategory.Complex) continue;
                     if ((Roles.F_Guesser.spawnableRoleFilter.getBool() && !role.IsSpawnable()) &&
                         !(role == Roles.Sidekick && Roles.Jackal.IsSpawnable() && NeutralRoles.Jackal.CanCreateSidekickOption.getBool() && NeutralRoles.Sidekick.SidekickTakeOverOriginalRoleOption.getBool()) &&
-                        !(role == Roles.Immoralist && Roles.Spectre.IsSpawnable()) && 
+                        !(role == Roles.Immoralist && Roles.Spectre.IsSpawnable()) &&
                         !(role == Roles.Dog && Roles.Pavlov.IsSpawnable()) &&
                         !(role == Roles.Moran && Roles.Moriarty.IsSpawnable())) continue;
                     if (role == Roles.Player) break;
@@ -336,7 +342,7 @@ static public class GuesserSystem
                     label.transform.localScale *= 1.7f;
 
                     button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-                    if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+                    if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
                     {
                         if (selectedButton != button)
                         {
@@ -352,7 +358,7 @@ static public class GuesserSystem
                                 return;
                             }
 
-                            PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
+                            PlayerControl focusedTarget = Helpers.playerById(__instance.playerStates[buttonTarget].TargetPlayerId);
                             if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                             if (target.Data.IsDead) return;
                             var focusedTargetData = focusedTarget.GetModData();
@@ -371,7 +377,7 @@ static public class GuesserSystem
                             UnityEngine.Object.Destroy(container.gameObject);
 
                             ulong data = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.SecondaryGuesser.id);
-                            if(PlayerControl.LocalPlayer.GetModData().role != Roles.HighRoller) data--;
+                            if (PlayerControl.LocalPlayer.GetModData().role != Roles.HighRoller) data--;
                             RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.SecondaryGuesser.id, data);
 
                             if ((Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() || PlayerControl.LocalPlayer.GetModData().role == Roles.HighRoller) &&
@@ -381,17 +387,21 @@ static public class GuesserSystem
                                 __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                             // Shoot player and send chat info if activated
-                            if(dyingTarget.PlayerId != PlayerControl.LocalPlayer.PlayerId){
-                                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,guessId,1);
-                            }else{
+                            if (dyingTarget.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+                            {
+                                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, guessId, 1);
+                            }
+                            else
+                            {
                                 ulong pa = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.ProfessionalAssassin.id);
-                                if(pa > 0){
+                                if (pa > 0)
+                                {
                                     pa--;
                                     RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.ProfessionalAssassin.id, pa);
                                     Helpers.PlayQuickFlash(FGuesser.RoleColor);
                                     return;
                                 }
-                            } 
+                            }
                             RPCEventInvoker.Guess(dyingTarget.PlayerId);
                             //Debug.LogWarningFormat(PlayerControl.LocalPlayer.GetModData().GetRoleData(guessId).ToString());
                         }
@@ -408,7 +418,7 @@ static public class GuesserSystem
             }));
         }
     }
-    
+
 
     public static void SetupMeetingButton(MeetingHud __instance)
     {
@@ -437,15 +447,16 @@ static public class GuesserSystem
     {
         ulong left = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser);
         if (left <= 0) return;
-        if(meetingInfo.text != "") meetingInfo.text += "\n";
+        if (meetingInfo.text != "") meetingInfo.text += "\n";
         meetingInfo.text += Language.Language.GetString("role.guesser.guessesLeft") + ": " + left;
         meetingInfo.gameObject.SetActive(true);
-        if(PlayerControl.LocalPlayer.GetModData().GetRoleData(guessId) >= Roles.F_Guesser.guessCountToWinOption.getFloat() && Roles.F_Guesser.canWinAloneOption.getBool()){
+        if (PlayerControl.LocalPlayer.GetModData().GetRoleData(guessId) >= Roles.F_Guesser.guessCountToWinOption.getFloat() && Roles.F_Guesser.canWinAloneOption.getBool())
+        {
             RPCEventInvoker.WinTrigger(Roles.F_Guesser);
         }
     }
 
-    public static bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition)
+    public static bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
     {
         return condition == Patches.EndCondition.GuesserWin;
     }
@@ -499,7 +510,7 @@ public class Guesser : Template.BilateralnessRole
         return base.IsSpawnable();
     }
 
-    public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition) => GuesserSystem.CheckAdditionalWin(player,condition);
+    public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition) => GuesserSystem.CheckAdditionalWin(player, condition);
 }
 
 public class SecondaryGuesser : ExtraRole
@@ -515,7 +526,7 @@ public class SecondaryGuesser : ExtraRole
     public override Assignable AssignableOnHelp => Roles.F_Guesser;
     public override HelpSprite[] helpSprite => Roles.F_Guesser.helpSprite;
 
-    private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
+    private void _sub_Assignment(AssignMap assignMap, List<byte> players, int count)
     {
         if (!Roles.F_Guesser.TopOption.getBool()) return;
         if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
@@ -536,7 +547,7 @@ public class SecondaryGuesser : ExtraRole
         }
     }
 
-    public override void Assignment(Patches.AssignMap assignMap)
+    public override void Assignment(AssignMap assignMap)
     {
         if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
 
@@ -620,10 +631,10 @@ public class SecondaryGuesser : ExtraRole
             suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
     }
 
-    public override Module.CustomOption? RegisterAssignableOption(Role role)
+    public override CustomOption? RegisterAssignableOption(Role role)
     {
         //if(role == Roles.WiseMan || role == Roles.F_Swapper || role == Roles.HighRoller) return null;
-        Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeGuesser");
+        CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeGuesser");
         option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
         option.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
         option.AddCustomPrerequisite(() =>
@@ -636,5 +647,5 @@ public class SecondaryGuesser : ExtraRole
         return option;
     }
 
-    public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition) => GuesserSystem.CheckAdditionalWin(player,condition);
+    public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition) => GuesserSystem.CheckAdditionalWin(player, condition);
 }

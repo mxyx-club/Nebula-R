@@ -16,7 +16,7 @@ public class Vampire : Role
 
     public class SuckBlondEvent : Events.LocalEvent
     {
-        PlayerControl target;
+        private PlayerControl target;
         public SuckBlondEvent(PlayerControl target) : base(dieAfterSuckBlondOption.getFloat()) { this.target = target; }
         public override void OnTerminal()
         {
@@ -31,7 +31,7 @@ public class Vampire : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if(killButton != null)
+        if (killButton != null)
         {
             killButton.Destroy();
         }
@@ -57,7 +57,7 @@ public class Vampire : Role
 
     public override void CleanUp()
     {
-        if(killButton != null)
+        if (killButton != null)
         {
             killButton.Destroy();
             killButton = null;

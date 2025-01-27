@@ -5,7 +5,7 @@ public class RitualPatch
 {
 
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.GetTaskById))]
-    class GetTaskByIdPatch
+    private class GetTaskByIdPatch
     {
         public static bool Prefix(ShipStatus __instance, ref NormalPlayerTask __result, [HarmonyArgument(0)] byte idx)
         {

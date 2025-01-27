@@ -1,8 +1,8 @@
-﻿namespace Nebula.Patches;
+namespace Nebula.Patches;
 
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
-static class HudManagerStartPatch
+internal static class HudManagerStartPatch
 {
     private static void CleanUp(IEnumerable<Roles.Assignable> roles)
     {
@@ -14,7 +14,7 @@ static class HudManagerStartPatch
             }
             catch
             {
-                NebulaPlugin.Instance.Logger.Print("An error has occurred in " + role.Name);
+                Error($"An error has occurred in {role.Name}");
             }
         }
     }
@@ -28,7 +28,7 @@ static class HudManagerStartPatch
 }
 
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
-class IntroCutsceneOnDestroyPatch
+internal class IntroCutsceneOnDestroyPatch
 {
     public static PoolablePlayer PlayerPrefab = null;
     public static void Postfix(IntroCutscene __instance)
@@ -37,8 +37,8 @@ class IntroCutsceneOnDestroyPatch
         CloseSpawnGUIPatch.Actions.Clear();
 
         PlayerPrefab = __instance.PlayerPrefab;
-        
-        if (CustomButton.OriginalVentButtonSprite) CustomButton.OriginalVentButtonSprite.hideFlags&= ~HideFlags.DontUnloadUnusedAsset;
+
+        if (CustomButton.OriginalVentButtonSprite) CustomButton.OriginalVentButtonSprite.hideFlags &= ~HideFlags.DontUnloadUnusedAsset;
         CustomButton.OriginalVentButtonSprite = HudManager.Instance.ImpostorVentButton.GetComponent<SpriteRenderer>().sprite;
         CustomButton.OriginalVentButtonSprite.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 
@@ -57,7 +57,7 @@ class IntroCutsceneOnDestroyPatch
             .Replace("%LEFT%", Module.NebulaInputManager.allKeyCodes[Module.NebulaInputManager.changeEyesightLeftInput.keyCode].displayKey)
             .Replace("%RIGHT%", Module.NebulaInputManager.allKeyCodes[Module.NebulaInputManager.changeEyesightRightInput.keyCode].displayKey));
 
-        new Objects.PlayerList(PlayerPrefab);
+        new PlayerList(PlayerPrefab);
 
         Roles.Roles.StaticInitialize();
 
@@ -92,7 +92,7 @@ class IntroCutsceneOnDestroyPatch
             if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).RequireStartCountDown)
             {
                 byte count = 10;
-                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new System.Action<float>((p) =>
+                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new Action<float>((p) =>
                 {
                     if ((byte)((1f - p) * 10f) < count)
                     {
@@ -158,7 +158,7 @@ class IntroCutsceneOnDestroyPatch
 }
 
 [HarmonyPatch]
-class IntroPatch
+internal class IntroPatch
 {
     public static void setupIntroTeamText(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
@@ -181,7 +181,7 @@ class IntroPatch
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
-    class SetUpRoleTextPatch
+    private class SetUpRoleTextPatch
     {
         private static void setUpRoleText(IntroCutscene __instance)
         {
@@ -195,7 +195,7 @@ class IntroPatch
             __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.LocalizeName + ".description");
             __instance.RoleBlurbText.color = role.Color;
             __instance.YouAreText.color = role.side.color;
-            
+
 
             //追加ロールの情報を付加
             string description = __instance.RoleBlurbText.text;
@@ -249,7 +249,7 @@ class IntroPatch
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowTeam))]
-    class BeginPatch
+    private class BeginPatch
     {
         public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToShow)
         {
@@ -271,7 +271,7 @@ class IntroPatch
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
-    class BeginCrewmatePatch
+    private class BeginCrewmatePatch
     {
         public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
         {
@@ -284,7 +284,7 @@ class IntroPatch
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginImpostor))]
-    class BeginImpostorPatch
+    private class BeginImpostorPatch
     {
         public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
         {
@@ -298,7 +298,7 @@ class IntroPatch
 }
 
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CreatePlayer))]
-class CreatePlayerPatch
+internal class CreatePlayerPatch
 {
     public static void Postfix(IntroCutscene __instance, ref PoolablePlayer __result, ref int i, ref int maxDepth, ref GameData.PlayerInfo pData, ref bool impostorPositioning)
     {
@@ -311,7 +311,7 @@ class CreatePlayerPatch
 [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Close))]
 public class CloseSpawnGUIPatch
 {
-    public static HashSet<System.Action> Actions = new HashSet<System.Action>();
+    public static HashSet<Action> Actions = new HashSet<Action>();
     public static void Postfix(SpawnInMinigame __instance)
     {
         foreach (var action in Actions)

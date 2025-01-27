@@ -2,7 +2,7 @@
 
 public class FractionGuage
 {
-    int num, den;
+    private int num, den;
 
     //最小公倍数
     private static int Lcm(int a, int b)
@@ -44,7 +44,7 @@ public class FractionGuage
         den /= gcd;
     }
 
-    public static implicit operator float(FractionGuage fGuage) => (float)fGuage.num / (float)fGuage.den;
+    public static implicit operator float(FractionGuage fGuage) => fGuage.num / (float)fGuage.den;
 
     public FractionGuage()
     {

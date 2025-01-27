@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Hazel;
 
 namespace Nebula.Patches;
@@ -54,16 +54,7 @@ public class GameStartManagerPatch
             if (PlayerControl.LocalPlayer != null)
             {
                 Helpers.shareGameVersion();
-                PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
-                RPCEventInvoker.SetMyColor();
             }
-
-
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                player.SetColor(player.PlayerId);
-            }
-
         }
     }
 
@@ -100,13 +91,6 @@ public class GameStartManagerPatch
 
                 GameData.Instance.HandleDisconnect();
 
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    if (player != null && player.PlayerId != player.Data.DefaultOutfit.ColorId)
-                    {
-                        player.SetColor(player.PlayerId);
-                    }
-                }
                 if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
                 update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
             }
@@ -123,10 +107,6 @@ public class GameStartManagerPatch
                 {
                     versionSent = true;
                     Helpers.shareGameVersion();
-
-                    PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
-                    AmongUs.Data.DataManager.Player.Customization.Color = PlayerControl.LocalPlayer.PlayerId;
-                    RPCEventInvoker.SetMyColor();
                 }
 
                 if (!AmongUsClient.Instance) return;
@@ -134,7 +114,7 @@ public class GameStartManagerPatch
                 // Host update with version handshake infos
                 if (AmongUsClient.Instance.AmHost)
                 {
-                    
+
                     int minPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
                     //int maxPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MaxPlayers ?? 15;
                     int maxPlayers = 127;
@@ -154,7 +134,7 @@ public class GameStartManagerPatch
                             message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasNoNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
 
                         }
-                        else if(!NebulaOption.configDontCareMismatchedNoS.Value)
+                        else if (!NebulaOption.configDontCareMismatchedNoS.Value)
                         {
                             PlayerVersion version = playerVersions[client.Id];
                             if (!version.Matches())
@@ -289,7 +269,7 @@ public class GameStartManagerPatch
                         int num = 6;
                         if (CustomOptionHolder.GetCustomGameMode() is Module.CustomGameMode.FreePlay)
                             num = (int)CustomOptionHolder.CountOfDummiesOption.getFloat();
-                        
+
                         for (int n = 0; n < num; n++)
                         {
                             var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);

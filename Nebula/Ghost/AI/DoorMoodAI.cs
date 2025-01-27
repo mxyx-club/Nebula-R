@@ -8,7 +8,7 @@ public class AI_PlayerDoorMood : GhostWeightedAI
     {
         foreach (var room in ghost.DoorKeys)
         {
-            ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfAlivePlayers(room, MaxPlayer) / (float)MaxPlayer;
+            ghost.DoorMood[room] += Weight * GhostAI.GetCountOfAlivePlayers(room, MaxPlayer) / MaxPlayer;
         }
     }
 
@@ -26,7 +26,7 @@ public class AI_HideDeadBodyDoorMood : GhostWeightedAI
     {
         foreach (var room in ghost.DoorKeys)
         {
-            ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfDeadBodies(room, MaxBodies) / (float)MaxBodies;
+            ghost.DoorMood[room] += Weight * GhostAI.GetCountOfDeadBodies(room, MaxBodies) / MaxBodies;
         }
     }
 
